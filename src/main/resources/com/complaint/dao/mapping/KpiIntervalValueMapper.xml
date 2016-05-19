@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.KpiIntervalValueDao">
+  <resultMap id="BaseResultMap" type="com.complaint.model.KpiIntervalValue">
+    <result column="NET_TYPE" jdbcType="DECIMAL" property="netType" />
+    <result column="kpiid" jdbcType="DECIMAL" property="kpi" />
+    <result column="SERIAL_NUM" jdbcType="DECIMAL" property="serialNum" />
+    <result column="KPI_VALUE" jdbcType="DECIMAL" property="kpiValue" />
+    <result column="KPI_NAME" jdbcType="VARCHAR" property="kpiName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    NET_TYPE, kpiid, SERIAL_NUM, KPI_VALUE, KPI_NAME, SCENE_TYPE
+  </sql>
+  
+  <select id="queryAllKipIntervalValues" resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List"/>
+  	from t_kpi_interval_value order by kpiid  , SERIAL_NUM 
+  </select>
+  
+  <!-- 接口阈值 -->
+  <select id="queryAllKpi" resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List"/>
+  	from t_kpi_interval_value   order by kpiid  ,SCENE_TYPE, SERIAL_NUM 
+  </select>
+  
+  
+  <insert id="insert" parameterType="com.complaint.model.KpiIntervalValue">
+    insert into t_kpi_interval_value (NET_TYPE, kpiid, SERIAL_NUM, 
+      KPI_VALUE, KPI_NAME)
+    values (#{netType,jdbcType=DECIMAL}, #{kpi,jdbcType=DECIMAL}, #{serialNum,jdbcType=DECIMAL}, 
+      #{kpiValue,jdbcType=DECIMAL}, #{kpiName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="update" parameterType="map">
+  	update t_kpi_interval_value set KPI_VALUE = #{kpivalue} where NET_TYPE =#{nettype} and kpiid = #{kpi} and SERIAL_NUM = #{serialnum} and scene_type = #{scene_type}
+  </insert>
+  <insert id="insertSelective" parameterType="com.complaint.model.KpiIntervalValue">
+    insert into t_kpi_interval_value
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="netType != null">
+        NET_TYPE,
+      </if>
+      <if test="kpi != null">
+        kpiid,
+      </if>
+      <if test="serialNum != null">
+        SERIAL_NUM,
+      </if>
+      <if test="kpiValue != null">
+        KPI_VALUE,
+      </if>
+      <if test="kpiName != null">
+        KPI_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="netType != null">
+        #{netType,jdbcType=DECIMAL},
+      </if>
+      <if test="kpi != null">
+        #{kpi,jdbcType=DECIMAL},
+      </if>
+      <if test="serialNum != null">
+        #{serialNum,jdbcType=DECIMAL},
+      </if>
+      <if test="kpiValue != null">
+        #{kpiValue,jdbcType=DECIMAL},
+      </if>
+      <if test="kpiName != null">
+        #{kpiName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

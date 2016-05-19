@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.ExportExcelDao">
+
+	<select id="queryColors" resultType="com.complaint.model.RateColor">
+		select t.rank_code,t.rank_color from t_rate_color t where t.type = 1 
+	</select>
+	<select id="queryDefDate" resultType="java.lang.String">
+		select configvalue from t_sysconfig where configkey=#{key}
+	</select>
+	<select id="countGroupNum"  resultType="java.lang.Integer">
+		select count(1) as num
+		  from (select a.groupid, count(1)
+		          from t_group a, t_quality_step_config b, t_area_code c, t_area_group_relation d
+		         where a.groupid = b.groupid
+		           and a.groupid = d.groupid
+		           and c.areaid = d.areaid
+             group by a.groupid)
+		
+	</select>
+	<select id="queryAreaInGroup" resultType="com.complaint.model.Group">
+		select t.groupid groupid,
+		        substr(sys_connect_by_path(t.areaid, ','), 2) areas,
+		        groupname
+		   from (select groupid,
+		                areaid,
+		                groupname,
+		                row_number() over(partition by groupid order by groupname) rn
+		           from (select a.groupid, c.areaid, a.groupname
+		                   from t_group a, t_area_group_relation b, t_area_code c
+		                  where a.groupid = b.groupid
+		                    and b.areaid = c.areaid
+		                  order by a.groupid)) t
+		  where connect_by_isleaf = 1
+		  start with rn = 1
+		 connect by rn = prior rn + 1
+		        and groupid = prior groupid
+	</select>
+	<select id="excelSerialno" resultType="com.complaint.model.WorkOrder">
+	   select  min(w.serialno) serialno,
+	           to_char( min (w.submit_datetime), 'yyyy-mm-dd hh24:mi:ss') submitDatetime,
+               to_char( min (w.request_datetime), 'yyyy-mm-dd hh24:mi:ss') requestDatetime, 
+                min(w.problems_address) problemsAddress,
+                min(w.acceptance_number) acceptanceNumber,
+                min(w.net_worktype) netWorktype
+  from t_log_manual t, t_test_workorder w
+ where t.id = w.id
+   and w.is_verify &lt;&gt; 2 
+   and t.area_id=w.area_id
+   and t.serialno=w.serialno
+   and t.test_time >= to_date(#{starttime}, 'yyyy.mm.dd hh24:mi:ss')
+   and to_date(#{endtime}, 'yyyy.mm.dd hh24:mi:ss')>=t.test_time  
+   <if test="reportType==2">
+   and w.submit_datetime >= to_date(#{systime}, 'yyyy.mm.dd hh24:mi:ss')
+   and to_date(#{endtime}, 'yyyy.mm.dd hh24:mi:ss')>=w.submit_datetime 
+   </if>
+   <if test="area_id !=null and area_id !=''">
+   and w.area_id  =#{area_id}
+  </if>
+  
+   <if test="groupid !=null and groupid !=0">
+    and w.area_id  in (select areaid from t_area_group_relation where groupid=#{groupid})
+  </if>
+  
+   <if test="groupid !=null and groupid ==0">
+    and w.area_id  is not null
+  </if>
+  and  not exists (select 1 from t_tolerance_cfg s where s.tolerid=2 and s.serialno=w.serialno and s.areaid=w.area_id)
+   group by w.serialno,w.area_id
+	</select>
+</mapper>

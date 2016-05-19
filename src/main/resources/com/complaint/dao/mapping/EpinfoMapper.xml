@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.EpinfoDao">
+	<select id="queryUuid" resultType="com.complaint.model.Epinfo">
+		   select id,uuid,isallow as islock,add_time as addtime,update_time as updatetime from t_ep_info where uuid = #{uuid,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getEpinfoArea" resultType="com.complaint.model.EpinfoArea">
+		   select a.departmentid areaid,b.areaname areaname
+      			from t_test_users a,t_area_code b 
+     			where a.departmentid=b.areaid and a.phone_num = #{phoneNum,jdbcType=VARCHAR}
+      			group by a.departmentid,b.areaname
+	</select>
+	
+	<select id="queryEpinfoList" parameterType="map" resultType="com.complaint.model.Epinfo">
+	select * from (
+      select a.*,row_number() over(order by a.addtime desc) rn  from (
+        select t.id,t.uuid,t.isallow as islock,t.add_time as addtime,t.update_time as updatetime,t.area_id areaid,t.functionary functionary,t.teltphone teltphone,c.areaname areaname from t_ep_info t left join t_area_code c on t.area_id = c.areaid
+				<if test="uuid != null and uuid != '' ">		
+					where t.uuid  like   '%' ||  #{uuid} || '%' 
+				</if>
+				order by t.add_time desc ) a 
+			) 
+		where rn &lt;= #{mbound} and rn &gt; #{lbound}
+	</select>
+	<select id="countEpinfo" parameterType="map" resultType="java.lang.Integer">
+		select count(0) from t_ep_info t 
+		<if test="uuid != null and uuid != '' ">		
+			where t.uuid  like   '%' ||  #{uuid} || '%' 
+		</if>
+	</select>
+	<insert id="insertEpInfo" parameterType="com.complaint.model.Epinfo">
+		insert into t_ep_info(id,uuid,isallow,add_time,update_time,area_id,functionary,teltphone) values(Seq_t_Ep_Info.Nextval,#{uuid,jdbcType=VARCHAR},
+		0,sysdate,sysdate,#{areaid,jdbcType=Integer},#{functionary,jdbcType=VARCHAR},#{teltphone,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertByBatch" parameterType="com.complaint.model.Epinfo">
+		insert into t_ep_info(id,uuid,isallow,add_time,update_time,area_id,functionary,teltphone) values(Seq_t_Ep_Info.Nextval,#{uuid,jdbcType=VARCHAR},
+		#{islock},sysdate,sysdate,#{areaid},#{functionary,jdbcType=VARCHAR},#{teltphone,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateEpInfo" parameterType="com.complaint.model.Epinfo">
+		update t_ep_info set uuid=#{uuid,jdbcType=VARCHAR},isallow = #{islock}, update_time = sysdate,area_id=#{areaid},functionary=#{functionary},teltphone=#{teltphone} where id = #{id}
+	</update>
+	<select id="queryById" parameterType="java.lang.Integer" resultType="com.complaint.model.Epinfo">
+		select t.id,t.uuid,t.isallow as islock,t.add_time as addtime,t.update_time as updatetime,t.area_id areaid,t.functionary functionary,t.teltphone teltphone,c.areaname  from t_ep_info t left join t_area_code c on t.area_id = c.areaid where t.id = #{id}
+	</select>
+	<delete id="deleteEpInfo" parameterType="java.lang.Integer">
+		delete from t_ep_info r where r.id=#{id}
+	</delete>
+	<select id="getAllEpinfoList" resultType="com.complaint.model.Epinfo">
+		select t.ID id,t.UUID uuid,t.ISALLOW islock,ADD_TIME addtime,UPDATE_TIME updatetime,t.area_id areaid,t.functionary functionary,t.teltphone teltphone,c.areaname areaname from t_ep_info t left join t_area_code c on t.area_id = c.areaid
+	</select>
+	<select id="getAreaBean" resultType="com.complaint.model.AreaBean">
+		select areaid,areaname from t_area_code order by areaid
+	</select>
+</mapper>

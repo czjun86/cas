@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.SceneDao" >
+  <sql id="Base_Column_List" >
+    SCENEID as sceneid, INSIDE as inside, TYPE as type, INSIDE_TYPE as insidetype, NAME as name
+  </sql>
+  <select id="queryAll" resultType="com.complaint.model.Scene" >
+   	select <include refid="Base_Column_List"/> from t_scene_code where isvalid = 1
+  </select>
+</mapper>

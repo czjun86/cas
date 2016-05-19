@@ -1,0 +1,28 @@
+TABLE.gsc-search-box {
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 5px;
+	PADDING-LEFT: 0px;
+	PADDING-RIGHT: 0px
+}
+
+.gsc-clear-button {
+	DISPLAY: none
+}
+
+INPUT.gsc-input {
+	BORDER-TOP: #d9d9d9 1px solid;
+	HEIGHT: 12px;
+	BORDER-RIGHT: #d9d9d9 1px solid;
+	BORDER-BOTTOM: #d9d9d9 1px solid;
+	BORDER-LEFT: #d9d9d9 1px solid
+}
+
+.gsc-search-button INPUT.gsc-search-button {
+	BORDER-TOP: #ddd 1px solid;
+	HEIGHT: 22px;
+	BORDER-RIGHT: #ddd 1px solid;
+	BACKGROUND: #ddd;
+	BORDER-BOTTOM: #ddd 1px solid;
+	BORDER-LEFT: #ddd 1px solid;
+	WIDTH: 50px
+}

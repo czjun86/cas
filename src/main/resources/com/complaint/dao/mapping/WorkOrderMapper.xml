@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.WorkOrderDao">
+  <sql id="Base_Column_List">
+    t.id,t.serialno, t.first_time as submitDatetime, t.request_datetime as requestDatetime, t.accept_human as acceptHuman, 
+    t.complaint_channels as complaintChannels, t.admissible_path as admissiblePath, 
+    t.product_name as productName, t.complaint, t.template_content as templateContent, t.channel_problems as channelProblems, 
+    t.problems_address as problemsAddress, t.attribution,  t.account_attribution as accountAttribution, t.acceptance_number as acceptanceNumber, 
+    t.users_brand as usersBrand, t.customer_contact as customerContact, t.area_id as areaId, t.net_worktype as netWorktype, 
+    t.test_number as testNumber, t.process_sta as processStatus, t.isdeal as isDeal, t.updatetime as updateTime
+  </sql>
+  
+    <!-- 工单表WHERE条件 -->
+  <sql id="where_sql"> 
+       <!-- 时间 -->
+        <if test="datatype!=null and datatype==1">
+				<if test="startTime != null">
+					and t.first_time &gt;= to_date(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endTime != null">
+					and t.first_time &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				
+			<!-- 地址或工单 -->
+				    <if test="serialno!=null and serialno!=''">
+				    and (t.serialno like '%' ||  #{serialno} || '%'  or c.test_adress like '%' ||  #{serialno} || '%')
+				    </if>
+			</if>
+			
+			<!-- 环境 -->
+			<if test="inside!=null and inside!=-1">
+             and c.inside=#{inside}
+           </if>
+			<!-- 任务类型 -->
+			<if test="jobtype!=null and jobtype!=-1">
+     
+            </if>
+			<!-- 网络制式 -->
+			<if test="nettype!=-1">
+			 <if test="nettype==1">
+		      and (c.net_type=2 or c.net_type=3)
+		     </if>
+		     <if test="nettype==2">
+		      and (c.net_type=1 or c.net_type=3)
+		     </if>
+		     <if test="nettype==4">
+		      and (c.net_type=4)
+		     </if>
+			</if>
+			 <!-- 测试网络 -->
+		    <if test="testnet!='-1' and testnet!=null">
+		     and instr(','||#{testnet}||',',','||c.net_type||',')>0 
+		    </if>
+			    <!-- 业务类型 -->
+				    <if test="testtype!=null and bustype!=-1">
+					    and(
+					    <if test="tt!=null">
+					      instr(','||#{tt}||',',','||c.test_type||',')>0 
+					    </if>
+					     <if test="yy!=null">
+					       or instr(','||#{yy}||',',','||c.call_type||',')>0 
+					     </if>
+					      <if test="ff!=null">
+					      or  instr(','||#{ff}||',',','||c.ftp_type||',')>0 
+					     </if>
+					     )
+				    </if>
+				
+				    <!-- 场景 -->
+				    <if test="senceids!=null and stype!=-1">
+				    and instr(','||#{senceids}||',',','||c.sceneid||',')>0 
+				    </if>
+  </sql>
+      <!-- 结果集WHERE条件 -->
+  <sql id="where_sql_test"> 
+       <!-- 时间 -->
+				<if test="datatype!=null and datatype==2">
+				<if test="startTime != null">
+					and m.test_time &gt;= to_date(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endTime != null">
+					and m.test_time &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				
+					<!-- 地址或工单 -->
+				    <if test="serialno!=null and serialno!=''">
+				    and (m.serialno like '%' ||  #{serialno} || '%'  or m.test_adress like '%' ||  #{serialno} || '%')
+				    </if>
+			</if>
+			
+			<!-- 环境 -->
+			<if test="inside!=null and inside!=-1">
+             and m.inside=#{inside}
+           </if>
+			<!-- 任务类型 -->
+			<if test="jobtype!=null and jobtype!=-1">
+     
+            </if>
+			<!-- 网络制式 -->
+			<if test="nettype!=-1">
+			 <if test="nettype==1">
+		      and (m.net_type=2 or m.net_type=3)
+		     </if>
+		     <if test="nettype==2">
+		      and (m.net_type=1 or m.net_type=3)
+		     </if>
+		     <if test="nettype==4">
+		      and (m.net_type=4)
+		     </if>
+			</if>
+			 <!-- 测试网络 -->
+		    <if test="testnet!='-1' and testnet!=null">
+		     and instr(','||#{testnet}||',',','||m.net_type||',')>0 
+		    </if>
+			    <!-- 业务类型 -->
+				    <if test="testtype!=null and bustype!=-1">
+					    and(
+					    <if test="tt!=null">
+					      instr(','||#{tt}||',',','||m.test_type||',')>0 
+					    </if>
+					     <if test="yy!=null">
+					       or instr(','||#{yy}||',',','||m.call_type||',')>0 
+					     </if>
+					      <if test="ff!=null">
+					      or  instr(','||#{ff}||',',','||m.ftp_type||',')>0 
+					     </if>
+					     )
+				    </if>
+				
+				    <!-- 场景 -->
+				    <if test="senceids!=null and stype!=-1">
+				    and instr(','||#{senceids}||',',','||m.sceneid||',')>0 
+				    </if>
+		
+  </sql>
+  <select id="queryWorkOrderList" parameterType="map" resultType="com.complaint.model.WorkOrder">
+	  select * from (
+		select a.*,rownum rn  from (
+			select 
+			<include refid="Base_Column_List" /> , c.test_time testtime,c.test_phone testphone,d.areaname
+			 from t_test_workorder t,
+			  	(select *
+                              from (select m.*,
+                                           row_number() over(partition by m.id,m.serialno order by m.test_time desc) rw
+                                      from t_log_manual m where 1=1 <include refid="where_sql_test"/>
+                                     order by m.test_time desc)
+                             where rw = 1) c,t_area_code d 
+                  <if test="datatype!=null and datatype==1">
+                  where t.id = c.id(+) 
+                  and t.serialno = c.serialno(+)
+                  and t.area_id = d.areaid(+)
+                  </if>
+                  
+                   <if test="datatype!=null and datatype==2">
+                  where t.id = c.id 
+                  and t.serialno = c.serialno
+                  and t.area_id = d.areaid
+                  </if>
+                  and 1 = 1
+                  <if test="workerOrderNetName!=null and workerOrderNetName!='全网络'">
+                  	and instr(','||#{workerOrderNetName}||',',','||t.net_worktype||',')>0 
+                  </if>
+			      and instr(','||#{areaids,jdbcType=VARCHAR}||',',','||to_char(t.area_id)||',')>decode(instr(','||#{areaids,jdbcType=VARCHAR}||',',',-1,'),0,0,-1)
+       <include refid="where_sql"/>
+			<if test="s_id != null and s_id != '' ">		
+				and t.ID  = #{s_id} 
+			</if>
+			 <if test="isDeal != null and isDeal != -1" >
+				<if test="isDeal == 1">
+					and t.test_number &gt;=1
+				</if>
+				<if test="isDeal == 0">
+					and t.test_number &lt;= 0
+				</if>
+			</if>
+			<if test="testphone != null and testphone != ''">
+				and c.test_phone like '%' ||  #{testphone} || '%'
+			</if>
+            <if test="verify != null and verify != -1" >
+				and t.is_verify =#{verify}
+            </if>
+			order by t.first_time DESC ) a 
+		where rownum &lt;= #{mbound} ) 
+	  where rn &gt; #{lbound}
+  </select>
+  <select id="countWorkOrderList" parameterType="map" resultType="java.lang.Integer">
+			select 	count(0)
+			 from t_test_workorder t,
+			  	(select *
+                              from (select m.*,
+                                           row_number() over(partition by m.id,m.serialno order by m.test_time desc) rw
+                                      from t_log_manual m where 1=1 <include refid="where_sql_test"/>
+                                     order by m.test_time desc)
+                             where rw = 1) c,t_area_code d 
+                   <if test="datatype!=null and datatype==1">
+                  where t.id = c.id(+) 
+                  and t.serialno = c.serialno(+)
+                  and t.area_id = d.areaid(+)
+                  </if>
+                  
+                   <if test="datatype!=null and datatype==2">
+                  where t.id = c.id 
+                  and t.serialno = c.serialno
+                  and t.area_id = d.areaid
+                  </if>
+                  <if test="workerOrderNetName!=null and workerOrderNetName!='全网络'">
+                  	and instr(','||#{workerOrderNetName}||',',','||t.net_worktype||',')>0 
+                  </if>
+			 	and instr(','||#{areaids,jdbcType=VARCHAR}||',',','||to_char(t.area_id)||',')>decode(instr(','||#{areaids,jdbcType=VARCHAR}||',',',-1,'),0,0,-1)
+		<include refid="where_sql"/>
+			<if test="s_id != null and s_id != '' ">		
+				and t.ID  = #{s_id} 
+			</if>
+			 <if test="isDeal != null and isDeal != -1" >
+				<if test="isDeal == 1">
+					and t.test_number &gt;=1
+				</if>
+				<if test="isDeal == 0">
+					and t.test_number &lt;= 0
+				</if>
+				<if test="verify != null and verify != -1">
+					and t.is_verify = #{verify}
+				</if>
+			</if>
+			<if test="testphone != null and testphone != ''">
+				and c.test_phone like '%' ||  #{testphone} || '%'
+			</if>
+			order by t.first_time Desc 
+  </select>
+  <select id="queryAllArea" resultType="com.complaint.model.WorkOrder">
+  		select t.areaid,t.areaname from t_area_code t where areaid not in ('863450','863451','863452') order by areaid asc 
+  </select>
+  <select id="queryWorkOrderBySerialno" parameterType="java.lang.String" resultType="com.complaint.model.WorkOrder">
+ 	 select * from 	(select 
+  		<include refid="Base_Column_List"/>
+  		from t_test_workorder t where t.SERIALNO = #{serialno,jdbcType=VARCHAR} and t.id = #{id,jdbcType=VARCHAR} order by t.request_datetime desc ) where rownum = 1
+  </select>
+
+  <insert id="insertWorkOrder" parameterType="com.complaint.model.WorkOrder">
+    insert into t_test_workorder (SERIALNO, SUBMIT_DATETIME, REQUEST_DATETIME, 
+      ACCEPT_HUMAN, COMPLAINT_CHANNELS, ADMISSIBLE_PATH, 
+      PRODUCT_NAME, COMPLAINT, TEMPLATE_CONTENT, 
+      CHANNEL_PROBLEMS, PROBLEMS_ADDRESS, ATTRIBUTION, 
+      ACCOUNT_ATTRIBUTION, ACCEPTANCE_NUMBER, USERS_BRAND, 
+      CUSTOMER_CONTACT, AREA_ID, NET_WORKTYPE, 
+      TEST_NUMBER, process_sta, isdeal, 
+      updatetime)
+    values (#{serialno,jdbcType=VARCHAR}, #{submitDatetime,jdbcType=TIMESTAMP}, #{requestDatetime,jdbcType=TIMESTAMP}, 
+      #{acceptHuman,jdbcType=VARCHAR}, #{complaintChannels,jdbcType=VARCHAR}, #{admissiblePath,jdbcType=VARCHAR}, 
+      #{productName,jdbcType=VARCHAR}, #{complaint,jdbcType=VARCHAR}, #{templateContent,jdbcType=VARCHAR}, 
+      #{channelProblems,jdbcType=VARCHAR}, #{problemsAddress,jdbcType=VARCHAR}, #{attribution,jdbcType=VARCHAR}, 
+      #{accountAttribution,jdbcType=VARCHAR}, #{acceptanceNumber,jdbcType=VARCHAR}, #{usersBrand,jdbcType=VARCHAR}, 
+      #{customerContact,jdbcType=VARCHAR}, #{areaId,jdbcType=DECIMAL}, #{netWorktype,jdbcType=VARCHAR}, 
+      #{testNumber,jdbcType=DECIMAL}, #{processStatus,jdbcType=DECIMAL}, #{isDeal,jdbcType=DECIMAL}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 自主工单的插入 -->
+  <insert id="insertOwnWorkOrder" parameterType="com.complaint.model.TestMasterlog">
+    insert into t_own_etl (id,serialno, areaid, break_flag, 
+      test_address, create_date)
+    values (#{serialno,jdbcType=VARCHAR},#{serialno,jdbcType=VARCHAR},#{areaid,jdbcType=DECIMAL},
+    		#{breakflag,jdbcType=DECIMAL},#{testaddress,jdbcType=VARCHAR},#{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  
+ <update id="updateWOTestNumber" parameterType="com.complaint.model.WorkOrder">
+ 	   update t_test_workorder
+    set  TEST_NUMBER = TEST_NUMBER+#{testNumber,jdbcType=DECIMAL},
+      isdeal = #{isDeal,jdbcType=DECIMAL}
+    where 1 = 1
+    	<if test="id!=null and id!=''">
+   			and id = #{id,jdbcType=VARCHAR}
+   		</if>
+    	<if test="id==null or id ==''">
+    		and SERIALNO = #{serialno,jdbcType=VARCHAR}
+    		and area_id =  #{areaId,jdbcType=DECIMAL}
+    		and process_sta = 2
+    	</if>
+ </update>
+  <update id="updateWorkOrder" parameterType="com.complaint.model.WorkOrder">
+    update t_test_workorder
+    set SUBMIT_DATETIME = #{submitDatetime,jdbcType=TIMESTAMP},
+      REQUEST_DATETIME = #{requestDatetime,jdbcType=TIMESTAMP},
+      ACCEPT_HUMAN = #{acceptHuman,jdbcType=VARCHAR},
+      COMPLAINT_CHANNELS = #{complaintChannels,jdbcType=VARCHAR},
+      ADMISSIBLE_PATH = #{admissiblePath,jdbcType=VARCHAR},
+      PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+      COMPLAINT = #{complaint,jdbcType=VARCHAR},
+      TEMPLATE_CONTENT = #{templateContent,jdbcType=VARCHAR},
+      CHANNEL_PROBLEMS = #{channelProblems,jdbcType=VARCHAR},
+      PROBLEMS_ADDRESS = #{problemsAddress,jdbcType=VARCHAR},
+      ATTRIBUTION = #{attribution,jdbcType=VARCHAR},
+      ACCOUNT_ATTRIBUTION = #{accountAttribution,jdbcType=VARCHAR},
+      ACCEPTANCE_NUMBER = #{acceptanceNumber,jdbcType=VARCHAR},
+      USERS_BRAND = #{usersBrand,jdbcType=VARCHAR},
+      CUSTOMER_CONTACT = #{customerContact,jdbcType=VARCHAR},
+      AREA_ID = #{areaId,jdbcType=DECIMAL},
+      NET_WORKTYPE = #{netWorktype,jdbcType=VARCHAR},
+      TEST_NUMBER = #{testNumber,jdbcType=DECIMAL},
+      process_sta = #{processStatus,jdbcType=DECIMAL},
+      isdeal = #{isDeal,jdbcType=DECIMAL},
+      updatetime = #{updateTime,jdbcType=TIMESTAMP}
+    where SERIALNO = #{serialno,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="queryWorkOrderForPhoneList" parameterType="java.lang.String" resultType="com.complaint.model.WorkOrderForList">
+	   select  b.id,
+	   b.area_id as areaid, 
+	   b.serialno,
+       b.isdeal         isDeal,
+       b.submit_datetime submitDatetime,
+       b.test_number     testNumber,
+       b.problems_address address
+    from  t_test_workorder b,  
+     (select a.departmentid,a.phone_num 
+      from t_test_users a 
+      where a.phone_num = #{phone,jdbcType=VARCHAR}
+      group by a.departmentid,a.phone_num
+          ) t
+   where  b.process_sta =2
+       and b.area_id=t.departmentid 
+  </select>
+  
+  <select id="queryLteWorkOrderForPhoneList" parameterType="java.lang.String" resultType="com.complaint.model.WorkOrderForList">
+	   select  b.id,
+	   b.area_id as areaid, 
+	   b.serialno,
+       b.isdeal         isDeal,
+       b.submit_datetime submitDatetime,
+       b.test_number     testNumber,
+       b.problems_address address
+    from  t_test_workorder b,  
+     (select a.departmentid,a.phone_num 
+      from t_test_users a 
+      where a.phone_num = #{phone,jdbcType=VARCHAR}
+      group by a.departmentid,a.phone_num
+          ) t
+   where  b.process_sta =2
+       and b.area_id=t.departmentid 
+       and net_worktype = '4G'
+  </select>
+  
+  <select id="queryWorkOrderForDetail" parameterType="java.lang.String" resultType="com.complaint.model.WorkOrder">
+	select a.serialno,
+	       a.test_number     testNumber,
+	       a.submit_datetime submitDatetime,
+	       a.net_worktype    netWorktype,
+	       a.users_brand     usersBrand,
+	       a.customer_contact customerContact,
+	       a.admissible_path admissiblePath,
+	       a.problems_address problemsAddress,
+	       a.complaint,
+	       a.template_content templateContent,
+	       a.isdeal  isDeal
+	  from t_test_workorder a
+	       where a.serialno = #{serialno,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="queryTaskWorkOrder" parameterType="java.lang.String" resultType="com.complaint.model.TaskWorkOrder">
+	   select  b.id,
+	   b.areaid as areaid, 
+	   b.serialno serialno,
+       b.net_worktype networktype,
+       b.break_flag breakflag,
+       b.test_address testAddress,
+       b.create_date createDate,
+       nvl(tm.tn,0)  testNumber
+    from  t_task_etl b,
+	  (select max(test_num) tn,serialno from t_log_manual_task group by serialno) tm
+   where  b.valid_state =0
+   		  and b.is_verify !=1
+   		  and b.serialno = tm.serialno(+)
+       and b.areaid in (select a.departmentid 
+      from t_test_users a 
+      where a.phone_num = #{phoneNum,jdbcType=VARCHAR}
+      group by a.departmentid
+          )
+  </select>
+  
+  <select id="queryWorkerOrderNetList"  resultType="map">
+	  select distinct net_worktype from t_test_workorder order by net_worktype
+  </select>
+  
+  <select id="queryWorkOrderExport" parameterType="map" resultType="com.complaint.model.WorkOrderExport">
+	  select t.serialno,
+		       t.areaname,
+		       max(t.netWorktype) netWorktype,
+		       max(t.usersBrand) usersBrand,
+		       max(t.submitDatetime) submitDatetime,
+		       max(t.netType) netType,
+		       max(case when rn=1 and lng !='-9999' then lng end) lng,
+		       max(case when rn=1 and lat !='-9999' then lat end) lat,
+		       max(t.test_time) testTime,
+		       wm_concat(distinct t.cell) cell,
+		       max(case when t.rxlev !=-9999 then t.rxlev end) maxRxlev,
+		       round(avg(case when t.rxlev !=-9998 and t.rxlev !=-9999 then t.rxlev end),2) avgRxlev,
+		       min(case when t.rxlev !=-9999 then t.rxlev end) minRxlev,
+		       max(case when t.rxqual !=-9999 then t.rxqual end) maxRxqual,
+		       round(avg(case when t.rxqual !=-9998 and t.rxqual !=-9999 then t.rxqual end),2) avgRxqual,
+		       min(case when t.rxqual !=-9999 then t.rxqual end) minRxqual,
+		       max(case when t.rscp !=-9999 then t.rscp end) maxRscp,
+		       round(avg(case when t.rscp !=-9998 and t.rscp !=-9999 then t.rscp end),2) avgRscp,
+		       min(case when t.rscp !=-9999 then t.rscp end) minRscp,
+		       max(case when t.ecno !=-9999 then t.ecno end) maxEcno,
+		       round(avg(case when t.ecno !=-9998 and t.ecno !=-9999 then t.ecno end),2) avgEcno,
+		       min(case when t.ecno !=-9999 then t.ecno end) minEcno,
+		       max(case when t.rsrp !=-9999 then t.rsrp end) maxRsrp,
+		       round(avg(case when t.rsrp !=-9998 and t.rsrp !=-9999 then t.rsrp end),2) avgRsrp,
+		       min(case when t.rsrp !=-9999 then t.rsrp end) minRsrp,
+		       max(case when t.rsrq !=-9999 then t.rsrq end) maxRsrq,
+		       round(avg(case when t.rsrq !=-9998 and t.rsrq !=-9999 then t.rsrq end),2) avgRsrq,
+		       min(case when t.rsrq !=-9999 then t.rsrq end) minRsrq,
+		       max(case when t.snr !=-9999 then t.snr end) maxSnr,
+		       round(avg(case when t.snr !=-9998 and t.snr !=-9999 then t.snr end),2) avgSnr,
+		       min(case when t.snr !=-9999 then t.snr end) minSnr
+		  from (select t.*,
+		               row_number() over(partition by t.serialno order by case when (t.lat='-9999' or t.lng='-9999') then null else t.test_time end asc nulls last) rn
+		          from (select t.serialno,
+		                       t.areaname,
+		                       t.netWorktype,
+		                       t.usersBrand,
+		                       t.submitDatetime,
+		                       t.complaint_net_type netType,
+		                       case when t.inside = 0 then
+	               				   (case
+			                         when t.complaint_net_type = '2' then
+			                          g.Longitude_Bmap
+			                         when t.complaint_net_type = '3' then
+			                          w.Longitude_Bmap
+			                         when t.complaint_net_type = '4' then
+			                          l.Longitude_Bmap
+			                       end)
+		                       else t.Longitude_Bmap end lng,
+		                       case when t.inside = 0 then
+			                       (case
+			                         when t.complaint_net_type = '2' then
+			                          g.latitude_Bmap
+			                         when t.complaint_net_type = '3' then
+			                          w.latitude_Bmap
+			                         when t.complaint_net_type = '4' then
+			                          l.latitude_Bmap
+			                       end)
+		                       else t.latitude_Bmap end lat,
+		                       case
+		                         when complaint_net_type = '2' then
+		                          g.ep_time
+		                         when complaint_net_type = '3' then
+		                          w.ep_time
+		                         when complaint_net_type = '4' then
+		                          l.ep_time
+		                       end test_time,
+		                       case
+		                         when t.complaint_net_type = '2' 
+		                         		and g.lac != '0' 
+		                         		and g.lac != '-9998' 
+		                         		and g.lac is not null 
+		                         		and g.cid != '0' 
+		                         		and g.cid != '-9998' 
+		                         		and g.cid is not null 
+		                         		and g.bcch != '-9998'
+		                         		and g.bcch is not null
+		                         then
+		                          	nvl(g.lac,'') || '@' || nvl(g.cid,'') || '@' || nvl(g.bcch,'')
+		                          when t.complaint_net_type = '3' 
+		                          		and w.lac != '0' 
+		                          		and w.lac != '-9998' 
+		                          		and w.lac is not null 
+		                          		and w.cid != '0' 
+		                          		and w.cid != '-9998'
+		                          		and w.cid is not null 
+		                          		and w.psc != '-9998'
+		                         		and w.psc is not null
+		                          then
+		                          	nvl(w.lac,'') || '@' || nvl(w.cid,'') || '@' || nvl(w.psc,'')
+		                          when t.complaint_net_type = '4' 
+		                          		and l.tac != '0' 
+		                          		and l.tac != '-9998' 
+		                          		and l.tac is not null 
+		                          		and l.cid != '0' 
+		                          		and l.cid != '-9998' 
+		                          		and l.cid is not null 
+		                          		and l.pci != '-9998'
+		                         		and l.pci is not null
+		                          then
+		                          	nvl(l.tac,'') || '@' || nvl(l.cid,'') || '@' || nvl(l.pci,'')
+		                       end cell,
+		                       g.rxlev_full rxlev,
+		                       g.rxqual_full rxqual,
+		                       w.rscp,
+		                       w.ec_no ecno,
+		                       l.rsrp,
+		                       l.rsrq,
+		                       l.snr
+		                  from (select t.*,
+		                               row_number() over(partition by serialno order by t.test_time desc) rn
+		                          from (select t.*,l.test_time , l.flowid, l.test_num,l.Longitude_Bmap,l.latitude_Bmap,l.inside
+		                                  from (select 
+														<include refid="Base_Column_List" /> , 
+														c.test_time testtime,c.test_phone testphone,d.areaname,
+		                                               case
+		                                                 when t.net_worktype = '2G语音' or
+		                                                      t.net_worktype = '2G数据' then
+		                                                  '2'
+		                                                 when t.net_worktype = '3G语音' or
+		                                                      t.net_worktype = '3G数据' then
+		                                                  '3'
+		                                                 when t.net_worktype = '4G' then
+		                                                  '4'
+		                                               end complaint_net_type,
+		                                               case
+		                                                 when t.net_worktype = '2G语音' or
+		                                                      t.net_worktype = '3G语音' then
+		                                                  '2'
+		                                                 when t.net_worktype = '2G数据' or
+		                                                      t.net_worktype = '3G数据' then
+		                                                  '3'
+		                                                 when t.net_worktype = '4G' then
+		                                                  '4'
+		                                               end complaint_test_net
+											 from t_test_workorder t,
+												(select *
+														  from (select m.*,
+																	   row_number() over(partition by m.id,m.serialno order by m.test_time desc) rw
+																  from t_log_manual m where 1=1 <include refid="where_sql_test"/>
+																 order by m.test_time desc)
+														 where rw = 1) c,t_area_code d 
+												  <if test="datatype!=null and datatype==1">
+												  where t.id = c.id(+) 
+												  and t.serialno = c.serialno(+)
+												  and t.area_id = d.areaid(+)
+												  </if>
+												  
+												   <if test="datatype!=null and datatype==2">
+												  where t.id = c.id 
+												  and t.serialno = c.serialno
+												  and t.area_id = d.areaid
+												  </if>
+												  and 1 = 1
+												  <if test="workerOrderNetName!=null and workerOrderNetName!='全网络'">
+													and instr(','||#{workerOrderNetName}||',',','||t.net_worktype||',')>0 
+												  </if>
+												  and instr(','||#{areaids,jdbcType=VARCHAR}||',',','||to_char(t.area_id)||',')>decode(instr(','||#{areaids,jdbcType=VARCHAR}||',',',-1,'),0,0,-1)
+									   <include refid="where_sql"/>
+											<if test="s_id != null and s_id != '' ">		
+												and t.ID  = #{s_id} 
+											</if>
+											 <if test="isDeal != null and isDeal != -1" >
+												<if test="isDeal == 1">
+													and t.test_number &gt;=1
+												</if>
+												<if test="isDeal == 0">
+													and t.test_number &lt;= 0
+												</if>
+											</if>
+											<if test="testphone != null and testphone != ''">
+												and c.test_phone like '%' ||  #{testphone} || '%'
+											</if>
+											<if test="verify != null and verify != -1" >
+												and t.is_verify =#{verify}
+											</if>
+											) t,
+		                                       t_log_manual l
+		                                 where t.serialno = l.serialno
+		                                   and t.complaint_test_net = case l.net_type when 4 then 4 when 5 then 4 else l.test_type end 
+		                                   and t.complaint_net_type = case l.net_type
+		                                         when 1 then
+		                                          2
+		                                         when 2 then
+		                                          3
+		                                         when 3 then
+		                                          3
+		                                         when 4 then
+		                                          4
+		                                         when 5 then
+		                                          4
+		                                       end) t) t,
+		                       t_log_submanual_gsm g,
+		                       t_log_submanual_wcdma w,
+		                       t_log_submanual_lte l
+		                 where t.rn = 1
+		                   and t.flowid = g.flowid(+)
+		                   and t.flowid = w.flowid(+)
+		                   and t.flowid = l.flowid(+)) t
+		                   order by t.submitDatetime desc) t
+		group by t.serialno,t.areaname
+  </select>
+</mapper>

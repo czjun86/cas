@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 人员考核环比 -->
+<mapper namespace="com.complaint.dao.StaffAssessDao">
+	 <resultMap id="StaffAssessMap" type="com.complaint.model.StaffAssess">
+	 	 <result property="group_big_id" column="group_big_id"/>
+		 <result property="group_big_name" column="group_big_name"/>
+		 <result property="group_small_id" column="group_small_id"/>
+		 <result property="group_small_name" column="group_small_name"/>
+		 <result property="total_test_rate" column="total_test_rate"/>
+		 <result property="curr_test_timely" column="curr_test_timely"/>
+		 <result property="total_solve_rate" column="total_solve_rate"/>
+		 <result property="total_delay_rate" column="total_delay_rate"/>   
+		 <result property="total_over_rate" column="total_over_rate"/>   
+		 <result property="total_send_rate" column="total_send_rate"/>   
+		 <result property="total_upgrade_rate" column="total_upgrade_rate"/>   
+		 <result property="total_complaint_rate" column="total_complaint_rate"/>   
+		 <result property="complaint" column="complaint"/>   
+		 <result property="group_kpi_score" column="group_kpi_score"/>   
+		 <result property="group_plusMinus_score" column="group_plusMinus_score"/>   
+		 <result property="group_synthesis_score" column="group_synthesis_score"/>   
+		 <result property="group_rank" column="group_rank"/>   
+		 <result property="group_plusMinus_cause" column="group_plusMinus_cause"/>     
+	 </resultMap>
+	<select id="getStaffAssess" statementType="CALLABLE" parameterType="map">    
+	<![CDATA[
+	call pr_wo_center(#{depts,mode=OUT,jdbcType=CURSOR,javaType=java.sql.ResultSet,resultMap=StaffAssessMap},
+	#{t_type}, 
+	#{s_time},
+	#{e_time},
+	#{m_time}) ]]>    
+	</select>
+	
+	<select id="getGroupScore" resultType="com.complaint.model.GroupManager">
+	select a.group_big_id group_big_id,
+	       a.group_big_name group_big_name,
+	       a.group_small_id group_small_id,
+	       a.group_small_name group_small_name,
+	       nvl(c.modified, 0) score
+	  from (select decode(a.groupid_small, null, '', a.groupid_big) group_big_id,
+	               decode(a.groupid_small, null, '', a.groupname_big) group_big_name,
+	               b.groupid group_small_id,
+	               b.groupname group_small_name
+	          from (select a.groupid_big groupid_big,
+	                       a.groupid_small groupid_small,
+	                      decode(b.groupid, null, '', b.groupname) groupname_big
+	                  from t_team_group_relation a, t_team_group b
+	                 where a.groupid_big = b.groupid(+)
+	                 order by b.groupid) a,
+	               (select groupid, groupname
+	                  from t_team_group
+	                 where grouptype = 1
+	                 order by groupid) b
+	         where a.groupid_small(+) = b.groupid) a,
+	       t_team_other_score c
+	 where a.group_small_id = c.groupid(+)
+	</select>
+	
+	<delete id ="deleteScore" >
+			delete t_team_other_score
+	</delete>
+	
+	<insert id="updateScore" parameterType="map">
+			insert into t_team_other_score (id, groupid, modified) values (SEQ_T_TEAM_OTHER_SCORE.nextval,#{groupid},#{modified})
+	</insert>
+	
+	<select id="getCenterStepConfig" resultType="map">
+			select id ,svg_step ,annular_step ,kpi from t_center_step_config order by kpi
+	</select>
+	
+	<update id="saveCenterStepConfig" parameterType="map">
+		update t_center_step_config set svg_step=#{svg_step},annular_step=#{annular_step} where kpi=#{kpi}
+	</update>
+	
+	<select id="getCenterReportConfig" resultType="map">
+			select id ,explanation ,val from t_center_report_config order by id
+	</select>
+	
+	<update id="saveCenterReportConfig" parameterType="map">
+		update t_center_report_config set val = #{val} where id=#{id}
+	</update>
+	
+     <resultMap id="staffAreasMap" type="com.complaint.model.StaffAreas">
+        <id property="id" column="id" />
+        <id property="name" column="name" />
+        <collection property="list" ofType="com.complaint.model.StaffAreas" column="id" resultMap="listMap"/>
+     </resultMap>
+     <resultMap id="listMap" type="com.complaint.model.StaffAreas">
+     		 <result property="areaname" column="areaname" jdbcType="VARCHAR" javaType="String" />
+     		 <result property="curr_serialno" column="curr_serialno" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="curr_upgrade" column="curr_upgrade" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="curr_over" column="curr_over" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="curr_complaint" column="curr_complaint" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="curr_send" column="curr_send" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="curr_solve" column="curr_solve" jdbcType="NUMERIC" javaType="Integer" />
+     </resultMap>
+	<select id="getStaffAreas" parameterType="map"  resultMap="staffAreasMap">
+ select m.id,
+       m.name,
+       c.areaname,
+       nvl(curr_serialno,0) curr_serialno,
+       nvl(curr_upgrade,0) curr_upgrade,
+       nvl(curr_over,0) curr_over,
+       nvl(curr_complaint,0) curr_complaint,
+       nvl(curr_solve,0) curr_send,
+       nvl(curr_solve,0) curr_solve
+  from (select t.area_id,
+               count(distinct case when cnt>1 and (tc.complaint_val is null or tc.complaint_val =0) then  t.acceptance_number  end) curr_complaint,
+               count(distinct case
+                       when rn_wo = 2
+                       and (tc.send_val is null or tc.send_val =0)
+                        then
+                        t.serialno
+                     end) curr_send
+          from (select area_id,
+                       serialno,
+                       acceptance_number,
+                       count(distinct serialno) over(partition by area_id, acceptance_number) cnt,
+                       row_number() over(partition by serialno, area_id order by create_datetime asc) rn_wo
+                  from t_wo_stat
+                 where create_datetime >=
+                       to_date(#{s_time}  || ' 00:00:00',
+                               'yyyy-mm-dd hh24:mi:ss')
+                   and create_datetime &lt;
+                       to_date(#{e_time} || ' 23:59:59',
+                               'yyyy-mm-dd hh24:mi:ss')
+                   and submit_datetime >=
+                       to_date(#{acctime},
+                               'yyyy-mm-dd hh24:mi:ss')
+                   and submit_datetime &lt;
+                       to_date(#{e_time} || ' 23:59:59',
+                               'yyyy-mm-dd hh24:mi:ss')) t,
+			       (select serialno,
+			               areaid,
+			               max(case
+			                     when tolerid in (16) then
+			                      1
+			                     else
+			                      0
+			                   end) complaint_val,
+			               max(case
+			                 when tolerid in (15) then
+			                  1
+			                 else
+			                  0
+			               end) send_val
+			          from t_tolerance_cfg
+			         group by serialno, areaid) tc
+			         where tc.serialno(+) = t.serialno and tc.areaid(+) = t.area_id	
+         group by t.area_id) s,
+       
+       (select area_id,
+               count(distinct case
+                       when t.submit_datetime >=
+                            to_date(#{s_time}  || ' 00:00:00',
+                                    'yyyy-mm-dd hh24:mi:ss') and
+                            t.submit_datetime &lt;
+                            to_date(#{e_time} || ' 23:59:59',
+                                    'yyyy-mm-dd hh24:mi:ss')
+                            and (tc.serialno_val is null or tc.serialno_val = 0)
+                            then
+                        t.serialno
+                     end) curr_serialno,
+               
+               count(distinct case
+                       when t.submit_datetime >=
+                            to_date(#{s_time}  || ' 00:00:00',
+                                    'yyyy-mm-dd hh24:mi:ss') and
+                            t.submit_datetime &lt;
+                            to_date(#{e_time} || ' 23:59:59',
+                                    'yyyy-mm-dd hh24:mi:ss')
+                           
+                            and instr(t.admissible_path, '内部提交') > 0 
+                            
+                            and (tc.upgrade_val is null or tc.upgrade_val =0)
+                            then
+                        t.serialno
+                     end) curr_upgrade,
+               count(distinct case
+                       when t.submit_datetime >=
+                            to_date(#{s_time} || ' 00:00:00',
+                                    'yyyy-mm-dd hh24:mi:ss') and
+                            t.submit_datetime &lt;
+                            to_date(#{e_time} || ' 23:59:59',
+                                    'yyyy-mm-dd hh24:mi:ss') and
+                            nvl(t.returnback_datetime, sysdate) >
+                            t.request_datetime 
+                            and (tc.over_val is null or tc.over_val =0)
+                            then
+                        t.serialno
+                     end) curr_over,
+               
+               count(distinct case
+                       when t.deal_datetime >=
+                            to_date(#{s_time}  || ' 00:00:00',
+                                    'yyyy-mm-dd hh24:mi:ss') and
+                            t.deal_datetime &lt;
+                            to_date(#{e_time} || ' 23:59:59',
+                                    'yyyy-mm-dd hh24:mi:ss') 
+                            and t.submit_datetime >=
+                            to_date(#{acctime},
+                                    'yyyy-mm-dd hh24:mi:ss') and
+                            t.submit_datetime &lt;
+                            to_date(#{e_time} || ' 23:59:59',
+                                    'yyyy-mm-dd hh24:mi:ss')         
+                                    and isbreakdown = 1 and
+                            break_flag in (1, 2, 3, 4) 
+                            and (tc.solve_val is null or tc.solve_val = 0)
+                            then
+                        t.serialno
+                     end) curr_solve
+          from t_wo_stat t ,
+          		(select serialno,
+		               areaid,
+		               max(case
+                             when tolerid in (3) then
+                              1
+                             else
+                              0
+                           end) serialno_val,
+		               max(case
+		                     when tolerid in (17) then
+		                      1
+		                     else
+		                      0
+		                   end) upgrade_val,
+		               max(case
+		                     when tolerid in (14) then
+		                      1
+		                     else
+		                      0
+		                   end) over_val,
+		               max(case
+		                     when tolerid in (4, 5, 6, 7) then
+		                      1
+		                     else
+		                      0
+		                   end) solve_val
+		          from t_tolerance_cfg
+		         group by serialno, areaid) tc
+			 where t.serialno = tc.serialno(+)
+			   and t.area_id = tc.areaid(+)
+         group by area_id) a,
+       t_area_code             c,
+       t_area_manager          m,
+       t_area_manager_relation r
+ where s.area_id = a.area_id(+)
+   and s.area_id(+) = c.areaid
+   and r.areaid = c.areaid(+)
+   and r.id = m.id
+ order by m.id
+ 
+		 
+
+	</select>
+
+</mapper>

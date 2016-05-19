@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.IntegrationThresholdDao" >
+	<select id="getScoreRule" resultType="com.complaint.model.ScoreRule">
+		select rank_code,rank_score,scene,type from t_score_rule
+	</select>
+	<select id="getRevisRule" resultType="com.complaint.model.RevisRule">
+		select revis_type,left_rate,right_rate,revis_level,rank_code,net_type,id from t_revis_rule
+	</select>
+	<select id="getEvaluateRule" resultType="com.complaint.model.EvaluateRule">
+		select rank_code,rank_code_sub,rank_score,scene,type from t_evaluate_rule
+	</select>
+	
+	<update id="updateScoreRule" parameterType="com.complaint.model.ScoreRule">
+ 		update t_score_rule set RANK_SCORE =#{rank_score} where RANK_CODE = #{rank_code} and SCENE= #{scene} and type = 2
+ 	</update>
+ 	<update id="updateRevisRule" parameterType="com.complaint.model.RevisRule">
+ 		update t_revis_rule set 
+ 		<if test="left_rate!=null">
+ 			left_rate =#{left_rate},
+ 		</if>
+ 		<if test="right_rate!=null">
+ 			right_rate =#{right_rate},
+ 		</if>
+ 			revis_level =#{revis_level} where id=#{id} and revis_type = #{revis_type}
+ 	</update>
+ 	<update id="updateEvaluateRule" parameterType="com.complaint.model.EvaluateRule">
+ 		update t_evaluate_rule set rank_score =#{rank_score} where rank_code = #{rank_code} and rank_code_sub= #{rank_code_sub} and type = 2 and scene = #{scene}
+ 	</update>
+</mapper>

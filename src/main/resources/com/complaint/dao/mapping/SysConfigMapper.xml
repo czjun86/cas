@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.SysConfigDao">
+	<select id="queryData" resultType="java.lang.String" parameterType="java.lang.String">
+		select configvalue from t_sysconfig where configkey= #{configkey,jdbcType=VARCHAR}
+	</select>
+	<update id="updateData"  parameterType="map">
+		update t_sysconfig set configvalue = #{configvalue,jdbcType=VARCHAR} where configkey= #{configkey,jdbcType=VARCHAR}
+	</update>
+	<select id="getAngleconfig" resultType="com.complaint.model.Sysconfig" parameterType="java.lang.String">
+		select configname,configkey,configvalue,status from t_sysconfig where configkey= #{configkey,jdbcType=VARCHAR}
+	</select>
+	<update id="saveAngleconfig" parameterType="map">
+		update t_sysconfig set configvalue = #{configvalue,jdbcType=VARCHAR} where configkey= #{configkey,jdbcType=VARCHAR}
+	</update>
+	<select id="getTotalSer" resultType="hashmap">
+	  select AREA_ID,count(distinct serialno) TOTAL_WORKORDER      
+                      from (select area_id,
+                                 serialno
+                              from t_wo_stat
+                             where  instr(','||#{p_area_id}||',', ','||to_char(area_id)||',') > (case when instr(','||#{p_area_id}||',',',-1,') = 0 then 0
+                                                                                             else -1 end)
+                               and submit_datetime >= to_date(#{systime},'yyyy.mm.dd hh24:mi:ss')
+                               and  to_date(#{endtime}, 'yyyy-mm-dd hh24:mi:ss')>=submit_datetime )
+     group by area_id order by area_id
+	</select>
+</mapper>

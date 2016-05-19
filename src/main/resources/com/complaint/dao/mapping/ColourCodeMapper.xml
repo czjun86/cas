@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.ColourCodeDao" >
+  <resultMap id="BaseResultMap" type="com.complaint.model.ColourCode" >
+    <result column="SERIAL_NUM" property="serialNum" jdbcType="DECIMAL" />
+    <result column="COLOURCODE" property="colourcode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERIAL_NUM, COLOURCODE
+  </sql>
+  <insert id="insert" parameterType="com.complaint.model.ColourCode" >
+    insert into T_COLOUR_CODE (SERIAL_NUM, COLOURCODE)
+    values (#{serialNum,jdbcType=DECIMAL}, #{colourcode,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.complaint.model.ColourCode">
+  	update T_COLOUR_CODE set COLOURCODE =  #{colourcode,jdbcType=VARCHAR} where SERIAL_NUM = #{serialNum,jdbcType=DECIMAL}
+  </update>
+  <select id="queryColourCodes" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from T_COLOUR_CODE order by serial_num ASC
+  </select>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.LLOffsetDao">
+  <resultMap id="BaseResultMap" type="com.complaint.model.LLOffset">
+    <result column="LNG" jdbcType="DECIMAL" property="lng" />
+    <result column="LAT" jdbcType="DECIMAL" property="lat" />
+    <result column="OFFSET_X" jdbcType="DECIMAL" property="offsetX" />
+    <result column="OFFSET_Y" jdbcType="DECIMAL" property="offsetY" />
+    <result column="OFFSET_LNG" jdbcType="DECIMAL" property="offsetLng" />
+    <result column="OFFSET_LAT" jdbcType="DECIMAL" property="offsetLat" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    LNG, LAT, OFFSET_X, OFFSET_Y, OFFSET_LNG, OFFSET_LAT
+  </sql>
+  <select id="queryAll" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	 from T_LL_OFFSET
+  </select>
+  <select id="countAll" resultType="java.lang.Integer">
+  	select count(0) from T_LL_OFFSET
+  </select>
+  <select id="queryBypage" parameterType="map" resultMap="BaseResultMap">
+  	select LNG,LAT,OFFSET_LNG,OFFSET_LAT from (
+			select a.LNG, a.LAT,a.OFFSET_LNG,a.OFFSET_LAT,rownum rn  from (
+				select LNG,LAT,OFFSET_LNG,OFFSET_LAT from T_LL_OFFSET 
+			  	  ) a 
+			where rownum &lt;= #{mbound} ) 
+		where rn &gt; #{lbound}
+  </select>
+  <insert id="insert" parameterType="com.complaint.model.LLOffset">
+    insert into T_LL_OFFSET (LNG, LAT, OFFSET_X, 
+      OFFSET_Y, OFFSET_LNG, OFFSET_LAT
+      )
+    values (#{lng,jdbcType=DECIMAL}, #{lat,jdbcType=DECIMAL}, #{offsetX,jdbcType=DECIMAL}, 
+      #{offsetY,jdbcType=DECIMAL}, #{offsetLng,jdbcType=DECIMAL}, #{offsetLat,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.complaint.model.LLOffset">
+    insert into T_LL_OFFSET
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lng != null">
+        LNG,
+      </if>
+      <if test="lat != null">
+        LAT,
+      </if>
+      <if test="offsetX != null">
+        OFFSET_X,
+      </if>
+      <if test="offsetY != null">
+        OFFSET_Y,
+      </if>
+      <if test="offsetLng != null">
+        OFFSET_LNG,
+      </if>
+      <if test="offsetLat != null">
+        OFFSET_LAT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lng != null">
+        #{lng,jdbcType=DECIMAL},
+      </if>
+      <if test="lat != null">
+        #{lat,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetX != null">
+        #{offsetX,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetY != null">
+        #{offsetY,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetLng != null">
+        #{offsetLng,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetLat != null">
+        #{offsetLat,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

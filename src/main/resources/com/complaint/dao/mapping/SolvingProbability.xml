@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 问题结局率 -->
+<mapper namespace="com.complaint.dao.SolvingProbabilityDao">
+	<resultMap id="SolvingMap" type="com.complaint.model.SolvingProbability">
+		<result property="areaname" column="areaname"/>
+		<result property="specialName" column="specialName"/>
+		<result property="complainl" column="complainl"/>
+		<result property="solving" column="solving"/>
+		<result property="solved" column="solved"/>
+	</resultMap>
+	<select id="getSolvingProbability" statementType="CALLABLE" parameterType="map">    
+		<![CDATA[
+			call pro_cas_solv(#{depts,mode=OUT,jdbcType=CURSOR,javaType=java.sql.ResultSet,resultMap=SolvingMap},
+			#{area_id,mode=IN,jdbcType=VARCHAR},
+			#{s_time,mode=IN,jdbcType=VARCHAR},
+			#{e_time,mode=IN,jdbcType=VARCHAR},
+			#{m_time,mode=IN,jdbcType=VARCHAR},
+			#{t_type,mode=IN,jdbcType=VARCHAR})
+		]]>    
+	</select>
+</mapper>

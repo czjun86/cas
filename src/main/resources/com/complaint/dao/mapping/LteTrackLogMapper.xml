@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.LteTrackLogDao" >
+  <resultMap id="BaseResultMap" type="com.complaint.model.LogSubmanualLte" >
+    <id column="LTEID" property="lteid" jdbcType="VARCHAR" />
+    <result column="FLOWID" property="flowid" jdbcType="VARCHAR" />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+    <result column="INSIDE" property="inside" jdbcType="DECIMAL" />
+    <result column="EP_TIME" property="epTime" jdbcType="TIMESTAMP" />
+    <result column="TEST_TIME" property="testtime" jdbcType="TIMESTAMP"/>
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="LONGITUDE_MODIFY" property="longitudeModify" jdbcType="DECIMAL" />
+    <result column="LATITUDE_MODIFY" property="latitudeModify" jdbcType="DECIMAL" />
+    <result column="LONGITUDE_BMAP" property="longitudeBmap" jdbcType="DECIMAL" />
+    <result column="LATITUDE_BMAP" property="latitudeBmap" jdbcType="DECIMAL" />
+    <result column="POSITION_X" property="positionX" jdbcType="DECIMAL" />
+    <result column="POSITION_Y" property="positionY" jdbcType="DECIMAL" />
+    <result column="REALNET_TYPE" property="realnetType" jdbcType="DECIMAL" />
+    <result column="TAC" property="tac" jdbcType="DECIMAL" />
+    <result column="CID" property="cid" jdbcType="DECIMAL" />
+    <result column="CQI" property="cqi" jdbcType="DECIMAL" />
+    <result column="PCI" property="pci" jdbcType="DECIMAL" />
+    <result column="EBID" property="ebid" jdbcType="DECIMAL" />
+    <result column="RSRP" property="rsrp" jdbcType="DECIMAL" />
+    <result column="RSRQ" property="rsrq" jdbcType="DECIMAL" />
+    <result column="SNR" property="snr" jdbcType="DECIMAL" />
+    <result column="FTP_TYPE" property="ftptype" jdbcType="NUMERIC" />
+    <result column="FTP_SPEED" property="ftpSpeed" jdbcType="DECIMAL" />
+    <result column="GPS_TYPE" property="gpsType" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LTEID, FLOWID, UUID, INSIDE, EP_TIME, LONGITUDE, LATITUDE, LONGITUDE_MODIFY, LATITUDE_MODIFY, LONGITUDE_BMAP,LATITUDE_BMAP,
+    POSITION_X, POSITION_Y, REALNET_TYPE, TAC, CID, CQI,PCI,EBID, RSRP, RSRQ, SNR, FTP_TYPE,GPS_TYPE,
+    FTP_SPEED
+  </sql>
+  <insert id="insertByBatch" parameterType="com.complaint.model.LogSubmanualLte" >
+    insert into t_log_submanual_lte 
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    LTEID, FLOWID, UUID,
+      INSIDE, EP_TIME,TEST_TIME,
+      <if test= "areaid!=null">
+      	AREA_ID,
+      </if>	
+      <if test="longitude != null">
+      LONGITUDE, 
+      </if>
+      <if test="latitude != null">
+      LATITUDE,
+      </if>
+      <if test="longitudeModify != null">
+      LONGITUDE_MODIFY, 
+      </if>
+      <if test="latitudeModify != null">
+      LATITUDE_MODIFY,
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP, 
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      <if test="positionX != null">
+      POSITION_X, 
+      </if>
+      <if test="positionY != null">
+      POSITION_Y, 
+      </if>
+      <if test="realnetType != null">
+      REALNET_TYPE,
+      </if>
+      TAC, CID, CQI ,
+      PCI,EBID, 
+      RSRP,RSRQ,
+      SNR,  FTP_TYPE,
+      
+      <if test="gpsType != null">
+        GPS_TYPE,
+      </if>
+      <if test="ftpSpeed != null">
+        FTP_SPEED,
+      </if>
+       </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    getlteseq(), #{flowid,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
+      #{inside,jdbcType=DECIMAL}, #{epTime,jdbcType=TIMESTAMP}, #{testtime,jdbcType=TIMESTAMP}, 
+      <if test= "areaid!=null">
+      	#{areaid,jdbcType=NUMERIC},
+      </if>	
+      <if test="longitude != null">
+      #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+      #{latitude,jdbcType=DECIMAL}, 
+      </if>
+      <if test="longitudeModify != null">
+      #{longitudeModify,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeModify != null">
+      #{latitudeModify,jdbcType=DECIMAL}, 
+      </if>
+       <if test="longitudeBmap != null">
+      #{longitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeBmap != null">
+      #{latitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="positionX != null">
+      #{positionX,jdbcType=DECIMAL},
+      </if>
+      <if test="positionY != null">
+      #{positionY,jdbcType=DECIMAL}, 
+      </if>
+      <if test="realnetType != null">
+      #{realnetType,jdbcType=DECIMAL}, 
+      </if>
+      #{tac,jdbcType=DECIMAL}, #{cid,jdbcType=DECIMAL}, #{cqi,jdbcType=DECIMAL},
+      #{pci,jdbcType=DECIMAL}, #{ebid,jdbcType=DECIMAL} ,
+      #{rsrp,jdbcType=DECIMAL}, #{rsrq,jdbcType=DECIMAL}, 
+      #{snr,jdbcType=DECIMAL},  #{ftptype,jdbcType=NUMERIC}, 
+      
+       <if test="gpsType != null">
+        #{gpsType,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpSpeed != null">
+        #{ftpSpeed,jdbcType=DECIMAL},
+      </if>
+  	</trim>
+  </insert>
+  <delete id="delLteByFlowid" parameterType="String">
+  	delete from t_log_submanual_lte where flowid = #{flowid,jdbcType=VARCHAR}
+  </delete>
+</mapper>

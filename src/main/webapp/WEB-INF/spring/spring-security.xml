@@ -1,0 +1,139 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+        xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    
+  <global-method-security pre-post-annotations="enabled" />   
+    <!-- 该路径下的资源不用拦截 -->             
+    <http pattern="/login" security="none"/>
+    <http pattern="/scatter1" security="none"/>
+    <http pattern="/amq/**" security="none"/>
+    <http pattern="/message/**" security="none"/>
+    <http pattern="/downForOne/**" security="none"/>
+    <http pattern="/downForTwo/**" security="none"/>
+    <http pattern="/layout" security="none" />
+     
+    <http use-expressions="true" auto-config="true">
+        <logout logout-success-url="/logout" delete-cookies="JSESSIONID"/>
+        <!-- <session-management session-authentication-strategy-ref="sas" /> -->
+        <!-- 非匿名登陆验证 -->
+        <intercept-url pattern="/user/index" access="isAuthenticated()"/>
+        <intercept-url pattern="/kpi/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rateconfig/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/report/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/role/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/user/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/workorder/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/epinfo/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/export/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/gisgrad/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/sysconfig/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/ftp/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/ftp4g/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/reportconfig/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/staffAssess/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/solving/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/complain/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/teamgroup/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/tolerant/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/map/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/task/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/tkconfig/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/reportTask/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/independent/**" access="isAuthenticated()"/>
+        <custom-filter ref="filterChainProxy" before="FILTER_SECURITY_INTERCEPTOR"/>  
+    </http>
+    
+    <beans:bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
+	<filter-chain-map path-type="ant">
+		<filter-chain pattern="/**" filters="
+			concurrencyFilter,
+			securityContextPersistenceFilter,
+			loginAuthenticationProcessingFilter,
+			exceptionTranslationFilter,
+			securityFilter" />
+	</filter-chain-map>
+	</beans:bean>
+    
+    <!-- 配置过滤器 -->  
+    <beans:bean id="securityFilter" class="com.complaint.security.SecurityFilter">
+        <!-- 用户拥有的权限 -->  
+        <beans:property name="authenticationManager" ref="myAuthenticationManager" />  
+        <!-- 用户是否拥有所请求资源的权限 -->  
+        <beans:property name="accessDecisionManager" ref="customAccessDecisionManager" />  
+        <!-- 资源与权限对应关系 -->  
+        <beans:property name="securityMetadataSource" ref="securityMetadataSourceTemplate" />  
+    </beans:bean>  
+    <!-- 实现了UserDetailsService的Bean -->  
+    <authentication-manager alias="myAuthenticationManager">  
+        <authentication-provider ref="daoAuthenticationProvider"/>  
+    </authentication-manager>
+    <!-- 角色权限资源读取 -->
+    <beans:bean id="securityMetadataSourceTemplate" class="com.complaint.security.SecurityMetadataSource" init-method="loadResourceDefine"/>
+    <!-- 登陆service -->
+    <beans:bean id="loginService" class="com.complaint.security.LoginService" />
+    <!-- 权限判断 -->
+    <beans:bean id="customAccessDecisionManager" class="com.complaint.security.CustomAccessDecisionManager"/>
+    <!-- 登陆成功handler -->
+    <beans:bean id="loginAuthenticationSuccess" class="com.complaint.security.LoginAuthenticationSuccess"/>
+    <!-- 登陆失败handler -->
+	<beans:bean id="loginAuthenticationFailure" class="com.complaint.security.LoginAuthenticationFailure"/>
+	
+	<beans:bean id="loginAuthenticationProcessingFilter" class="com.complaint.security.LoginAuthenticationProcessingFilter">
+		<beans:constructor-arg value="/doLogin" />
+		<beans:property name="postOnly" value="false"/>
+		<beans:property name="authenticationManager" ref="myAuthenticationManager"/>
+		<beans:property name="authenticationSuccessHandler" ref="loginAuthenticationSuccess"/>
+		<beans:property name="authenticationFailureHandler" ref="loginAuthenticationFailure"/>
+		<!--  <beans:property name="sessionAuthenticationStrategy" ref="sas"/>-->
+	</beans:bean>
+	
+	<beans:bean id="securityContextPersistenceFilter" 
+		class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
+		
+	<beans:bean id="authenticationEntryPoint"
+		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<beans:property name="loginFormUrl" value="/logout"/>
+	</beans:bean>
+	
+	<beans:bean id="accessDeniedHandler"
+		class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+		<beans:property name="errorPage" value="/accessDenied"/>
+	</beans:bean>
+	
+	<beans:bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+	<beans:property name="authenticationEntryPoint" ref="authenticationEntryPoint"/>
+	<beans:property name="accessDeniedHandler" ref="accessDeniedHandler"/>
+	</beans:bean>
+	
+	<!-- 比较用户名密码并登陆 -->
+	<beans:bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<beans:property name="userDetailsService" ref="loginService" />
+		<beans:property name="passwordEncoder"  ref="md5PasswordEncoder"/>
+		<beans:property name="saltSource" ref="saltSourceDetail"/>
+		<beans:property name="hideUserNotFoundExceptions" value="false" />
+	</beans:bean>
+	
+	<!-- md5加密 -->
+	<beans:bean id="md5PasswordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+	
+	<!-- 盐值 -->
+	<beans:bean id="saltSourceDetail" class="com.complaint.security.SaltSourceDetail"/>
+
+	<!-- 同步filter -->
+	<beans:bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
+	  <beans:property name="sessionRegistry" ref="sessionRegistry" />
+	  <beans:property name="expiredUrl" value="/timeout" />
+	</beans:bean>
+
+	<!-- 同步session控制策略 -->
+	<beans:bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
+	  <beans:constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+	  <beans:property name="exceptionIfMaximumExceeded" value="false"/>
+	  <beans:property name="maximumSessions" value="1" />
+	</beans:bean>
+
+	<beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+</beans:beans>

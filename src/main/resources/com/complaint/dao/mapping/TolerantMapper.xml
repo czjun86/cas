@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.TolerantDao">
+	<select id="getTolerantPage" parameterType="map" resultType="java.lang.Integer">
+  		select count(1) from (
+  			select * from (
+		  		select w.serialno, w.area_id ,nvl(max(tc.userid),-1) tolerance
+				  from t_test_workorder w , t_tolerance_cfg tc
+				  where 
+				  	tc.areaid(+) = w.area_id
+          			and tc.serialno(+) = w.serialno
+          			<if test="areas != null and areas != ''">
+          				and w.area_id in 
+          				<foreach collection="areas" item="area"  open="(" separator="," close=")">  
+							#{area}  
+					  	</foreach>
+          			</if>
+				  <if test="startTime != null and startTime != ''">
+				  and w.submit_datetime &gt;=to_date(#{startTime}||' 00:00:00','yyyy-MM-dd hh24:mi:ss')
+				  </if>
+				  <if test="endTime != null and endTime != ''">
+				  and w.submit_datetime &lt;=to_date(#{endTime}||' 23:59:59','yyyy-MM-dd hh24:mi:ss')
+				  </if>
+				  <if test="serialno != null and serialno != ''">
+				  and w.serialno like   '%' ||  #{serialno} || '%' 
+				  </if>
+				 group by w.serialno, w.area_id
+				 order by max(w.submit_datetime)
+			 ) where 1=1 
+			 <if  test="isTolerant != null and isTolerant != ''">
+			 	<if test="isTolerant ==1">
+			 		and tolerance  &lt;&gt; -1
+			 	</if>
+			 </if>
+			 <if  test="isTolerant != null and isTolerant != ''">
+			 	<if test="isTolerant ==2">
+			 		and tolerance  = -1
+			 	</if>
+			 </if>
+			 
+		 )
+  	</select>
+  	<select id="getList" parameterType="map" resultType="com.complaint.model.WorkOrder">
+	  	select serialno,areaid,areaname ,to_char(submit_datetime ,'yyyy-MM-dd hh24:mi:ss') submitDatetime,to_char(test_time ,'yyyy-MM-dd hh24:mi:ss') testtime,case when tolerance = -1 then tolerance else 0 end toleType from (
+	  		select serialno,areaid,areaname ,submit_datetime ,test_time  ,tolerance ,rownum rn from (
+		  		select w.serialno serialno, w.area_id areaid, max(c.areaname) areaname,max(w.submit_datetime) submit_datetime ,max(m.test_time)
+		  		 test_time,nvl(max(tc.userid),-1) tolerance
+				  from t_test_workorder w ,t_area_code c, t_tolerance_cfg tc ,t_log_manual m
+				  where 
+					  tc.areaid(+) = w.area_id
+	          		  and tc.serialno(+) = w.serialno
+					  and c.areaid(+) = w.area_id
+					  and m.id(+) = w.id
+					  <if test="areas != null and areas != ''">
+          				and w.area_id in 
+          				<foreach collection="areas" item="area"  open="(" separator="," close=")">  
+							#{area}  
+					  	</foreach>
+          			  </if>
+					  <if test="startTime != null and startTime != ''">
+					  and w.submit_datetime &gt;=to_date(#{startTime}||' 00:00:00','yyyy-MM-dd hh24:mi:ss')
+					  </if>
+					  <if test="endTime != null and endTime != ''">
+					  and w.submit_datetime &lt;=to_date(#{endTime}||' 23:59:59','yyyy-MM-dd hh24:mi:ss')
+					  </if>
+					  <if test="serialno != null and serialno != ''">
+					  and w.serialno like   '%' ||  #{serialno} || '%'
+					  </if>
+				 group by w.serialno, w.area_id
+				 order by w.area_id ,max(w.submit_datetime)
+			 ) where 1 = 1
+			 <if  test="isTolerant != null and isTolerant != ''">
+			 	<if test="isTolerant ==1">
+			 		and tolerance  &lt;&gt; -1
+			 	</if>
+			 </if>
+			 <if  test="isTolerant != null and isTolerant != ''">
+			 	<if test="isTolerant ==2">
+			 		and tolerance  = -1
+			 	</if>
+			 </if>
+			 and rownum &lt;= #{mbound}
+		)where rn  &gt; #{lbound}
+  	</select>
+  	
+  	<select id="getInfo" parameterType="map" resultType="java.lang.Integer">
+  		select tolerid from t_tolerance_cfg where serialno = #{serialno,jdbcType=VARCHAR} and areaid = #{areaId,jdbcType=NUMERIC}
+  	</select>
+  	
+  	<delete id="deleteInfo" parameterType="map" >
+  		delete t_tolerance_cfg where serialno = #{serialno,jdbcType=VARCHAR} and areaid = #{areaId,jdbcType=NUMERIC}
+  	</delete>
+  	<insert id="insertByBatch" parameterType="com.complaint.model.Tolerante">
+  		insert into t_tolerance_cfg
+		  (id, tolerid, serialno, areaid, userid, updtime)
+		values
+		  (seq_t_tolerance_cfg.Nextval,
+		   #{tolerid},
+		   #{serialno},
+		   #{areaId},
+		   #{userId},
+		   sysdate)
+  	</insert>
+</mapper>

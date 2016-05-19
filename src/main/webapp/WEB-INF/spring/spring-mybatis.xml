@@ -1,0 +1,53 @@
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    	
+	<beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+  		<beans:property name="basePackage" value="com.complaint.dao" />
+	</beans:bean>
+	
+	<!-- <beans:bean id="resourceDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+  		<beans:property name="mapperInterface" value="com.complaint.dao.ResourceDao" />
+	</beans:bean>
+	<beans:bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+  		<beans:property name="mapperInterface" value="com.complaint.dao.UserDao" />
+	</beans:bean>
+	<beans:bean id="roleDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+  		<beans:property name="mapperInterface" value="com.complaint.dao.RoleDao" />
+	</beans:bean>
+	<beans:bean id="workOrderDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.WorkOrderDao"/>
+	</beans:bean>
+	<beans:bean id="epinfoDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.EpinfoDao"/>
+	</beans:bean>
+	<beans:bean id="sceneDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.SceneDao"/>
+	</beans:bean>
+	<beans:bean id="kpiIntervalValueDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.KpiIntervalValueDao" />
+	</beans:bean>
+	<beans:bean id="testMasterlogDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.TestMasterlogDao"/>
+	</beans:bean>
+	<beans:bean id="wcdmsTrackLogDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.WcdmsTrackLogDao"/>
+	</beans:bean>
+	<beans:bean id="colourCodeDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.ColourCodeDao"/>
+	</beans:bean>
+	<beans:bean id="rateColorDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.RateColorDao"/>
+	</beans:bean>
+	<beans:bean id="logSubmanualGsmDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<beans:property name="mapperInterface" value="com.complaint.dao.LogSubmanualGsmDao"/>
+	</beans:bean>
+	<beans:bean id="llOffsetDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+			<beans:property name="mapperInterface" value="com.complaint.dao.LLOffsetDao"/>
+	</beans:bean>
+	<beans:bean id="wnmsCellDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+			<beans:property name="mapperInterface" value="com.complaint.dao.WnmsCellDao"/>
+	</beans:bean> -->
+</beans:beans>

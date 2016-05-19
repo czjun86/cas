@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.WnmsCellDao">
+  <resultMap id="BaseResultMap" type="com.complaint.model.WnmsCell">
+    <id column="LAC" jdbcType="DECIMAL" property="lac" />
+    <id column="CELL_ID" jdbcType="DECIMAL" property="cellId" />
+    <result column="WMTS_ID" jdbcType="DECIMAL" property="wmtsId" />
+    <result column="PSC" jdbcType="DECIMAL" property="psc" />
+    <result column="CELL_AREA" jdbcType="VARCHAR" property="cellArea" />
+    <result column="CELL_SEQNUM" jdbcType="DECIMAL" property="cellSeqnum" />
+    <result column="CELL_TYPE" jdbcType="DECIMAL" property="cellType" />
+    <result column="CELL_LONGITUDE" jdbcType="DECIMAL" property="cellLongitude" />
+    <result column="CELL_LATITUDE" jdbcType="DECIMAL" property="cellLatitude" />
+    <result column="CELL_NAME" jdbcType="VARCHAR" property="cellName" />
+    <result column="CELL_POSITION" jdbcType="DECIMAL" property="cellPosition" />
+    <result column="CELL_DIP" jdbcType="DECIMAL" property="cellDip" />
+    <result column="CELL_FIRM" jdbcType="VARCHAR" property="cellFirm" />
+    <result column="LAT_OFFSET" jdbcType="DECIMAL" property="latOffset" />
+    <result column="LNG_OFFSET" jdbcType="DECIMAL" property="lngOffset" />
+    <result column="CELL_SHORT_NAME" jdbcType="VARCHAR" property="cellShortName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    LAC, CELL_ID, WMTS_ID, PSC, CELL_AREA, CELL_SEQNUM, CELL_TYPE, CELL_LONGITUDE, CELL_LATITUDE, 
+    CELL_NAME, CELL_POSITION, CELL_DIP, CELL_FIRM, LAT_OFFSET, LNG_OFFSET, CELL_SHORT_NAME
+  </sql>
+  <select id="queryByPage" parameterType="map" resultMap="BaseResultMap">
+  	select * from (
+			select a.*,rownum rn  from (
+				select 
+			  	<include refid="Base_Column_List"/>
+			  	 from T_WNMS_CELL
+			  	  ) a 
+			where rownum &lt;= #{mbound} ) 
+		where rn &gt; #{lbound}
+  </select>
+  <select id="countAll" resultType="java.lang.Integer">
+  	select count(0) from T_WNMS_CELL;
+  </select>
+  <select id="selectByPrimaryKey" parameterType="com.complaint.model.WnmsCellKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_WNMS_CELL
+    where LAC = #{lac,jdbcType=DECIMAL}
+      and CELL_ID = #{cellId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.complaint.model.WnmsCellKey">
+    delete from T_WNMS_CELL
+    where LAC = #{lac,jdbcType=DECIMAL}
+      and CELL_ID = #{cellId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.complaint.model.WnmsCell">
+    insert into T_WNMS_CELL (LAC, CELL_ID, WMTS_ID, 
+      PSC, CELL_AREA, CELL_SEQNUM, 
+      CELL_TYPE, CELL_LONGITUDE, CELL_LATITUDE, 
+      CELL_NAME, CELL_POSITION, CELL_DIP, 
+      CELL_FIRM, LAT_OFFSET, LNG_OFFSET, 
+      CELL_SHORT_NAME)
+    values (#{lac,jdbcType=DECIMAL}, #{cellId,jdbcType=DECIMAL}, #{wmtsId,jdbcType=DECIMAL}, 
+      #{psc,jdbcType=DECIMAL}, #{cellArea,jdbcType=VARCHAR}, #{cellSeqnum,jdbcType=DECIMAL}, 
+      #{cellType,jdbcType=DECIMAL}, #{cellLongitude,jdbcType=DECIMAL}, #{cellLatitude,jdbcType=DECIMAL}, 
+      #{cellName,jdbcType=VARCHAR}, #{cellPosition,jdbcType=DECIMAL}, #{cellDip,jdbcType=DECIMAL}, 
+      #{cellFirm,jdbcType=VARCHAR}, #{latOffset,jdbcType=DECIMAL}, #{lngOffset,jdbcType=DECIMAL}, 
+      #{cellShortName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.complaint.model.WnmsCell">
+    insert into T_WNMS_CELL
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lac != null">
+        LAC,
+      </if>
+      <if test="cellId != null">
+        CELL_ID,
+      </if>
+      <if test="wmtsId != null">
+        WMTS_ID,
+      </if>
+      <if test="psc != null">
+        PSC,
+      </if>
+      <if test="cellArea != null">
+        CELL_AREA,
+      </if>
+      <if test="cellSeqnum != null">
+        CELL_SEQNUM,
+      </if>
+      <if test="cellType != null">
+        CELL_TYPE,
+      </if>
+      <if test="cellLongitude != null">
+        CELL_LONGITUDE,
+      </if>
+      <if test="cellLatitude != null">
+        CELL_LATITUDE,
+      </if>
+      <if test="cellName != null">
+        CELL_NAME,
+      </if>
+      <if test="cellPosition != null">
+        CELL_POSITION,
+      </if>
+      <if test="cellDip != null">
+        CELL_DIP,
+      </if>
+      <if test="cellFirm != null">
+        CELL_FIRM,
+      </if>
+      <if test="latOffset != null">
+        LAT_OFFSET,
+      </if>
+      <if test="lngOffset != null">
+        LNG_OFFSET,
+      </if>
+      <if test="cellShortName != null">
+        CELL_SHORT_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lac != null">
+        #{lac,jdbcType=DECIMAL},
+      </if>
+      <if test="cellId != null">
+        #{cellId,jdbcType=DECIMAL},
+      </if>
+      <if test="wmtsId != null">
+        #{wmtsId,jdbcType=DECIMAL},
+      </if>
+      <if test="psc != null">
+        #{psc,jdbcType=DECIMAL},
+      </if>
+      <if test="cellArea != null">
+        #{cellArea,jdbcType=VARCHAR},
+      </if>
+      <if test="cellSeqnum != null">
+        #{cellSeqnum,jdbcType=DECIMAL},
+      </if>
+      <if test="cellType != null">
+        #{cellType,jdbcType=DECIMAL},
+      </if>
+      <if test="cellLongitude != null">
+        #{cellLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="cellLatitude != null">
+        #{cellLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="cellName != null">
+        #{cellName,jdbcType=VARCHAR},
+      </if>
+      <if test="cellPosition != null">
+        #{cellPosition,jdbcType=DECIMAL},
+      </if>
+      <if test="cellDip != null">
+        #{cellDip,jdbcType=DECIMAL},
+      </if>
+      <if test="cellFirm != null">
+        #{cellFirm,jdbcType=VARCHAR},
+      </if>
+      <if test="latOffset != null">
+        #{latOffset,jdbcType=DECIMAL},
+      </if>
+      <if test="lngOffset != null">
+        #{lngOffset,jdbcType=DECIMAL},
+      </if>
+      <if test="cellShortName != null">
+        #{cellShortName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.complaint.model.WnmsCell">
+    update T_WNMS_CELL
+    <set>
+      <if test="wmtsId != null">
+        WMTS_ID = #{wmtsId,jdbcType=DECIMAL},
+      </if>
+      <if test="psc != null">
+        PSC = #{psc,jdbcType=DECIMAL},
+      </if>
+      <if test="cellArea != null">
+        CELL_AREA = #{cellArea,jdbcType=VARCHAR},
+      </if>
+      <if test="cellSeqnum != null">
+        CELL_SEQNUM = #{cellSeqnum,jdbcType=DECIMAL},
+      </if>
+      <if test="cellType != null">
+        CELL_TYPE = #{cellType,jdbcType=DECIMAL},
+      </if>
+      <if test="cellLongitude != null">
+        CELL_LONGITUDE = #{cellLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="cellLatitude != null">
+        CELL_LATITUDE = #{cellLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="cellName != null">
+        CELL_NAME = #{cellName,jdbcType=VARCHAR},
+      </if>
+      <if test="cellPosition != null">
+        CELL_POSITION = #{cellPosition,jdbcType=DECIMAL},
+      </if>
+      <if test="cellDip != null">
+        CELL_DIP = #{cellDip,jdbcType=DECIMAL},
+      </if>
+      <if test="cellFirm != null">
+        CELL_FIRM = #{cellFirm,jdbcType=VARCHAR},
+      </if>
+      <if test="latOffset != null">
+        LAT_OFFSET = #{latOffset,jdbcType=DECIMAL},
+      </if>
+      <if test="lngOffset != null">
+        LNG_OFFSET = #{lngOffset,jdbcType=DECIMAL},
+      </if>
+      <if test="cellShortName != null">
+        CELL_SHORT_NAME = #{cellShortName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LAC = #{lac,jdbcType=DECIMAL}
+      and CELL_ID = #{cellId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.complaint.model.WnmsCell">
+    update T_WNMS_CELL
+    set WMTS_ID = #{wmtsId,jdbcType=DECIMAL},
+      PSC = #{psc,jdbcType=DECIMAL},
+      CELL_AREA = #{cellArea,jdbcType=VARCHAR},
+      CELL_SEQNUM = #{cellSeqnum,jdbcType=DECIMAL},
+      CELL_TYPE = #{cellType,jdbcType=DECIMAL},
+      CELL_LONGITUDE = #{cellLongitude,jdbcType=DECIMAL},
+      CELL_LATITUDE = #{cellLatitude,jdbcType=DECIMAL},
+      CELL_NAME = #{cellName,jdbcType=VARCHAR},
+      CELL_POSITION = #{cellPosition,jdbcType=DECIMAL},
+      CELL_DIP = #{cellDip,jdbcType=DECIMAL},
+      CELL_FIRM = #{cellFirm,jdbcType=VARCHAR},
+      LAT_OFFSET = #{latOffset,jdbcType=DECIMAL},
+      LNG_OFFSET = #{lngOffset,jdbcType=DECIMAL},
+      CELL_SHORT_NAME = #{cellShortName,jdbcType=VARCHAR}
+    where LAC = #{lac,jdbcType=DECIMAL}
+      and CELL_ID = #{cellId,jdbcType=DECIMAL}
+  </update>
+</mapper>

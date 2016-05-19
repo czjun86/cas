@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.WcdmsTaskLogDao" >
+  <resultMap id="BaseResultMap" type="com.complaint.model.WcdmsTrackLog" >
+    <id column="WCDMAID" property="wcdmaid" jdbcType="VARCHAR" />
+    <result column="FLOWID" property="flowid" jdbcType="VARCHAR" />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+    <result column="INSIDE" property="inside" jdbcType="DECIMAL" />
+    <result column="EP_TIME" property="epTime" jdbcType="TIMESTAMP" />
+    <result column="TEST_TIME" property="testTime" jdbcType="TIMESTAMP"/>
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="LONGITUDE_MODIFY" property="longitudeModify" jdbcType="DECIMAL" />
+    <result column="LATITUDE_MODIFY" property="latitudeModify" jdbcType="DECIMAL" />
+    <result column="LONGITUDE_BMAP" property="longitudeBmap" jdbcType="DECIMAL" />
+    <result column="LATITUDE_BMAP" property="latitudeBmap" jdbcType="DECIMAL" />
+    <result column="POSITION_X" property="positionX" jdbcType="DECIMAL" />
+    <result column="POSITION_Y" property="positionY" jdbcType="DECIMAL" />
+    <result column="REALNET_TYPE" property="realnetType" jdbcType="DECIMAL" />
+    <result column="LAC" property="lac" jdbcType="DECIMAL" />
+    <result column="CID" property="cid" jdbcType="DECIMAL" />
+    <result column="PSC" property="psc" jdbcType="DECIMAL" />
+    <result column="Freq_UL" property="frequl" jdbcType="DECIMAL" />
+    <result column="Freq_DL" property="freqdl" jdbcType="DECIMAL" />
+    <result column="RSCP" property="rscp" jdbcType="DECIMAL" />
+    <result column="EC_NO" property="ecNo" jdbcType="DECIMAL" />
+    <result column="TXPOWER" property="txpower" jdbcType="DECIMAL" />
+    <result column="FTP_TYPE" property="ftptype" jdbcType="NUMERIC" />
+    <result column="FTP_SPEED" property="ftpSpeed" jdbcType="DECIMAL" />
+    <result column="A_PSC_1" property="aPsc1" jdbcType="DECIMAL" />
+    <result column="A_RSCP_1" property="aRscp1" jdbcType="DECIMAL" />
+    <result column="A_EC_NO_1" property="aEcNo1" jdbcType="DECIMAL" />
+    <result column="A_ARFCN_1" property="aArfcn1" jdbcType="DECIMAL" />
+    <result column="A_PSC_2" property="aPsc2" jdbcType="DECIMAL" />
+    <result column="A_RSCP_2" property="aRscp2" jdbcType="DECIMAL" />
+    <result column="A_EC_NO_2" property="aEcNo2" jdbcType="DECIMAL" />
+    <result column="A_ARFCN_2" property="aArfcn2" jdbcType="DECIMAL" />
+    <result column="A_PSC_3" property="aPsc3" jdbcType="DECIMAL" />
+    <result column="A_RSCP_3" property="aRscp3" jdbcType="DECIMAL" />
+    <result column="A_EC_NO_3" property="aEcNo3" jdbcType="DECIMAL" />
+    <result column="A_ARFCN_3" property="aArfcn3" jdbcType="DECIMAL" />
+    <result column="M_PSC_1" property="mPsc1" jdbcType="DECIMAL" />
+    <result column="M_RSCP_1" property="mRscp1" jdbcType="DECIMAL" />
+    <result column="M_EC_NO_1" property="mEcNo1" jdbcType="DECIMAL" />
+    <result column="M_ARFCN_1" property="mArfcn1" jdbcType="DECIMAL" />
+    <result column="M_PSC_2" property="mPsc2" jdbcType="DECIMAL" />
+    <result column="M_RSCP_2" property="mRscp2" jdbcType="DECIMAL" />
+    <result column="M_EC_NO_2" property="mEcNo2" jdbcType="DECIMAL" />
+    <result column="M_ARFCN_2" property="mArfcn2" jdbcType="DECIMAL" />
+    <result column="M_PSC_3" property="mPsc3" jdbcType="DECIMAL" />
+    <result column="M_RSCP_3" property="mRscp3" jdbcType="DECIMAL" />
+    <result column="M_EC_NO_3" property="mEcNo3" jdbcType="DECIMAL" />
+    <result column="M_ARFCN_3" property="mArfcn3" jdbcType="DECIMAL" />
+    <result column="M_PSC_4" property="mPsc4" jdbcType="DECIMAL" />
+    <result column="M_RSCP_4" property="mRscp4" jdbcType="DECIMAL" />
+    <result column="M_EC_NO_4" property="mEcNo4" jdbcType="DECIMAL" />
+    <result column="M_ARFCN_4" property="mArfcn4" jdbcType="DECIMAL" />
+    <result column="M_PSC_5" property="mPsc5" jdbcType="DECIMAL" />
+    <result column="M_RSCP_5" property="mRscp5" jdbcType="DECIMAL" />
+    <result column="M_EC_NO_5" property="mEcNo5" jdbcType="DECIMAL" />
+    <result column="M_ARFCN_5" property="mArfcn5" jdbcType="DECIMAL" />
+    <result column="M_PSC_6" property="mPsc6" jdbcType="DECIMAL" />
+    <result column="M_RSCP_6" property="mRscp6" jdbcType="DECIMAL" />
+    <result column="M_EC_NO_6" property="mEcNo6" jdbcType="DECIMAL" />
+    <result column="M_ARFCN_6" property="mArfcn6" jdbcType="DECIMAL" />
+    <result column="D_PSC_1" property="dPsc1" jdbcType="DECIMAL" />
+    <result column="D_RSCP_1" property="dRscp1" jdbcType="DECIMAL" />
+    <result column="D_EC_NO_1" property="dEcNo1" jdbcType="DECIMAL" />
+    <result column="D_ARFCN_1" property="dArfcn1" jdbcType="DECIMAL" />
+    <result column="D_PSC_2" property="dPsc2" jdbcType="DECIMAL" />
+    <result column="D_RSCP_2" property="dRscp2" jdbcType="DECIMAL" />
+    <result column="D_EC_NO_2" property="dEcNo2" jdbcType="DECIMAL" />
+    <result column="D_ARFCN_2" property="dArfcn2" jdbcType="DECIMAL" />
+    <result column="GPS_TYPE" property="gpsType" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    WCDMAID, FLOWID, UUID, INSIDE, EP_TIME, LONGITUDE, LATITUDE, LONGITUDE_MODIFY, LATITUDE_MODIFY, LONGITUDE_BMAP,LATITUDE_BMAP,
+    POSITION_X, POSITION_Y, REALNET_TYPE, LAC, CID, PSC,Freq_UL,Freq_DL, RSCP, EC_NO, TXPOWER, FTP_TYPE,GPS_TYPE,
+    FTP_SPEED, A_PSC_1, A_RSCP_1, A_EC_NO_1, A_ARFCN_1, A_PSC_2, A_RSCP_2, A_EC_NO_2, 
+    A_ARFCN_2, A_PSC_3, A_RSCP_3, A_EC_NO_3, A_ARFCN_3, M_PSC_1, M_RSCP_1, M_EC_NO_1, 
+    M_ARFCN_1, M_PSC_2, M_RSCP_2, M_EC_NO_2, M_ARFCN_2, M_PSC_3, M_RSCP_3, M_EC_NO_3, 
+    M_ARFCN_3, M_PSC_4, M_RSCP_4, M_EC_NO_4, M_ARFCN_4, M_PSC_5, M_RSCP_5, M_EC_NO_5, 
+    M_ARFCN_5, M_PSC_6, M_RSCP_6, M_EC_NO_6, M_ARFCN_6, D_PSC_1, D_RSCP_1, D_EC_NO_1, 
+    D_ARFCN_1, D_PSC_2, D_RSCP_2, D_EC_NO_2, D_ARFCN_2
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_log_task_wcdma
+    where WCDMAID = #{wcdmaid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_log_task_wcdma
+    where WCDMAID = #{wcdmaid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertByBatch" parameterType="com.complaint.model.WcdmsTrackLog" >
+    insert into t_log_task_wcdma 
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    WCDMAID, FLOWID, UUID,
+      INSIDE, EP_TIME,TEST_TIME,
+      <if test= "areaid!=null">
+      	AREA_ID,
+      </if>	
+      <if test="longitude != null">
+      LONGITUDE, 
+      </if>
+      <if test="latitude != null">
+      LATITUDE,
+      </if>
+      <if test="longitudeModify != null">
+      LONGITUDE_MODIFY, 
+      </if>
+      <if test="latitudeModify != null">
+      LATITUDE_MODIFY,
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP, 
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      <if test="positionX != null">
+      POSITION_X, 
+      </if>
+      <if test="positionY != null">
+      POSITION_Y, 
+      </if>
+      <if test="realnetType != null">
+      REALNET_TYPE,
+      </if>
+      LAC, CID, PSC, Freq_UL,Freq_DL,
+      RSCP, EC_NO, FTP_TYPE,
+      
+      <if test="gpsType != null">
+        GPS_TYPE,
+      </if>
+       <if test="txpower != null">
+        TXPOWER,
+      </if>
+      <if test="ftpSpeed != null">
+        FTP_SPEED,
+      </if>
+      <if test="aPsc1 != null">
+        A_PSC_1,
+      </if>
+      <if test="aRscp1 != null">
+        A_RSCP_1,
+      </if>
+      <if test="aEcNo1 != null">
+        A_EC_NO_1,
+      </if>
+      <if test="aArfcn1 != null">
+        A_ARFCN_1,
+      </if>
+      <if test="aPsc2 != null">
+        A_PSC_2,
+      </if>
+      <if test="aRscp2 != null">
+        A_RSCP_2,
+      </if>
+      <if test="aEcNo2 != null">
+        A_EC_NO_2,
+      </if>
+      <if test="aArfcn2 != null">
+        A_ARFCN_2,
+      </if>
+      <if test="aPsc3 != null">
+        A_PSC_3,
+      </if>
+      <if test="aRscp3 != null">
+        A_RSCP_3,
+      </if>
+      <if test="aEcNo3 != null">
+        A_EC_NO_3,
+      </if>
+      <if test="aArfcn3 != null">
+        A_ARFCN_3,
+      </if>
+      <if test="mPsc1 != null">
+        M_PSC_1,
+      </if>
+      <if test="mRscp1 != null">
+        M_RSCP_1,
+      </if>
+      <if test="mEcNo1 != null">
+        M_EC_NO_1,
+      </if>
+      <if test="mArfcn1 != null">
+        M_ARFCN_1,
+      </if>
+      <if test="mPsc2 != null">
+        M_PSC_2,
+      </if>
+      <if test="mRscp2 != null">
+        M_RSCP_2,
+      </if>
+      <if test="mEcNo2 != null">
+        M_EC_NO_2,
+      </if>
+      <if test="mArfcn2 != null">
+        M_ARFCN_2,
+      </if>
+      <if test="mPsc3 != null">
+        M_PSC_3,
+      </if>
+      <if test="mRscp3 != null">
+        M_RSCP_3,
+      </if>
+      <if test="mEcNo3 != null">
+        M_EC_NO_3,
+      </if>
+      <if test="mArfcn3 != null">
+        M_ARFCN_3,
+      </if>
+      <if test="mPsc4 != null">
+        M_PSC_4,
+      </if>
+      <if test="mRscp4 != null">
+        M_RSCP_4,
+      </if>
+      <if test="mEcNo4 != null">
+        M_EC_NO_4,
+      </if>
+      <if test="mArfcn4 != null">
+        M_ARFCN_4,
+      </if>
+      <if test="mPsc5 != null">
+        M_PSC_5,
+      </if>
+      <if test="mRscp5 != null">
+        M_RSCP_5,
+      </if>
+      <if test="mEcNo5 != null">
+        M_EC_NO_5,
+      </if>
+      <if test="mArfcn5 != null">
+        M_ARFCN_5,
+      </if>
+      <if test="mPsc6 != null">
+        M_PSC_6,
+      </if>
+      <if test="mRscp6 != null">
+        M_RSCP_6,
+      </if>
+      <if test="mEcNo6 != null">
+        M_EC_NO_6,
+      </if>
+      <if test="mArfcn6 != null">
+        M_ARFCN_6,
+      </if>
+      <if test="dPsc1 != null">
+        D_PSC_1,
+      </if>
+      <if test="dRscp1 != null">
+        D_RSCP_1,
+      </if>
+      <if test="dEcNo1 != null">
+        D_EC_NO_1,
+      </if>
+      <if test="dArfcn1 != null">
+        D_ARFCN_1,
+      </if>
+      <if test="dPsc2 != null">
+        D_PSC_2,
+      </if>
+      <if test="dRscp2 != null">
+        D_RSCP_2,
+      </if>
+      <if test="dEcNo2 != null">
+        D_EC_NO_2,
+      </if>
+      <if test="dArfcn2 != null">
+        D_ARFCN_2,
+      </if>
+       <if test="lac_1 != null">
+        lac_1,
+      </if>
+      <if test="lac_2 != null">
+        lac_2,
+      </if>
+      <if test="cid_1 != null">
+        cid_1,
+      </if>
+      <if test="cid_2 != null">
+        cid_2,
+      </if>
+       <if test="range != null">
+        range,
+      </if>
+       <if test="isequal != null">
+        isequal,
+      </if>
+       </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    getwcdmaseq(), #{flowid,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
+      #{inside,jdbcType=DECIMAL}, #{epTime,jdbcType=TIMESTAMP}, #{testtime,jdbcType=TIMESTAMP}, 
+      <if test= "areaid!=null">
+      	#{areaid,jdbcType=NUMERIC},
+      </if>	
+      <if test="longitude != null">
+      #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+      #{latitude,jdbcType=DECIMAL}, 
+      </if>
+      <if test="longitudeModify != null">
+      #{longitudeModify,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeModify != null">
+      #{latitudeModify,jdbcType=DECIMAL}, 
+      </if>
+       <if test="longitudeBmap != null">
+      #{longitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeBmap != null">
+      #{latitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="positionX != null">
+      #{positionX,jdbcType=DECIMAL},
+      </if>
+      <if test="positionY != null">
+      #{positionY,jdbcType=DECIMAL}, 
+      </if>
+      <if test="realnetType != null">
+      #{realnetType,jdbcType=DECIMAL}, 
+      </if>
+      #{lac,jdbcType=DECIMAL}, #{cid,jdbcType=DECIMAL}, #{psc,jdbcType=DECIMAL}, #{frequl,jdbcType=DECIMAL}, #{freqdl,jdbcType=DECIMAL}, 
+      #{rscp,jdbcType=DECIMAL}, #{ecNo,jdbcType=DECIMAL},  #{ftptype,jdbcType=NUMERIC}, 
+      
+       <if test="gpsType != null">
+        #{gpsType,jdbcType=DECIMAL},
+      </if>
+      <if test="txpower != null">
+        #{txpower,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpSpeed != null">
+        #{ftpSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="aPsc1 != null">
+        #{aPsc1,jdbcType=DECIMAL},
+      </if>
+      <if test="aRscp1 != null">
+        #{aRscp1,jdbcType=DECIMAL},
+      </if>
+      <if test="aEcNo1 != null">
+        #{aEcNo1,jdbcType=DECIMAL},
+      </if>
+      <if test="aArfcn1 != null">
+        #{aArfcn1,jdbcType=DECIMAL},
+      </if>
+      <if test="aPsc2 != null">
+        #{aPsc2,jdbcType=DECIMAL},
+      </if>
+      <if test="aRscp2 != null">
+        #{aRscp2,jdbcType=DECIMAL},
+      </if>
+      <if test="aEcNo2 != null">
+        #{aEcNo2,jdbcType=DECIMAL},
+      </if>
+      <if test="aArfcn2 != null">
+        #{aArfcn2,jdbcType=DECIMAL},
+      </if>
+      <if test="aPsc3 != null">
+        #{aPsc3,jdbcType=DECIMAL},
+      </if>
+      <if test="aRscp3 != null">
+        #{aRscp3,jdbcType=DECIMAL},
+      </if>
+      <if test="aEcNo3 != null">
+        #{aEcNo3,jdbcType=DECIMAL},
+      </if>
+      <if test="aArfcn3 != null">
+        #{aArfcn3,jdbcType=DECIMAL},
+      </if>
+      <if test="mPsc1 != null">
+        #{mPsc1,jdbcType=DECIMAL},
+      </if>
+      <if test="mRscp1 != null">
+        #{mRscp1,jdbcType=DECIMAL},
+      </if>
+      <if test="mEcNo1 != null">
+        #{mEcNo1,jdbcType=DECIMAL},
+      </if>
+      <if test="mArfcn1 != null">
+        #{mArfcn1,jdbcType=DECIMAL},
+      </if>
+      <if test="mPsc2 != null">
+        #{mPsc2,jdbcType=DECIMAL},
+      </if>
+      <if test="mRscp2 != null">
+        #{mRscp2,jdbcType=DECIMAL},
+      </if>
+      <if test="mEcNo2 != null">
+        #{mEcNo2,jdbcType=DECIMAL},
+      </if>
+      <if test="mArfcn2 != null">
+        #{mArfcn2,jdbcType=DECIMAL},
+      </if>
+      <if test="mPsc3 != null">
+        #{mPsc3,jdbcType=DECIMAL},
+      </if>
+      <if test="mRscp3 != null">
+        #{mRscp3,jdbcType=DECIMAL},
+      </if>
+      <if test="mEcNo3 != null">
+        #{mEcNo3,jdbcType=DECIMAL},
+      </if>
+      <if test="mArfcn3 != null">
+        #{mArfcn3,jdbcType=DECIMAL},
+      </if>
+      <if test="mPsc4 != null">
+        #{mPsc4,jdbcType=DECIMAL},
+      </if>
+      <if test="mRscp4 != null">
+        #{mRscp4,jdbcType=DECIMAL},
+      </if>
+      <if test="mEcNo4 != null">
+        #{mEcNo4,jdbcType=DECIMAL},
+      </if>
+      <if test="mArfcn4 != null">
+        #{mArfcn4,jdbcType=DECIMAL},
+      </if>
+      <if test="mPsc5 != null">
+        #{mPsc5,jdbcType=DECIMAL},
+      </if>
+      <if test="mRscp5 != null">
+        #{mRscp5,jdbcType=DECIMAL},
+      </if>
+      <if test="mEcNo5 != null">
+        #{mEcNo5,jdbcType=DECIMAL},
+      </if>
+      <if test="mArfcn5 != null">
+        #{mArfcn5,jdbcType=DECIMAL},
+      </if>
+      <if test="mPsc6 != null">
+        #{mPsc6,jdbcType=DECIMAL},
+      </if>
+      <if test="mRscp6 != null">
+        #{mRscp6,jdbcType=DECIMAL},
+      </if>
+      <if test="mEcNo6 != null">
+        #{mEcNo6,jdbcType=DECIMAL},
+      </if>
+      <if test="mArfcn6 != null">
+        #{mArfcn6,jdbcType=DECIMAL},
+      </if>
+      <if test="dPsc1 != null">
+        #{dPsc1,jdbcType=DECIMAL},
+      </if>
+      <if test="dRscp1 != null">
+        #{dRscp1,jdbcType=DECIMAL},
+      </if>
+      <if test="dEcNo1 != null">
+        #{dEcNo1,jdbcType=DECIMAL},
+      </if>
+      <if test="dArfcn1 != null">
+        #{dArfcn1,jdbcType=DECIMAL},
+      </if>
+      <if test="dPsc2 != null">
+        #{dPsc2,jdbcType=DECIMAL},
+      </if>
+      <if test="dRscp2 != null">
+        #{dRscp2,jdbcType=DECIMAL},
+      </if>
+      <if test="dEcNo2 != null">
+        #{dEcNo2,jdbcType=DECIMAL},
+      </if>
+      <if test="dArfcn2 != null">
+        #{dArfcn2,jdbcType=DECIMAL},
+      </if>
+        <if test="lac_1 != null">
+        #{lac_1,jdbcType=DECIMAL},
+      </if>
+      <if test="lac_2 != null">
+        #{lac_2,jdbcType=DECIMAL},
+      </if>
+        <if test="cid_1 != null">
+        #{cid_1,jdbcType=DECIMAL},
+      </if>
+      <if test="cid_2 != null">
+        #{cid_2,jdbcType=DECIMAL},
+      </if>
+       <if test="range!= null">
+        #{range,jdbcType=DECIMAL},
+      </if>
+         <if test="isequal != null">
+        #{isequal,jdbcType=DECIMAL},
+      </if>
+  	</trim>
+  </insert>
+  <insert id="insertByBatch1" parameterType="com.complaint.model.WcdmsTrackLog" >
+    insert into t_log_task_wcdma (WCDMAID, FLOWID, UUID, 
+      INSIDE, EP_TIME, LONGITUDE, 
+      LATITUDE, LONGITUDE_MODIFY, LATITUDE_MODIFY, LONGITUDE_BMAP,LATITUDE_BMAP,
+      POSITION_X, POSITION_Y, REALNET_TYPE, 
+      LAC, CID, PSC, Freq_UL,Freq_DL,
+      RSCP, EC_NO, TXPOWER, FTP_TYPE,
+      FTP_SPEED, A_PSC_1, A_RSCP_1, 
+      A_EC_NO_1, A_ARFCN_1, A_PSC_2, 
+      A_RSCP_2, A_EC_NO_2, A_ARFCN_2, 
+      A_PSC_3, A_RSCP_3, A_EC_NO_3, 
+      A_ARFCN_3, M_PSC_1, M_RSCP_1, 
+      M_EC_NO_1, M_ARFCN_1, M_PSC_2, 
+      M_RSCP_2, M_EC_NO_2, M_ARFCN_2, 
+      M_PSC_3, M_RSCP_3, M_EC_NO_3, 
+      M_ARFCN_3, M_PSC_4, M_RSCP_4, 
+      M_EC_NO_4, M_ARFCN_4, M_PSC_5, 
+      M_RSCP_5, M_EC_NO_5, M_ARFCN_5, 
+      M_PSC_6, M_RSCP_6, M_EC_NO_6, 
+      M_ARFCN_6, D_PSC_1, D_RSCP_1, 
+      D_EC_NO_1, D_ARFCN_1, D_PSC_2, 
+      D_RSCP_2, D_EC_NO_2, D_ARFCN_2,GPS_TYPE
+      )
+    values (getwcdmaseq(), #{flowid,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
+      #{inside,jdbcType=DECIMAL}, #{epTime,jdbcType=TIMESTAMP}, #{longitude,jdbcType=DECIMAL}, 
+      #{latitude,jdbcType=DECIMAL}, #{longitudeModify,jdbcType=DECIMAL}, #{latitudeModify,jdbcType=DECIMAL}, #{longitudeBmap,jdbcType=DECIMAL}, #{latitudeBmap,jdbcType=DECIMAL},
+      #{positionX,jdbcType=DECIMAL}, #{positionY,jdbcType=DECIMAL}, #{realnetType,jdbcType=DECIMAL}, 
+      #{lac,jdbcType=DECIMAL}, #{cid,jdbcType=DECIMAL}, #{psc,jdbcType=DECIMAL}, #{frequl,jdbcType=DECIMAL}, #{freqdl,jdbcType=DECIMAL}, 
+      #{rscp,jdbcType=DECIMAL}, #{ecNo,jdbcType=DECIMAL}, #{txpower,jdbcType=DECIMAL}, #{ftptype,jdbcType=NUMERIC}, 
+      #{ftpSpeed,jdbcType=DECIMAL}, #{aPsc1,jdbcType=DECIMAL}, #{aRscp1,jdbcType=DECIMAL}, 
+      #{aEcNo1,jdbcType=DECIMAL}, #{aArfcn1,jdbcType=DECIMAL}, #{aPsc2,jdbcType=DECIMAL}, 
+      #{aRscp2,jdbcType=DECIMAL}, #{aEcNo2,jdbcType=DECIMAL}, #{aArfcn2,jdbcType=DECIMAL}, 
+      #{aPsc3,jdbcType=DECIMAL}, #{aRscp3,jdbcType=DECIMAL}, #{aEcNo3,jdbcType=DECIMAL}, 
+      #{aArfcn3,jdbcType=DECIMAL}, #{mPsc1,jdbcType=DECIMAL}, #{mRscp1,jdbcType=DECIMAL}, 
+      #{mEcNo1,jdbcType=DECIMAL}, #{mArfcn1,jdbcType=DECIMAL}, #{mPsc2,jdbcType=DECIMAL}, 
+      #{mRscp2,jdbcType=DECIMAL}, #{mEcNo2,jdbcType=DECIMAL}, #{mArfcn2,jdbcType=DECIMAL}, 
+      #{mPsc3,jdbcType=DECIMAL}, #{mRscp3,jdbcType=DECIMAL}, #{mEcNo3,jdbcType=DECIMAL}, 
+      #{mArfcn3,jdbcType=DECIMAL}, #{mPsc4,jdbcType=DECIMAL}, #{mRscp4,jdbcType=DECIMAL}, 
+      #{mEcNo4,jdbcType=DECIMAL}, #{mArfcn4,jdbcType=DECIMAL}, #{mPsc5,jdbcType=DECIMAL}, 
+      #{mRscp5,jdbcType=DECIMAL}, #{mEcNo5,jdbcType=DECIMAL}, #{mArfcn5,jdbcType=DECIMAL}, 
+      #{mPsc6,jdbcType=DECIMAL}, #{mRscp6,jdbcType=DECIMAL}, #{mEcNo6,jdbcType=DECIMAL}, 
+      #{mArfcn6,jdbcType=DECIMAL}, #{dPsc1,jdbcType=DECIMAL}, #{dRscp1,jdbcType=DECIMAL}, 
+      #{dEcNo1,jdbcType=DECIMAL}, #{dArfcn1,jdbcType=DECIMAL}, #{dPsc2,jdbcType=DECIMAL}, 
+      #{dRscp2,jdbcType=DECIMAL}, #{dEcNo2,jdbcType=DECIMAL}, #{dArfcn2,jdbcType=DECIMAL},
+      #{gpsType,jdbcType=DECIMAL}
+      )
+  </insert>
+  <delete id="delTaskWcdmaByFlowid" parameterType="String">
+  	delete from t_log_task_wcdma where flowid = #{flowid,jdbcType=VARCHAR}
+  </delete>
+</mapper>

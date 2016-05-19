@@ -1,0 +1,61 @@
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    	
+    <beans:bean id="snmpCodecFilter" class="org.apache.mina.filter.codec.ProtocolCodecFilter">
+	  <beans:constructor-arg>
+	    <beans:bean class="com.complaint.mina.ByteCodeFactory" />
+	  </beans:constructor-arg>
+	</beans:bean>
+	
+	<!-- 字节解码 -->
+	<beans:bean id="byteDecoder" class="com.complaint.mina.ByteDecoder"/>
+	<!-- 字节编码 -->
+	<beans:bean id="byteEncoder" class="com.complaint.mina.ByteEncoder"/>
+	<!-- 线程池配置 -->
+	<beans:bean id="threadPoolFilter" class="org.apache.mina.filter.executor.ExecutorFilter">
+		<beans:constructor-arg>
+			<beans:bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+				<beans:property name="targetClass">
+					<beans:value>java.util.concurrent.Executors</beans:value>
+				</beans:property>
+				<beans:property name="targetMethod" value="newCachedThreadPool" />
+			</beans:bean>
+		</beans:constructor-arg>
+	</beans:bean>
+
+	<!-- <beans:bean id="loggingFilter" class="org.apache.mina.filter.logging.LoggingFilter" /> -->
+
+	<!-- The filter chain. -->
+	<beans:bean id="filterChainBuilder" class="org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder">
+	  <beans:property name="filters">
+	    <beans:map>
+	      <!-- <beans:entry key="loggingFilter" value-ref="loggingFilter"/> -->
+	      <beans:entry key="codecFilter" value-ref="snmpCodecFilter"/>
+	      <beans:entry key="threadPoolFilter" value-ref="threadPoolFilter" />
+	    </beans:map>
+	  </beans:property>
+	</beans:bean>
+    	
+    <beans:bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+	    <beans:property name="customEditors">
+	      <beans:map>
+	        <beans:entry key="java.net.SocketAddress">
+	          <beans:bean class="org.apache.mina.integration.beans.InetSocketAddressEditor" />
+	        </beans:entry>
+	      </beans:map>
+	    </beans:property>
+	</beans:bean>
+	
+	<beans:bean id="trapHandler" class="com.complaint.mina.MinaServerHandler"/>
+   
+	<beans:bean class="org.apache.mina.transport.socket.nio.NioSocketAcceptor" init-method="bind" destroy-method="unbind">
+	  <beans:property name="defaultLocalAddress" value=":9123" />
+	  <beans:property name="handler" ref="trapHandler" />
+	  <beans:property name="filterChainBuilder" ref="filterChainBuilder" />
+	</beans:bean>
+    
+    
+</beans:beans>

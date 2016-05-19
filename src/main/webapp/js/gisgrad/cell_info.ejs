@@ -1,0 +1,56 @@
+
+
+<div style="font-weight: bold;"><%=adminRegion%>&nbsp;&nbsp;<%=cellName%></div>
+<div class="gis-tk">
+<ul>
+<li><span>RNC名称</span><%=rncname%></li>
+<li><span>网元类型</span><%=neType%></li>
+<li><span>CELLID</span><%=cellId%></li>
+<li><span>经纬度</span><%=celllat%>,<%=celllng%></li>
+<li><span>电子斜角</span><%=antElectAngle%></li>
+<li><span>下倾角</span><%=tilt%></li>
+<li title="<%=antType%>"><span>天线类型</span>
+<%
+if(antType && antType.length > 12){
+var _antType = antType.substring(0,11)+"...";
+	%>
+	<%=_antType%>
+<%}else{%>
+<%=antType%>
+<%}
+%></li>
+</ul>
+<ul style="float:right;">
+<li title="<%=baseName%>"><span>基站名称</span>
+<%if(baseName && baseName.length > 12){
+	var _baseName = baseName.substring(0,12)+"...";
+	%>
+	<%=_baseName%>
+<%}else{%>
+<%=baseName%>
+<%}%></li>
+<li><span>LAC</span><%=lac%></li>
+<li><span><% 
+if (modetype==0){%>
+ PSC
+<% } %>
+<% 
+if (modetype==1){%>
+BCCH
+<% } %>
+
+</span><%=psc%></li>
+<li><span>天线方向角</span>
+<% 
+if (sctype==0){%>
+ <%=self_azimuth%>
+<% } %>
+<% 
+if (sctype!=0){%>
+ <%=ant_azimuth%>
+<%}%>
+</li>
+<li><span>机械倾角</span><%=antMathAngle%></li>
+<li><span>天线公用情况</span><%=sharedAnt%></li>
+</ul>
+</div>

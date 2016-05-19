@@ -1,0 +1,1064 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.LogSubmanualGsmDao" >
+  <resultMap id="BaseResultMap" type="com.complaint.model.LogSubmanualGsm">
+    <id column="GSMID" jdbcType="VARCHAR" property="gsmid" />
+    <result column="FLOWID" jdbcType="VARCHAR" property="flowid" />
+    <result column="UUID" jdbcType="VARCHAR" property="uuid" />
+    <result column="INSIDE" jdbcType="DECIMAL" property="inside" />
+    <result column="EP_TIME" jdbcType="TIMESTAMP" property="epTime" />
+    <result column="TEST_TIME" jdbcType="TIMESTAMP" property="testTime" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+    <result column="LONGITUDE_MODIFY" jdbcType="DECIMAL" property="longitudeModify" />
+    <result column="LATITUDE_MODIFY" jdbcType="DECIMAL" property="latitudeModify" />
+    <result column="LONGITUDE_BMAP" property="longitudeBmap" jdbcType="DECIMAL" />
+    <result column="LATITUDE_BMAP" property="latitudeBmap" jdbcType="DECIMAL" />
+    <result column="POSITION_X" jdbcType="DECIMAL" property="positionX" />
+    <result column="POSITION_Y" jdbcType="DECIMAL" property="positionY" />
+    <result column="REALNET_TYPE" jdbcType="DECIMAL" property="realnetType" />
+    <result column="LAC" jdbcType="DECIMAL" property="lac" />
+    <result column="CID" jdbcType="DECIMAL" property="cid" />
+    <result column="BSIC" jdbcType="DECIMAL" property="bsic" />
+    <result column="BCCH" jdbcType="DECIMAL" property="bcch" />
+    <result column="RXLEV_SUB" jdbcType="DECIMAL" property="rxlevSub" />
+    <result column="RXQUAL_SUB" jdbcType="DECIMAL" property="rxqualSub" />
+    <result column="C_I" jdbcType="DECIMAL" property="cI" />
+    <result column="TXPOWER" jdbcType="DECIMAL" property="txpower" />
+    <result column="MOS" jdbcType="DECIMAL" property="mos" />
+    <result column="BSIC_1" jdbcType="DECIMAL" property="bsic1" />
+    <result column="BCCH_1" jdbcType="DECIMAL" property="bcch1" />
+    <result column="RXLEV_1" jdbcType="DECIMAL" property="rxlev1" />
+    <result column="BSIC_2" jdbcType="DECIMAL" property="bsic2" />
+    <result column="BCCH_2" jdbcType="DECIMAL" property="bcch2" />
+    <result column="RXLEV_2" jdbcType="DECIMAL" property="rxlev2" />
+    <result column="BSIC_3" jdbcType="DECIMAL" property="bsic3" />
+    <result column="BCCH_3" jdbcType="DECIMAL" property="bcch3" />
+    <result column="RXLEV_3" jdbcType="DECIMAL" property="rxlev3" />
+    <result column="BSIC_4" jdbcType="DECIMAL" property="bsic4" />
+    <result column="BCCH_4" jdbcType="DECIMAL" property="bcch4" />
+    <result column="RXLEV_4" jdbcType="DECIMAL" property="rxlev4" />
+    <result column="BSIC_5" jdbcType="DECIMAL" property="bsic5" />
+    <result column="BCCH_5" jdbcType="DECIMAL" property="bcch5" />
+    <result column="RXLEV_5" jdbcType="DECIMAL" property="rxlev5" />
+    <result column="BSIC_6" jdbcType="DECIMAL" property="bsic6" />
+    <result column="BCCH_6" jdbcType="DECIMAL" property="bcch6" />
+    <result column="RXLEV_6" jdbcType="DECIMAL" property="rxlev6" />
+    <result column="GPS_TYPE" jdbcType="DECIMAL" property="gpsType" />
+    <result column="TA" jdbcType="DECIMAL" property="ta" />
+    <result column="RXLEV_FULL" jdbcType="DECIMAL" property="rxlevFull" />
+    <result column="RXQUAL_FULL" jdbcType="DECIMAL" property="rxqualFull" />
+    <result column="C1" jdbcType="DECIMAL" property="c1" />
+    <result column="C2" jdbcType="DECIMAL" property="c2" />
+    <result column="C1_1" jdbcType="DECIMAL" property="c11" />
+    <result column="C2_1" jdbcType="DECIMAL" property="c21" />
+    <result column="C1_2" jdbcType="DECIMAL" property="c12" />
+    <result column="C2_2" jdbcType="DECIMAL" property="c22" />
+    <result column="C1_3" jdbcType="DECIMAL" property="c13" />
+    <result column="C2_3" jdbcType="DECIMAL" property="c23" />
+    <result column="C1_4" jdbcType="DECIMAL" property="c14" />
+    <result column="C2_4" jdbcType="DECIMAL" property="c24" />
+    <result column="C1_5" jdbcType="DECIMAL" property="c15" />
+    <result column="C2_5" jdbcType="DECIMAL" property="c25" />
+    <result column="C1_6" jdbcType="DECIMAL" property="c16" />
+    <result column="C2_6" jdbcType="DECIMAL" property="c26" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    GSMID, FLOWID, UUID, INSIDE, EP_TIME, LONGITUDE, LATITUDE, LONGITUDE_MODIFY, LATITUDE_MODIFY,  LONGITUDE_BMAP,LATITUDE_BMAP,
+    POSITION_X, POSITION_Y, REALNET_TYPE, LAC, CID, BSIC, BCCH, RXLEV_SUB, RXQUAL_SUB, 
+    C_I, TXPOWER, MOS, BSIC_1, BCCH_1, RXLEV_1, BSIC_2, BCCH_2, RXLEV_2, BSIC_3, BCCH_3, 
+    RXLEV_3, BSIC_4, BCCH_4, RXLEV_4, BSIC_5, BCCH_5, RXLEV_5, BSIC_6, BCCH_6, RXLEV_6, 
+    GPS_TYPE, TA, RXLEV_FULL, RXQUAL_FULL, C1, C2, C1_1, C2_1, C1_2, C2_2, C1_3, C2_3, 
+    C1_4, C2_4, C1_5, C2_5, C1_6, C2_6
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_LOG_SUBMANUAL_GSM
+    where GSMID = #{gsmid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from T_LOG_SUBMANUAL_GSM
+    where GSMID = #{gsmid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertByBatch" parameterType="com.complaint.model.LogSubmanualGsm">
+    insert into T_LOG_SUBMANUAL_GSM 
+     <trim prefix="(" suffix=")" suffixOverrides=",">
+    GSMID, FLOWID, UUID,
+      INSIDE, EP_TIME,TEST_TIME,
+       <if test= "areaid!=null">
+      	AREA_ID,
+      </if>	 
+      <if test="longitude != null">
+      	LONGITUDE, 
+      </if>
+      <if test="latitude != null">
+      	LATITUDE, 
+      </if>
+      <if test="longitudeModify != null">
+      LONGITUDE_MODIFY, 
+      </if>
+      <if test="latitudeModify != null">
+      LATITUDE_MODIFY, 
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP, 
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      <if test="positionX != null">
+      POSITION_X, 
+      </if>
+      <if test="positionY != null">
+      POSITION_Y, 
+      </if>
+      REALNET_TYPE, 
+      LAC, CID, 
+      <if test="bsic != null">
+        BSIC,
+      </if>
+      <if test="bcch != null">
+        BCCH,
+      </if>
+      <if test="rxlevSub != null">
+        RXLEV_SUB,
+      </if>
+      <if test="rxqualSub != null">
+        RXQUAL_SUB,
+      </if>
+      <if test="cI != null">
+        C_I,
+      </if>
+      <if test="txpower != null">
+        TXPOWER,
+      </if>
+      <if test="mos != null">
+        MOS,
+      </if>
+      <if test="bsic1 != null">
+        BSIC_1,
+      </if>
+      <if test="bcch1 != null">
+        BCCH_1,
+      </if>
+      <if test="rxlev1 != null">
+        RXLEV_1,
+      </if>
+      <if test="bsic2 != null">
+        BSIC_2,
+      </if>
+      <if test="bcch2 != null">
+        BCCH_2,
+      </if>
+      <if test="rxlev2 != null">
+        RXLEV_2,
+      </if>
+      <if test="bsic3 != null">
+        BSIC_3,
+      </if>
+      <if test="bcch3 != null">
+        BCCH_3,
+      </if>
+      <if test="rxlev3 != null">
+        RXLEV_3,
+      </if>
+      <if test="bsic4 != null">
+        BSIC_4,
+      </if>
+      <if test="bcch4 != null">
+        BCCH_4,
+      </if>
+      <if test="rxlev4 != null">
+        RXLEV_4,
+      </if>
+      <if test="bsic5 != null">
+        BSIC_5,
+      </if>
+      <if test="bcch5 != null">
+        BCCH_5,
+      </if>
+      <if test="rxlev5 != null">
+        RXLEV_5,
+      </if>
+      <if test="bsic6 != null">
+        BSIC_6,
+      </if>
+      <if test="bcch6 != null">
+        BCCH_6,
+      </if>
+      <if test="rxlev6 != null">
+        RXLEV_6,
+      </if>
+      <if test="gpsType != null">
+        GPS_TYPE,
+      </if>
+      <if test="ta != null">
+        TA,
+      </if>
+      <if test="rxlevFull != null">
+        RXLEV_FULL,
+      </if>
+      <if test="rxqualFull != null">
+        RXQUAL_FULL,
+      </if>
+      <if test="c1 != null">
+        C1,
+      </if>
+      <if test="c2 != null">
+        C2,
+      </if>
+      <if test="c11 != null">
+        C1_1,
+      </if>
+      <if test="c21 != null">
+        C2_1,
+      </if>
+      <if test="c12 != null">
+        C1_2,
+      </if>
+      <if test="c22 != null">
+        C2_2,
+      </if>
+      <if test="c13 != null">
+        C1_3,
+      </if>
+      <if test="c23 != null">
+        C2_3,
+      </if>
+      <if test="c14 != null">
+        C1_4,
+      </if>
+      <if test="c24 != null">
+        C2_4,
+      </if>
+      <if test="c15 != null">
+        C1_5,
+      </if>
+      <if test="c25 != null">
+        C2_5,
+      </if>
+      <if test="c16 != null">
+        C1_6,
+      </if>
+      <if test="c26 != null">
+        C2_6,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    	getgsmseq(), #{flowid,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR},
+      #{inside,jdbcType=DECIMAL}, #{epTime,jdbcType=TIMESTAMP}, #{testtime,jdbcType=TIMESTAMP},
+       <if test= "areaid!=null">
+      	#{areaid,jdbcType=NUMERIC},
+      </if>	 
+      <if test="longitude != null">
+      #{longitude,jdbcType=DECIMAL},
+      </if> 
+      <if test="latitude != null">
+      #{latitude,jdbcType=DECIMAL}, 
+      </if>
+      <if test="longitudeModify != null">
+      #{longitudeModify,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeModify != null">
+      #{latitudeModify,jdbcType=DECIMAL}, 
+      </if>
+       <if test="longitudeBmap != null">
+      #{longitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeBmap != null">
+      #{latitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="positionX != null">
+      #{positionX,jdbcType=DECIMAL}, 
+      </if>
+      <if test="positionY != null">
+      #{positionY,jdbcType=DECIMAL}, 
+      </if>
+      #{realnetType,jdbcType=DECIMAL}, 
+      #{lac,jdbcType=DECIMAL}, #{cid,jdbcType=DECIMAL}, 
+      <if test="bsic != null">
+        #{bsic,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch != null">
+        #{bcch,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlevSub != null">
+        #{rxlevSub,jdbcType=DECIMAL},
+      </if>
+      <if test="rxqualSub != null">
+        #{rxqualSub,jdbcType=DECIMAL},
+      </if>
+      <if test="cI != null">
+        #{cI,jdbcType=DECIMAL},
+      </if>
+      <if test="txpower != null">
+        #{txpower,jdbcType=DECIMAL},
+      </if>
+      <if test="mos != null">
+        #{mos,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic1 != null">
+        #{bsic1,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch1 != null">
+        #{bcch1,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev1 != null">
+        #{rxlev1,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic2 != null">
+        #{bsic2,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch2 != null">
+        #{bcch2,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev2 != null">
+        #{rxlev2,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic3 != null">
+        #{bsic3,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch3 != null">
+        #{bcch3,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev3 != null">
+        #{rxlev3,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic4 != null">
+        #{bsic4,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch4 != null">
+        #{bcch4,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev4 != null">
+        #{rxlev4,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic5 != null">
+        #{bsic5,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch5 != null">
+        #{bcch5,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev5 != null">
+        #{rxlev5,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic6 != null">
+        #{bsic6,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch6 != null">
+        #{bcch6,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev6 != null">
+        #{rxlev6,jdbcType=DECIMAL},
+      </if>
+      <if test="gpsType != null">
+        #{gpsType,jdbcType=DECIMAL},
+      </if>
+      <if test="ta != null">
+        #{ta,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlevFull != null">
+        #{rxlevFull,jdbcType=DECIMAL},
+      </if>
+      <if test="rxqualFull != null">
+        #{rxqualFull,jdbcType=DECIMAL},
+      </if>
+      <if test="c1 != null">
+        #{c1,jdbcType=DECIMAL},
+      </if>
+      <if test="c2 != null">
+        #{c2,jdbcType=DECIMAL},
+      </if>
+      <if test="c11 != null">
+        #{c11,jdbcType=DECIMAL},
+      </if>
+      <if test="c21 != null">
+        #{c21,jdbcType=DECIMAL},
+      </if>
+      <if test="c12 != null">
+        #{c12,jdbcType=DECIMAL},
+      </if>
+      <if test="c22 != null">
+        #{c22,jdbcType=DECIMAL},
+      </if>
+      <if test="c13 != null">
+        #{c13,jdbcType=DECIMAL},
+      </if>
+      <if test="c23 != null">
+        #{c23,jdbcType=DECIMAL},
+      </if>
+      <if test="c14 != null">
+        #{c14,jdbcType=DECIMAL},
+      </if>
+      <if test="c24 != null">
+        #{c24,jdbcType=DECIMAL},
+      </if>
+      <if test="c15 != null">
+        #{c15,jdbcType=DECIMAL},
+      </if>
+      <if test="c25 != null">
+        #{c25,jdbcType=DECIMAL},
+      </if>
+      <if test="c16 != null">
+        #{c16,jdbcType=DECIMAL},
+      </if>
+      <if test="c26 != null">
+        #{c26,jdbcType=DECIMAL},
+      </if>
+      </trim>
+  </insert>
+  <insert id="insertByBatch1" parameterType="com.complaint.model.LogSubmanualGsm">
+    insert into T_LOG_SUBMANUAL_GSM (GSMID, FLOWID, UUID, 
+      INSIDE, EP_TIME ,TEST_TIME, LONGITUDE, 
+      LATITUDE, LONGITUDE_MODIFY, LATITUDE_MODIFY, LONGITUDE_BMAP,LATITUDE_BMAP,
+      POSITION_X, POSITION_Y, REALNET_TYPE, 
+      LAC, CID, BSIC, BCCH, 
+      RXLEV_SUB, RXQUAL_SUB, C_I, 
+      TXPOWER, MOS, BSIC_1, 
+      BCCH_1, RXLEV_1, BSIC_2, 
+      BCCH_2, RXLEV_2, BSIC_3, 
+      BCCH_3, RXLEV_3, BSIC_4, 
+      BCCH_4, RXLEV_4, BSIC_5, 
+      BCCH_5, RXLEV_5, BSIC_6, 
+      BCCH_6, RXLEV_6, GPS_TYPE, 
+      TA, RXLEV_FULL, RXQUAL_FULL, 
+      C1, C2, C1_1, C2_1, 
+      C1_2, C2_2, C1_3, C2_3, 
+      C1_4, C2_4, C1_5, C2_5, 
+      C1_6, C2_6)
+    values (getgsmseq(), #{flowid,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
+      #{inside,jdbcType=DECIMAL}, #{epTime,jdbcType=TIMESTAMP},  #{testtime,jdbcType=TIMESTAMP}, #{longitude,jdbcType=DECIMAL}, 
+      #{latitude,jdbcType=DECIMAL}, #{longitudeModify,jdbcType=DECIMAL}, #{latitudeModify,jdbcType=DECIMAL}, #{longitudeBmap,jdbcType=DECIMAL}, #{latitudeBmap,jdbcType=DECIMAL}, 
+      #{positionX,jdbcType=DECIMAL}, #{positionY,jdbcType=DECIMAL}, #{realnetType,jdbcType=DECIMAL}, 
+      #{lac,jdbcType=DECIMAL}, #{cid,jdbcType=DECIMAL}, #{bsic,jdbcType=DECIMAL}, #{bcch,jdbcType=DECIMAL}, 
+      #{rxlevSub,jdbcType=DECIMAL}, #{rxqualSub,jdbcType=DECIMAL}, #{cI,jdbcType=DECIMAL}, 
+      #{txpower,jdbcType=DECIMAL}, #{mos,jdbcType=DECIMAL}, #{bsic1,jdbcType=DECIMAL}, 
+      #{bcch1,jdbcType=DECIMAL}, #{rxlev1,jdbcType=DECIMAL}, #{bsic2,jdbcType=DECIMAL}, 
+      #{bcch2,jdbcType=DECIMAL}, #{rxlev2,jdbcType=DECIMAL}, #{bsic3,jdbcType=DECIMAL}, 
+      #{bcch3,jdbcType=DECIMAL}, #{rxlev3,jdbcType=DECIMAL}, #{bsic4,jdbcType=DECIMAL}, 
+      #{bcch4,jdbcType=DECIMAL}, #{rxlev4,jdbcType=DECIMAL}, #{bsic5,jdbcType=DECIMAL}, 
+      #{bcch5,jdbcType=DECIMAL}, #{rxlev5,jdbcType=DECIMAL}, #{bsic6,jdbcType=DECIMAL}, 
+      #{bcch6,jdbcType=DECIMAL}, #{rxlev6,jdbcType=DECIMAL}, #{gpsType,jdbcType=DECIMAL}, 
+      #{ta,jdbcType=DECIMAL}, #{rxlevFull,jdbcType=DECIMAL}, #{rxqualFull,jdbcType=DECIMAL}, 
+      #{c1,jdbcType=DECIMAL}, #{c2,jdbcType=DECIMAL}, #{c11,jdbcType=DECIMAL}, #{c21,jdbcType=DECIMAL}, 
+      #{c12,jdbcType=DECIMAL}, #{c22,jdbcType=DECIMAL}, #{c13,jdbcType=DECIMAL}, #{c23,jdbcType=DECIMAL}, 
+      #{c14,jdbcType=DECIMAL}, #{c24,jdbcType=DECIMAL}, #{c15,jdbcType=DECIMAL}, #{c25,jdbcType=DECIMAL}, 
+      #{c16,jdbcType=DECIMAL}, #{c26,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.complaint.model.LogSubmanualGsm">
+    insert into T_LOG_SUBMANUAL_GSM
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="gsmid != null">
+        GSMID,
+      </if>
+      <if test="flowid != null">
+        FLOWID,
+      </if>
+      <if test="uuid != null">
+        UUID,
+      </if>
+      <if test="inside != null">
+        INSIDE,
+      </if>
+      <if test="epTime != null">
+        EP_TIME,
+      </if>
+      <if test="testtime != null">
+        testtime,
+      </if>
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+      <if test="longitudeModify != null">
+        LONGITUDE_MODIFY,
+      </if>
+      <if test="latitudeModify != null">
+        LATITUDE_MODIFY,
+      </if>
+      <if test="longitudeBmap != null">
+      LONGITUDE_BMAP,
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      <if test="positionX != null">
+        POSITION_X,
+      </if>
+      <if test="positionY != null">
+        POSITION_Y,
+      </if>
+      <if test="realnetType != null">
+        REALNET_TYPE,
+      </if>
+      <if test="lac != null">
+        LAC,
+      </if>
+      <if test="cid != null">
+        CID,
+      </if>
+      <if test="bsic != null">
+        BSIC,
+      </if>
+      <if test="bcch != null">
+        BCCH,
+      </if>
+      <if test="rxlevSub != null">
+        RXLEV_SUB,
+      </if>
+      <if test="rxqualSub != null">
+        RXQUAL_SUB,
+      </if>
+      <if test="cI != null">
+        C_I,
+      </if>
+      <if test="txpower != null">
+        TXPOWER,
+      </if>
+      <if test="mos != null">
+        MOS,
+      </if>
+      <if test="bsic1 != null">
+        BSIC_1,
+      </if>
+      <if test="bcch1 != null">
+        BCCH_1,
+      </if>
+      <if test="rxlev1 != null">
+        RXLEV_1,
+      </if>
+      <if test="bsic2 != null">
+        BSIC_2,
+      </if>
+      <if test="bcch2 != null">
+        BCCH_2,
+      </if>
+      <if test="rxlev2 != null">
+        RXLEV_2,
+      </if>
+      <if test="bsic3 != null">
+        BSIC_3,
+      </if>
+      <if test="bcch3 != null">
+        BCCH_3,
+      </if>
+      <if test="rxlev3 != null">
+        RXLEV_3,
+      </if>
+      <if test="bsic4 != null">
+        BSIC_4,
+      </if>
+      <if test="bcch4 != null">
+        BCCH_4,
+      </if>
+      <if test="rxlev4 != null">
+        RXLEV_4,
+      </if>
+      <if test="bsic5 != null">
+        BSIC_5,
+      </if>
+      <if test="bcch5 != null">
+        BCCH_5,
+      </if>
+      <if test="rxlev5 != null">
+        RXLEV_5,
+      </if>
+      <if test="bsic6 != null">
+        BSIC_6,
+      </if>
+      <if test="bcch6 != null">
+        BCCH_6,
+      </if>
+      <if test="rxlev6 != null">
+        RXLEV_6,
+      </if>
+      <if test="gpsType != null">
+        GPS_TYPE,
+      </if>
+      <if test="ta != null">
+        TA,
+      </if>
+      <if test="rxlevFull != null">
+        RXLEV_FULL,
+      </if>
+      <if test="rxqualFull != null">
+        RXQUAL_FULL,
+      </if>
+      <if test="c1 != null">
+        C1,
+      </if>
+      <if test="c2 != null">
+        C2,
+      </if>
+      <if test="c11 != null">
+        C1_1,
+      </if>
+      <if test="c21 != null">
+        C2_1,
+      </if>
+      <if test="c12 != null">
+        C1_2,
+      </if>
+      <if test="c22 != null">
+        C2_2,
+      </if>
+      <if test="c13 != null">
+        C1_3,
+      </if>
+      <if test="c23 != null">
+        C2_3,
+      </if>
+      <if test="c14 != null">
+        C1_4,
+      </if>
+      <if test="c24 != null">
+        C2_4,
+      </if>
+      <if test="c15 != null">
+        C1_5,
+      </if>
+      <if test="c25 != null">
+        C2_5,
+      </if>
+      <if test="c16 != null">
+        C1_6,
+      </if>
+      <if test="c26 != null">
+        C2_6,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="gsmid != null">
+        #{gsmid,jdbcType=VARCHAR},
+      </if>
+      <if test="flowid != null">
+        #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null">
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="inside != null">
+        #{inside,jdbcType=DECIMAL},
+      </if>
+      <if test="epTime != null">
+        #{epTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="testtime != null">
+        #{testtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="longitudeModify != null">
+        #{longitudeModify,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeModify != null">
+        #{latitudeModify,jdbcType=DECIMAL},
+      </if>
+       <if test="longitudeBmap != null">
+      #{longitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeBmap != null">
+       #{latitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="positionX != null">
+        #{positionX,jdbcType=DECIMAL},
+      </if>
+      <if test="positionY != null">
+        #{positionY,jdbcType=DECIMAL},
+      </if>
+      <if test="realnetType != null">
+        #{realnetType,jdbcType=DECIMAL},
+      </if>
+      <if test="lac != null">
+        #{lac,jdbcType=DECIMAL},
+      </if>
+      <if test="cid != null">
+        #{cid,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic != null">
+        #{bsic,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch != null">
+        #{bcch,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlevSub != null">
+        #{rxlevSub,jdbcType=DECIMAL},
+      </if>
+      <if test="rxqualSub != null">
+        #{rxqualSub,jdbcType=DECIMAL},
+      </if>
+      <if test="cI != null">
+        #{cI,jdbcType=DECIMAL},
+      </if>
+      <if test="txpower != null">
+        #{txpower,jdbcType=DECIMAL},
+      </if>
+      <if test="mos != null">
+        #{mos,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic1 != null">
+        #{bsic1,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch1 != null">
+        #{bcch1,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev1 != null">
+        #{rxlev1,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic2 != null">
+        #{bsic2,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch2 != null">
+        #{bcch2,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev2 != null">
+        #{rxlev2,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic3 != null">
+        #{bsic3,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch3 != null">
+        #{bcch3,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev3 != null">
+        #{rxlev3,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic4 != null">
+        #{bsic4,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch4 != null">
+        #{bcch4,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev4 != null">
+        #{rxlev4,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic5 != null">
+        #{bsic5,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch5 != null">
+        #{bcch5,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev5 != null">
+        #{rxlev5,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic6 != null">
+        #{bsic6,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch6 != null">
+        #{bcch6,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev6 != null">
+        #{rxlev6,jdbcType=DECIMAL},
+      </if>
+      <if test="gpsType != null">
+        #{gpsType,jdbcType=DECIMAL},
+      </if>
+      <if test="ta != null">
+        #{ta,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlevFull != null">
+        #{rxlevFull,jdbcType=DECIMAL},
+      </if>
+      <if test="rxqualFull != null">
+        #{rxqualFull,jdbcType=DECIMAL},
+      </if>
+      <if test="c1 != null">
+        #{c1,jdbcType=DECIMAL},
+      </if>
+      <if test="c2 != null">
+        #{c2,jdbcType=DECIMAL},
+      </if>
+      <if test="c11 != null">
+        #{c11,jdbcType=DECIMAL},
+      </if>
+      <if test="c21 != null">
+        #{c21,jdbcType=DECIMAL},
+      </if>
+      <if test="c12 != null">
+        #{c12,jdbcType=DECIMAL},
+      </if>
+      <if test="c22 != null">
+        #{c22,jdbcType=DECIMAL},
+      </if>
+      <if test="c13 != null">
+        #{c13,jdbcType=DECIMAL},
+      </if>
+      <if test="c23 != null">
+        #{c23,jdbcType=DECIMAL},
+      </if>
+      <if test="c14 != null">
+        #{c14,jdbcType=DECIMAL},
+      </if>
+      <if test="c24 != null">
+        #{c24,jdbcType=DECIMAL},
+      </if>
+      <if test="c15 != null">
+        #{c15,jdbcType=DECIMAL},
+      </if>
+      <if test="c25 != null">
+        #{c25,jdbcType=DECIMAL},
+      </if>
+      <if test="c16 != null">
+        #{c16,jdbcType=DECIMAL},
+      </if>
+      <if test="c26 != null">
+        #{c26,jdbcType=DECIMAL},
+      </if>
+    </trim>
+    <foreach collection="">
+    	<if test=""></if>
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.complaint.model.LogSubmanualGsm">
+    update T_LOG_SUBMANUAL_GSM
+    <set>
+      <if test="flowid != null">
+        FLOWID = #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null">
+        UUID = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="inside != null">
+        INSIDE = #{inside,jdbcType=DECIMAL},
+      </if>
+      <if test="epTime != null">
+        EP_TIME = #{epTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="longitude != null">
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="longitudeModify != null">
+        LONGITUDE_MODIFY = #{longitudeModify,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeModify != null">
+        LATITUDE_MODIFY = #{latitudeModify,jdbcType=DECIMAL},
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP= #{longitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP= #{latitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="positionX != null">
+        POSITION_X = #{positionX,jdbcType=DECIMAL},
+      </if>
+      <if test="positionY != null">
+        POSITION_Y = #{positionY,jdbcType=DECIMAL},
+      </if>
+      <if test="realnetType != null">
+        REALNET_TYPE = #{realnetType,jdbcType=DECIMAL},
+      </if>
+      <if test="lac != null">
+        LAC = #{lac,jdbcType=DECIMAL},
+      </if>
+      <if test="cid != null">
+        CID = #{cid,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic != null">
+        BSIC = #{bsic,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch != null">
+        BCCH = #{bcch,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlevSub != null">
+        RXLEV_SUB = #{rxlevSub,jdbcType=DECIMAL},
+      </if>
+      <if test="rxqualSub != null">
+        RXQUAL_SUB = #{rxqualSub,jdbcType=DECIMAL},
+      </if>
+      <if test="cI != null">
+        C_I = #{cI,jdbcType=DECIMAL},
+      </if>
+      <if test="txpower != null">
+        TXPOWER = #{txpower,jdbcType=DECIMAL},
+      </if>
+      <if test="mos != null">
+        MOS = #{mos,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic1 != null">
+        BSIC_1 = #{bsic1,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch1 != null">
+        BCCH_1 = #{bcch1,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev1 != null">
+        RXLEV_1 = #{rxlev1,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic2 != null">
+        BSIC_2 = #{bsic2,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch2 != null">
+        BCCH_2 = #{bcch2,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev2 != null">
+        RXLEV_2 = #{rxlev2,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic3 != null">
+        BSIC_3 = #{bsic3,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch3 != null">
+        BCCH_3 = #{bcch3,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev3 != null">
+        RXLEV_3 = #{rxlev3,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic4 != null">
+        BSIC_4 = #{bsic4,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch4 != null">
+        BCCH_4 = #{bcch4,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev4 != null">
+        RXLEV_4 = #{rxlev4,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic5 != null">
+        BSIC_5 = #{bsic5,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch5 != null">
+        BCCH_5 = #{bcch5,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev5 != null">
+        RXLEV_5 = #{rxlev5,jdbcType=DECIMAL},
+      </if>
+      <if test="bsic6 != null">
+        BSIC_6 = #{bsic6,jdbcType=DECIMAL},
+      </if>
+      <if test="bcch6 != null">
+        BCCH_6 = #{bcch6,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlev6 != null">
+        RXLEV_6 = #{rxlev6,jdbcType=DECIMAL},
+      </if>
+      <if test="gpsType != null">
+        GPS_TYPE = #{gpsType,jdbcType=DECIMAL},
+      </if>
+      <if test="ta != null">
+        TA = #{ta,jdbcType=DECIMAL},
+      </if>
+      <if test="rxlevFull != null">
+        RXLEV_FULL = #{rxlevFull,jdbcType=DECIMAL},
+      </if>
+      <if test="rxqualFull != null">
+        RXQUAL_FULL = #{rxqualFull,jdbcType=DECIMAL},
+      </if>
+      <if test="c1 != null">
+        C1 = #{c1,jdbcType=DECIMAL},
+      </if>
+      <if test="c2 != null">
+        C2 = #{c2,jdbcType=DECIMAL},
+      </if>
+      <if test="c11 != null">
+        C1_1 = #{c11,jdbcType=DECIMAL},
+      </if>
+      <if test="c21 != null">
+        C2_1 = #{c21,jdbcType=DECIMAL},
+      </if>
+      <if test="c12 != null">
+        C1_2 = #{c12,jdbcType=DECIMAL},
+      </if>
+      <if test="c22 != null">
+        C2_2 = #{c22,jdbcType=DECIMAL},
+      </if>
+      <if test="c13 != null">
+        C1_3 = #{c13,jdbcType=DECIMAL},
+      </if>
+      <if test="c23 != null">
+        C2_3 = #{c23,jdbcType=DECIMAL},
+      </if>
+      <if test="c14 != null">
+        C1_4 = #{c14,jdbcType=DECIMAL},
+      </if>
+      <if test="c24 != null">
+        C2_4 = #{c24,jdbcType=DECIMAL},
+      </if>
+      <if test="c15 != null">
+        C1_5 = #{c15,jdbcType=DECIMAL},
+      </if>
+      <if test="c25 != null">
+        C2_5 = #{c25,jdbcType=DECIMAL},
+      </if>
+      <if test="c16 != null">
+        C1_6 = #{c16,jdbcType=DECIMAL},
+      </if>
+      <if test="c26 != null">
+        C2_6 = #{c26,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where GSMID = #{gsmid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.complaint.model.LogSubmanualGsm">
+    update T_LOG_SUBMANUAL_GSM
+    set FLOWID = #{flowid,jdbcType=VARCHAR},
+      UUID = #{uuid,jdbcType=VARCHAR},
+      INSIDE = #{inside,jdbcType=DECIMAL},
+      EP_TIME = #{epTime,jdbcType=TIMESTAMP},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      LONGITUDE_MODIFY = #{longitudeModify,jdbcType=DECIMAL},
+      LATITUDE_MODIFY = #{latitudeModify,jdbcType=DECIMAL},
+      LONGITUDE_BMAP= #{longitudeBmap,jdbcType=DECIMAL},
+      LATITUDE_BMAP= #{latitudeBmap,jdbcType=DECIMAL},
+      POSITION_X = #{positionX,jdbcType=DECIMAL},
+      POSITION_Y = #{positionY,jdbcType=DECIMAL},
+      REALNET_TYPE = #{realnetType,jdbcType=DECIMAL},
+      LAC = #{lac,jdbcType=DECIMAL},
+      CID = #{cid,jdbcType=DECIMAL},
+      BSIC = #{bsic,jdbcType=DECIMAL},
+      BCCH = #{bcch,jdbcType=DECIMAL},
+      RXLEV_SUB = #{rxlevSub,jdbcType=DECIMAL},
+      RXQUAL_SUB = #{rxqualSub,jdbcType=DECIMAL},
+      C_I = #{cI,jdbcType=DECIMAL},
+      TXPOWER = #{txpower,jdbcType=DECIMAL},
+      MOS = #{mos,jdbcType=DECIMAL},
+      BSIC_1 = #{bsic1,jdbcType=DECIMAL},
+      BCCH_1 = #{bcch1,jdbcType=DECIMAL},
+      RXLEV_1 = #{rxlev1,jdbcType=DECIMAL},
+      BSIC_2 = #{bsic2,jdbcType=DECIMAL},
+      BCCH_2 = #{bcch2,jdbcType=DECIMAL},
+      RXLEV_2 = #{rxlev2,jdbcType=DECIMAL},
+      BSIC_3 = #{bsic3,jdbcType=DECIMAL},
+      BCCH_3 = #{bcch3,jdbcType=DECIMAL},
+      RXLEV_3 = #{rxlev3,jdbcType=DECIMAL},
+      BSIC_4 = #{bsic4,jdbcType=DECIMAL},
+      BCCH_4 = #{bcch4,jdbcType=DECIMAL},
+      RXLEV_4 = #{rxlev4,jdbcType=DECIMAL},
+      BSIC_5 = #{bsic5,jdbcType=DECIMAL},
+      BCCH_5 = #{bcch5,jdbcType=DECIMAL},
+      RXLEV_5 = #{rxlev5,jdbcType=DECIMAL},
+      BSIC_6 = #{bsic6,jdbcType=DECIMAL},
+      BCCH_6 = #{bcch6,jdbcType=DECIMAL},
+      RXLEV_6 = #{rxlev6,jdbcType=DECIMAL},
+      GPS_TYPE = #{gpsType,jdbcType=DECIMAL},
+      TA = #{ta,jdbcType=DECIMAL},
+      RXLEV_FULL = #{rxlevFull,jdbcType=DECIMAL},
+      RXQUAL_FULL = #{rxqualFull,jdbcType=DECIMAL},
+      C1 = #{c1,jdbcType=DECIMAL},
+      C2 = #{c2,jdbcType=DECIMAL},
+      C1_1 = #{c11,jdbcType=DECIMAL},
+      C2_1 = #{c21,jdbcType=DECIMAL},
+      C1_2 = #{c12,jdbcType=DECIMAL},
+      C2_2 = #{c22,jdbcType=DECIMAL},
+      C1_3 = #{c13,jdbcType=DECIMAL},
+      C2_3 = #{c23,jdbcType=DECIMAL},
+      C1_4 = #{c14,jdbcType=DECIMAL},
+      C2_4 = #{c24,jdbcType=DECIMAL},
+      C1_5 = #{c15,jdbcType=DECIMAL},
+      C2_5 = #{c25,jdbcType=DECIMAL},
+      C1_6 = #{c16,jdbcType=DECIMAL},
+      C2_6 = #{c26,jdbcType=DECIMAL}
+    where GSMID = #{gsmid,jdbcType=VARCHAR}
+  </update>
+  <delete id="delGsmByFlowid" parameterType="String">
+  	delete from t_log_submanual_gsm where flowid = #{flowid,jdbcType=VARCHAR}
+  </delete>
+</mapper>

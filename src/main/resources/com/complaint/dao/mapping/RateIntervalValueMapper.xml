@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.RateIntervalValueDao">
+	<select id="getAllRateValue" resultType="com.complaint.model.RateValue">
+		select v.id,
+		       v.rank_code,
+		       v.rank_arithmetic,
+		       v.rank_value,
+		       v.rank_ratio,
+		       v.rank_avg,
+		       c.rank_color
+		  from t_rate_value v
+		  join (select * from t_rate_color where type = 1) c
+		    on v.rank_code = c.rank_code
+		    order by v.id,v.rank_code
+	</select>
+	<select id="getAllRatekpi" resultType="com.complaint.model.Ratekpi">
+		select id,kpi_name,kpi_code,net_type,scene from t_rate_kpi
+	</select>
+	<select id="update" parameterType="com.complaint.model.RateValue">
+		update t_rate_value
+		<set>
+			<if test="rank_arithmetic!=null">
+				rank_arithmetic =#{rank_arithmetic} ,
+			</if>
+			<if test="rank_value!=null">
+				 rank_value =#{rank_value} ,
+			</if>
+			<if test="rank_ratio!=null">
+				 rank_ratio =#{rank_ratio},
+			</if>
+			<if test="rank_avg!=null">
+				 rank_avg =#{rank_avg},
+			</if>
+		</set>
+		 where 
+		 	id = #{id} 
+		 and 
+		 	rank_code = #{rank_code}
+	</select>
+</mapper>

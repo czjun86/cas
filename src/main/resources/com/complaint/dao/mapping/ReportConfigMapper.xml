@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.ReportConfigDao">
+	<!-- 分公司与区域映射 -->
+	 <resultMap id="groupMap" type="com.complaint.model.Group">
+        <id property="groupid" column="groupid" />
+        <id property="groupname" column="groupname" />
+        <collection property="list" ofType="com.complaint.model.AreaBean" column="groupid" resultMap="areaMap"/>
+     </resultMap>
+     <resultMap id="areaMap" type="com.complaint.model.AreaBean">
+     		 <result property="areaid" column="areaid" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="areaname" column="areaname" jdbcType="VARCHAR" javaType="String" />
+     		 <result property="groupid" column="groupid" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="id" column="id" jdbcType="NUMERIC" javaType="Integer" />
+     </resultMap>
+     <!-- 分公司与步长映射关系 -->
+     <resultMap id="groupQualMap" type="com.complaint.model.Group">
+     	<id property="groupid" column="groupid" />
+        <id property="groupname" column="groupname" />
+        <collection property="quals" ofType="com.complaint.model.QualityConfig" column="groupid" resultMap="qualMap"/>
+     </resultMap>
+     <resultMap id="qualMap" type="com.complaint.model.QualityConfig">
+        <result property="id" column="id" jdbcType="NUMERIC" javaType="Integer" />
+        <result property="kpi" column="kpi" jdbcType="NUMERIC" javaType="Integer" />
+   		<result property="svgstep" column="svg_step" jdbcType="NUMERIC" javaType="Double" />
+   		<result property="annularstep" column="annular_step" jdbcType="NUMERIC" javaType="Double" />
+     </resultMap>
+   <select id="queryGroupSeq" resultType="java.lang.Integer">
+   		select seq_t_group.nextval from dual
+   </select>  
+   <insert id="insertGroup"  parameterType="map" >
+   		insert into t_group(groupid,groupname) values(#{groupid,jdbcType=NUMERIC},#{groupname,jdbcType=VARCHAR})
+   </insert>  
+   <delete id="deleteGroup"  parameterType="java.lang.Integer">
+   		delete from t_group where groupid = #{groupid}
+   </delete>
+   <update id="updateGroup" parameterType="map">
+   		update t_group set groupname=#{groupname,jdbcType=VARCHAR} where groupid = #{groupid}
+   </update>
+  <!-- 根据分公司查询区域信息 -->
+  <select id="queryGroupById" parameterType="java.lang.Integer" resultMap="groupMap">
+  	select a.groupid, a.groupname, c.areaid, c.areaname
+	  from t_group a
+	  left join t_area_group_relation b
+	    on a.groupid = b.groupid
+	  left join t_area_code c
+	    on b.areaid = c.areaid
+	 where 1 = 1 
+       <if test="groupid != null and groupid != '' ">
+       and a.groupid = #{groupid}
+       </if>
+       order by a.groupid asc
+  </select>
+  <select id="queryAreaByGroupId" parameterType="java.lang.Integer" resultType="com.complaint.model.AreaBean">
+  	select a.areaid, b.areaname
+	  from t_area_group_relation a, t_area_code b
+	 where a.areaid=b.areaid 
+	   and a.groupid = #{groupid}
+  </select>
+  <!-- 分公司分页查询 -->
+  <select id="queryGrouplist" parameterType="map" resultType="com.complaint.model.Group">
+	select groupid, groupname,areas from (
+		select a.groupid, a.groupname,areas,rownum rn  from (
+			select t.groupid,groupname,
+		       substr(sys_connect_by_path(t.areaname, ' | '), 3) areas
+		  from (select groupid,
+		               groupname,
+		               areaid,
+		               areaname,
+		               row_number() over(partition by groupid order by groupname) rn
+		          from (select c.groupid, c.groupname, b.areaid, b.areaname
+		                  from (select a.groupid, a.groupname, b.areaid
+		                          from t_group a,t_area_group_relation b
+		                            where a.groupid = b.groupid(+)) c,
+		                       t_area_code b
+		                 where c.areaid = b.areaid(+))) t
+		 where connect_by_isleaf = 1
+		 start with rn = 1
+		connect by rn = prior rn + 1
+		       and groupid = prior groupid
+		       order by groupid asc) a 
+		where rownum &lt;= #{mbound} ) 
+	where rn &gt; #{lbound}
+  </select>
+  <select id="countGroups" resultType="java.lang.Integer">
+  		select count(1)
+	  	from t_group a
+  </select>
+  <select id="queryNotInGroupArea"  resultType="com.complaint.model.AreaBean">
+  	select areaid, areaname
+	  from t_area_code a
+	 where not exists (select 1 from t_area_group_relation b where a.areaid = b.areaid )
+	   and a.areaid not in (863450,863451,863452)
+  </select>
+  <select id="countGroupname"  parameterType="java.lang.String" resultType="java.lang.Integer">
+  		select count(1) from  t_group where groupname = #{groupname}
+  </select>
+  <!-- 删除分公司关系 -->
+  <delete id="deleteGroupRelation" parameterType="java.lang.Integer">
+  	delete from t_area_group_relation where groupid = #{groupid}
+  </delete>
+  <!-- 添加分公司与区域关系 -->
+  <insert id="insertGroupRelation" parameterType="map">
+  	insert into t_area_group_relation(groupid,areaid) values(#{groupid,jdbcType=NUMERIC},#{areaid,jdbcType=NUMERIC})
+  </insert>
+
+  <select id="queryAreaGroup" resultType="com.complaint.model.AreaBean">
+  	select a.groupid groupid, a.groupname groupname, c.areaid areaid, c.areaname areaname
+    	from t_group a, t_area_group b, t_area_code c
+   			where a.groupid = b.groupid
+		       and b.areaid = c.areaid 
+		       and c.areaid not in (863450,863451,863452)
+		       order by a.groupid asc
+  </select>
+  
+  <!-- 查询分公司的步长信息 -->
+  <select id="queryGroupAndQualityConfigRelation" resultMap="groupQualMap">
+  		select a.groupid,
+		       a.groupname,
+		       b.id,
+		       b.svg_step,
+		       b.annular_step,
+		       b.kpi
+		  from t_group a
+		  left join t_quality_step_config b
+		    on a.groupid = b.groupid
+		 order by a.groupid asc,b.kpi asc
+  </select>
+  <select id="queryQualityBasicConfig" resultType="com.complaint.model.QualityBasicConfig"> 
+  		select a.id,a.explanation,a.val from  t_quality_report_config a
+  </select>
+  <insert id="insertStep" parameterType="map">
+		  insert into t_quality_step_config
+	       (id, svg_step, annular_step, kpi, groupid)
+	     values
+	       (seq_t_quality_step_config.nextval,
+	        #{svg_step,jdbcType=NUMERIC},
+	        #{annular_step,jdbcType=NUMERIC},
+	        #{kpi,jdbcType=NUMERIC},
+	        #{groupid,jdbcType=NUMERIC})
+  </insert>
+  <update id="updateStep"  parameterType="map">
+  		update t_quality_step_config set svg_step = #{svg_step,jdbcType=NUMERIC}, annular_step = #{annular_step,jdbcType=NUMERIC} where id = #{id}
+  </update>
+  <delete id="deleteStepByGroupid" parameterType="java.lang.Integer">
+  		delete from t_quality_step_config where groupid = #{groupid}
+  </delete> 
+  <update id="updateBasics" parameterType="map">
+  		update t_quality_report_config set val = #{val,jdbcType=VARCHAR} where id = #{id}
+  </update>
+</mapper>

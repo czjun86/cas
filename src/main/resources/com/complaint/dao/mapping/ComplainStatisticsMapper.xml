@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 投诉率与投诉统计 -->
+<mapper namespace="com.complaint.dao.ComplainStatisticsDao">
+	<resultMap id="ComplainMap" type="com.complaint.model.ComplainProbability">
+		<result property="areaname" column="areaname"/>
+		<result property="groupname" column="groupname"/>
+		<result property="gsm_data_complaint" column="g2s"/>
+		<result property="gsm_speech_complaint" column="g2y"/>
+		<result property="wcdma_data_complaint" column="g3s"/>
+		<result property="wcdma_speech_complaint" column="g3y"/>
+		<result property="gsm_inside_uncovered" column="g2inside"/>
+		<result property="gsm_outside_uncovered" column="g2outside"/>
+		<result property="wcdma_inside_uncovered" column="g3inside"/>
+		<result property="wcdma_outside_uncovered" column="g3outside"/>
+	</resultMap>
+	<select id="getComplain" statementType="CALLABLE" parameterType="map">    
+		<![CDATA[
+			call pro_cas_complain(#{depts,mode=OUT,jdbcType=CURSOR,javaType=java.sql.ResultSet,resultMap=ComplainMap},
+			#{area_id,mode=IN,jdbcType=VARCHAR}, 
+			#{s_time,mode=IN,jdbcType=VARCHAR},
+			#{e_time,mode=IN,jdbcType=VARCHAR},
+			#{m_time,mode=IN,jdbcType=VARCHAR},
+			#{t_type,mode=IN,jdbcType=VARCHAR})
+		]]>    
+	</select>
+</mapper>

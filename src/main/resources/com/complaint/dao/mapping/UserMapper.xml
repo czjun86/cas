@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.UserDao">
+	<insert id="insertUser" parameterType="com.complaint.model.User">
+		insert into t_user(userid,username,name,password,email,phone,roleid,islock) values(Seq_t_User.Nextval,#{userName,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},
+			#{roleid,jdbcType=NUMERIC},#{islock,jdbcType=NUMERIC})
+	</insert>
+	<update id="updateUser" parameterType="com.complaint.model.User">
+		update t_user set name=#{name,jdbcType=VARCHAR},email = #{email,jdbcType=VARCHAR} ,
+		phone = #{phone,jdbcType=VARCHAR} ,roleid = #{roleid,jdbcType=NUMERIC} ,islock = #{islock,jdbcType=NUMERIC}
+		where userid= #{userid,jdbcType=NUMERIC}
+	</update>
+	<update id="updateUserInfo" parameterType="com.complaint.model.User">
+		update t_user set name=#{name,jdbcType=VARCHAR},email = #{email,jdbcType=VARCHAR} ,
+		phone = #{phone,jdbcType=VARCHAR} where userid= #{userid,jdbcType=NUMERIC}
+	</update>
+	<update id="updateUserPsw" parameterType="map">
+			update t_user  t set t.password = #{password} where t.userid = #{id}
+	</update>
+	<select id="queryUserList" parameterType="map" resultType="com.complaint.model.User">
+		select * from (
+			select a.*,rownum rn  from (
+				select u.userid,u.username,u.name,u.email,u.phone,u.roleid,u.islock,r.rolename 
+				from t_user u,t_role r where u.roleid = r.roleid 
+				<if test="name != null and name != '' ">		
+					and u.name  like   '%' ||  #{name} || '%' 
+					<!-- oracle '%' || #keywords# || '%' like CONCAT('%', #{name}, '%') -->
+				</if>
+				order by u.userid desc ) a 
+			where rownum &lt;= #{mbound} ) 
+		where rn &gt; #{lbound}
+	</select>
+	<select id="queryUserListCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(0)
+		from t_user u,t_role r where u.roleid = r.roleid 
+		<if test="name != null and name != '' ">		
+			and u.name  like   '%' ||  #{name} || '%' 
+		</if>
+	</select>
+	<delete id="deleteUser" parameterType="java.lang.Integer">
+		 delete from t_user t where t.userid = #{id} 
+	</delete>
+	
+	<select id="queryUserByUsername" parameterType="java.lang.String" resultType="com.complaint.model.User">
+		select u.userid,u.username,u.password,u.name,u.email,u.phone,u.roleid,u.islock,r.rolename 
+		from t_user u,t_role r where u.roleid = r.roleid and u.username = #{username,jdbcType=VARCHAR}
+	</select>
+	<select id="queryUsersByUserName" parameterType="java.lang.String" resultType="com.complaint.model.User">
+		select u.userid,u.username,u.password,u.name,u.email,u.phone,u.roleid,u.islock
+		from t_user u where u.username = #{username,jdbcType=VARCHAR}
+	</select>
+	<select id="queryUserById" parameterType="java.lang.Integer" resultType="com.complaint.model.User">
+		select u.userid,u.username,u.name,u.email,u.phone,u.roleid,u.islock,r.rolename 
+		from t_user u,t_role r where u.roleid = r.roleid and u.userid=#{id}
+	</select>
+	
+	<select id="getAreas" parameterType="com.complaint.model.User" resultType="java.lang.String">
+		select substr(sys_connect_by_path(areaid, ','), 2) areas
+			  from (select userid,
+			               areaid,
+			               row_number() over(partition by userid order by areaid) rn
+			          from t_user_area where userid = #{userid})
+			          where connect_by_isleaf = 1
+			         start with rn = 1
+			        connect by rn = prior rn + 1
+	</select>
+	<delete id="deleteAreas" parameterType="com.complaint.model.User" >
+		delete t_user_area where userid = #{userid}
+	</delete>
+	<insert id="insertByBatch" parameterType="map">
+		insert into t_user_area(userid ,areaid) values(#{userid},#{areaid})
+	</insert>
+</mapper>

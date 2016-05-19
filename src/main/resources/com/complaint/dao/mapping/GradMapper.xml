@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <!-- 轨迹相关mapper -->
+<mapper namespace="com.complaint.dao.GradMapper">
+
+  
+  
+
+   
+   <!-- 根据流水号区域查询3G指标评测百分比 -->
+   <select id="showGradBySingleWcdma" resultType="com.complaint.model.GradeBean" parameterType="map">
+ select flowid,
+   inside,
+   ftp_avg_speed,
+           case when rscp>0 then 1 else 0 end rscp,
+           case when rscp=0 then 0 else round(rscp_1/rscp,4)*100 end rscp_1,
+           case when rscp=0 then 0 else round(rscp_3/rscp,4)*100 end rscp_3,
+           case when rscp=0 then 0 else round(rscp_4/rscp,4)*100 end rscp_4,
+           case when ec_no>0 then 1 else 0 end ec_no,
+           case when ec_no=0 then 0 else round(ec_no_1/ec_no,4)*100 end ec_no_1,
+           case when ec_no=0 then 0 else round(ec_no_3/ec_no,4)*100 end ec_no_3,
+           case when ec_no=0 then 0 else round(ec_no_4/ec_no,4)*100 end ec_no_4,      
+           case when txpower>0 then 1 else 0 end txpower,
+           case when txpower=0 then 0 else round(txpower_1/txpower,4)*100 end txpower_1,
+           case when txpower=0 then 0 else round(txpower_3/txpower,4)*100 end txpower_3,
+           case when txpower=0 then 0 else round(txpower_4/txpower,4)*100 end txpower_4,
+           case when ftp_speed_up>0 then 1 else 0 end ftp_speed_up,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_1/ftp_speed_up,4)*100 end ftp_speed_up_1,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_3/ftp_speed_up,4)*100 end ftp_speed_up_3,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_4/ftp_speed_up,4)*100 end ftp_speed_up_4,
+           case when ftp_speed_down>0 then 1 else 0 end ftp_speed_down,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_1/ftp_speed_down,4)*100 end ftp_speed_down_1,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_3/ftp_speed_down,4)*100 end ftp_speed_down_3,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_4/ftp_speed_down,4)*100 end ftp_speed_down_4
+       
+    from 
+    (
+    select w.flowid,
+    w.inside,
+    t.ftp_avg_speed,
+           <!--rscp  -->
+           sum(case when w.rscp!=-9999 then 1 else 0 end) rscp,
+           sum(case when w.rscp!=-9999 and (w.rscp! =-9998 and 
+            <if test="rscp_s_4==1">
+             w.rscp>#{rscp_v_4} 
+           </if>
+           <if test="rscp_s_4==2">
+             w.rscp>=#{rscp_v_4} 
+           </if>
+           <if test="rscp_s_4==3">
+             #{rscp_v_4}>w.rscp
+           </if>
+           <if test="rscp_s_4==4">
+           #{rscp_v_4}>=w.rscp
+           </if>
+
+           ) then 1 else 0 end) rscp_1,
+           
+           sum(case when rscp!=-9999 and  w.rscp! =-9998 and 
+             <if test="rscp_s_2==1">
+             rscp>#{rscp_v_2} 
+           </if>
+           <if test="rscp_s_2==2">
+             rscp>=#{rscp_v_2} 
+           </if>
+           <if test="rscp_s_2==3">
+             #{rscp_v_2}>rscp
+           </if>
+           <if test="rscp_s_2==4">
+           #{rscp_v_2}>=rscp
+           </if>
+    
+           then 1 else 0 end) rscp_3,
+           sum(case when w.rscp!=-9999 and  w.rscp! =-9998 and 
+              <if test="rscp_s_1==1">
+             w.rscp>#{rscp_v_1} 
+           </if>
+           <if test="rscp_s_1==2">
+             w.rscp>=#{rscp_v_1} 
+           </if>
+           <if test="rscp_s_1==3">
+             #{rscp_v_1}>w.rscp
+           </if>
+           <if test="rscp_s_1==4">
+           #{rscp_v_1}>=w.rscp
+           </if>
+   
+           then 1 else 0 end) rscp_4,
+           
+           <!-- ec_no -->
+           sum(case when ec_no!=-9999 then 1 else 0 end) ec_no,
+           sum(case when w.ec_no!=-9999 and (w.ec_no!=-9998 and 
+           
+             <if test="ecno_s_4==1">
+             w.ec_no>#{ecno_v_4} 
+           </if>
+           <if test="ecno_s_4==2">
+             w.ec_no>=#{ecno_v_4} 
+           </if>
+           <if test="ecno_s_4==3">
+             #{ecno_v_4}>w.ec_no
+           </if>
+           <if test="ecno_s_4==4">
+           #{ecno_v_4}>=w.ec_no
+           </if>
+           
+           ) then 1 else 0 end) ec_no_1,
+         
+           sum(case when w.ec_no!=-9999 and w.ec_no!=-9998 and 
+           <if test="ecno_s_2==1">
+             w.ec_no>#{ecno_v_2} 
+           </if>
+           <if test="ecno_s_2==2">
+             w.ec_no>=#{ecno_v_2} 
+           </if>
+           <if test="ecno_s_2==3">
+             #{ecno_v_2}>w.ec_no
+           </if>
+           <if test="ecno_s_2==4">
+           #{ecno_v_2}>=w.ec_no
+           </if>
+           
+    
+           then 1 else 0 end) ec_no_3,
+           sum(case when w.ec_no!=-9999 and w.ec_no!=-9998 and 
+           <if test="ecno_s_1==1">
+             w.ec_no>#{ecno_v_1} 
+           </if>
+           <if test="ecno_s_1==2">
+             w.ec_no>=#{ecno_v_1} 
+           </if>
+           <if test="ecno_s_1==3">
+             #{ecno_v_1}>w.ec_no
+           </if>
+           <if test="ecno_s_1==4">
+           #{ecno_v_1}>=w.ec_no
+           </if>
+       
+           then 1 else 0 end) ec_no_4,
+           
+           <!-- txpower -->
+           sum(case when w.txpower!=-9999 then 1 else 0 end) txpower,
+           
+           sum(case when w.txpower!=-9999 and w.txpower!=-9998 and 
+           <if test="tx_s_1==1">
+             w.txpower>#{tx_v_1} 
+           </if>
+           <if test="tx_s_1==2">
+             w.txpower>=#{tx_v_1} 
+           </if>
+           <if test="tx_s_1==3">
+             #{tx_v_1}>w.txpower
+           </if>
+           <if test="tx_s_1==4">
+           #{tx_v_1}>=w.txpower
+           </if>
+           
+            then 1 else 0 end) txpower_4,
+           sum(case when w.txpower!=-9999 and w.txpower!=-9998 and
+            <if test="tx_s_2==1">
+             w.txpower>#{tx_v_2} 
+           </if>
+           <if test="tx_s_2==2">
+             w.txpower>=#{tx_v_2} 
+           </if>
+           <if test="tx_s_2==3">
+             #{tx_v_2}>w.txpower
+           </if>
+           <if test="tx_s_2==4">
+           #{tx_v_2}>=w.txpower
+           </if>
+           
+            then 1 else 0 end) txpower_3,
+          
+           sum(case when w.txpower!=-9999 and w.txpower!=-9998 and 
+         <if test="tx_s_4==1">
+             w.txpower>#{tx_v_4} 
+           </if>
+           <if test="tx_s_4==2">
+             w.txpower>=#{tx_v_4} 
+           </if>
+           <if test="tx_s_4==3">
+             #{tx_v_4}>w.txpower
+           </if>
+           <if test="tx_s_4==4">
+           #{tx_v_4}>=w.txpower
+           </if>
+           then 1 else 0 end) txpower_1,
+          
+           <!-- FTP上行 -->
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 then 1 else 0 end) ftp_speed_up,
+           
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and (w.ftp_speed!=-9998 and (
+            <if test="fu_s_1==1">
+             w.ftp_speed>#{fu_v_1} 
+           </if>
+           <if test="fu_s_1==2">
+             w.ftp_speed>=#{fu_v_1} 
+           </if>
+           <if test="fu_s_1==3">
+             #{fu_v_1}>w.ftp_speed
+           </if>
+           <if test="fu_s_1==4">
+           #{fu_v_1}>=w.ftp_speed
+           </if>
+           
+       
+           
+           )
+           
+           ) then 1 else 0 end) ftp_speed_up_4,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and w.ftp_speed!=-9998 and
+              <if test="fu_s_2==1">
+             w.ftp_speed>#{fu_v_2} 
+           </if>
+           <if test="fu_s_2==2">
+             w.ftp_speed>=#{fu_v_2} 
+           </if>
+           <if test="fu_s_2==3">
+             #{fu_v_2}>w.ftp_speed
+           </if>
+           <if test="fu_s_2==4">
+           #{fu_v_2}>=w.ftp_speed
+           </if>
+           
+           
+           
+           
+           then 1 else 0 end) ftp_speed_up_3,
+          
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and  w.ftp_speed!=-9998 and
+           
+            <if test="fu_s_4==1">
+             w.ftp_speed>#{fu_v_2} 
+           </if>
+           <if test="fu_s_4==2">
+             w.ftp_speed>=#{fu_v_4} 
+           </if>
+           <if test="fu_s_4==3">
+             #{fu_v_4}>w.ftp_speed
+           </if>
+           <if test="fu_s_4==4">
+           #{fu_v_4}>=w.ftp_speed
+           </if>
+           
+        
+           
+           then 1 else 0 end) ftp_speed_up_1,
+           <!-- FTP下行 -->
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 then 1 else 0 end) ftp_speed_down,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and (w.ftp_speed!=-9998 and  
+           (
+            <if test="fd_s_1==1">
+             w.ftp_speed>#{fd_v_1} 
+           </if>
+           <if test="fd_s_1==2">
+             w.ftp_speed>=#{fd_v_1} 
+           </if>
+           <if test="fd_s_1==3">
+             #{fd_v_1}>w.ftp_speed
+           </if>
+           <if test="fd_s_1==4">
+           #{fd_v_1}>=w.ftp_speed
+           </if>
+           
+          
+           
+           )
+           )  then 1 else 0 end) ftp_speed_down_4,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed!=-9998 and
+            <if test="fd_s_2==1">
+             w.ftp_speed>#{fd_v_2} 
+           </if>
+           <if test="fd_s_2==2">
+             w.ftp_speed>=#{fd_v_2} 
+           </if>
+           <if test="fd_s_2==3">
+             #{fd_v_2}>w.ftp_speed
+           </if>
+           <if test="fd_s_2==4">
+           #{fd_v_2}>=w.ftp_speed
+           </if>
+           
+          
+           
+           
+           then 1 else 0 end ) ftp_speed_down_3,
+        
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed!=-9998 and
+              <if test="fd_s_4==1">
+             w.ftp_speed>#{fd_v_4} 
+           </if>
+           <if test="fd_s_4==2">
+             w.ftp_speed>=#{fd_v_4} 
+           </if>
+           <if test="fd_s_4==3">
+             #{fd_v_4}>w.ftp_speed
+           </if>
+           <if test="fd_s_4==4">
+           #{fd_v_4}>=w.ftp_speed
+           </if>
+           
+           
+           then 1 else 0 end ) ftp_speed_down_1
+          
+    from t_log_submanual_wcdma w ,t_log_manual t
+    where w.flowid=t.flowid
+    
+    and instr(',' ||#{flowid}|| ',', ',' || w.flowid || ',') > 0
+    <if test="areaid != null and areaid != '' ">	
+	    and w.area_id=#{areaid}
+	</if>
+    group by w.flowid,w.inside,t.ftp_avg_speed
+    ) a
+   </select>
+   
+     <!-- 根据流水号区域查询2G指标评测百分比 -->
+   <select id="showGradBySingleGsm" resultType="com.complaint.model.GradeBean" parameterType="map">
+
+ select 
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_1/rxlev_Sub,4)*100 end rxlev_Sub_1,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_3/rxlev_Sub,4)*100 end rxlev_Sub_3,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_4/rxlev_Sub,4)*100 end rxlev_Sub_4,
+          
+
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_1/rxqual_Sub,4)*100 end rxqual_Sub_1,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_3/rxqual_Sub,4)*100 end rxqual_Sub_3,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_4/rxqual_Sub,4)*100 end rxqual_Sub_4          
+    from 
+    (
+    select flowid,
+    inside,
+          sum(case when rxlev_Full!=-9999 then 1 else 0 end) rxlev_Sub,
+           <!-- rxlev_Sub -->
+           sum(case when rxlev_Full!=-9999 and (rxlev_Full!=-9998 and 
+           <if test="rxl_s_4==1">
+             rxlev_Full>#{rxl_v_4} 
+           </if>
+           <if test="rxl_s_4==2">
+             rxlev_Full>=#{rxl_v_4} 
+           </if>
+           <if test="rxl_s_4==3">
+             #{rxl_v_4}>rxlev_Full
+           </if>
+           <if test="rxl_s_4==4">
+           #{rxl_v_4}>=rxlev_Full
+           </if>
+           ) then 1 else 0 end) rxlev_Sub_1,
+           
+           sum(case when rxlev_Full!=-9999 and rxlev_Full!=-9998 and 
+           <if test="rxl_s_2==1">
+             rxlev_Full>#{rxl_v_2} 
+           </if>
+           <if test="rxl_s_2==2">
+             rxlev_Full>=#{rxl_v_2} 
+           </if>
+           <if test="rxl_s_2==3">
+             #{rxl_v_2}>rxlev_Full
+           </if>
+           <if test="rxl_s_2==4">
+           #{rxl_v_2}>=rxlev_Full
+           </if>
+           
+            then 1 else 0 end) rxlev_Sub_3,
+           sum(case when rxlev_Full!=-9999 and rxlev_Full!=-9998 and 
+         <if test="rxl_s_1==1">
+             rxlev_Full>#{rxl_v_1} 
+           </if>
+           <if test="rxl_s_1==2">
+             rxlev_Full>=#{rxl_v_1} 
+           </if>
+           <if test="rxl_s_1==3">
+             #{rxl_v_1}>rxlev_Full
+           </if>
+           <if test="rxl_s_1==4">
+           #{rxl_v_1}>=rxlev_Full
+           </if>
+            then 1 else 0 end) rxlev_Sub_4,
+           <!-- rxqual_Sub -->
+           sum(case when rxqual_Sub!=-9999 then 1 else 0 end) rxqual_Sub,
+           
+           sum(case when rxqual_Sub!=-9999 and rxqual_Sub!=-9998 and 
+         <if test="rxq_s_1==1">
+             rxqual_Sub>#{rxq_v_1} 
+           </if>
+           <if test="rxq_s_1==2">
+             rxqual_Sub>=#{rxq_v_1} 
+           </if>
+           <if test="rxq_s_1==3">
+             #{rxq_v_1}>rxqual_Sub
+           </if>
+           <if test="rxq_s_1==4">
+           #{rxq_v_1}>=rxqual_Sub
+           </if>
+
+          then 1 else 0 end) rxqual_Sub_4,
+           sum(case when rxqual_Sub!=-9999 and rxqual_Sub!=-9998 and 
+            <if test="rxq_s_2==1">
+             rxqual_Sub>#{rxq_v_2} 
+           </if>
+           <if test="rxq_s_2==2">
+             rxqual_Sub>=#{rxq_v_2} 
+           </if>
+           <if test="rxq_s_2==3">
+             #{rxq_v_2}>rxqual_Sub
+           </if>
+           <if test="rxq_s_2==4">
+           #{rxq_v_2}>=rxqual_Sub
+           </if>
+           then 1 else 0 end) rxqual_Sub_3,
+           sum(case when rxqual_Sub!=-9999 and rxqual_Sub!=-9998 and 
+           
+           (rxqual_Sub=-9998 or 
+              <if test="rxq_s_4==1">
+             rxqual_Sub>#{rxq_v_4} 
+           </if>
+           <if test="rxq_s_4==2">
+             rxqual_Sub>=#{rxq_v_4} 
+           </if>
+           <if test="rxq_s_4==3">
+             #{rxq_v_4}>rxqual_Sub
+           </if>
+           <if test="rxq_s_4==4">
+           #{rxq_v_4}>=rxqual_Sub
+           </if>
+           ) 
+           
+           then 1 else 0 end) rxqual_Sub_1
+      
+    from t_log_submanual_gsm
+    where instr(',' ||#{flowid}|| ',', ',' || flowid || ',') > 0
+    <if test="areaid != null and areaid != '' ">	
+	    and area_id=#{areaid}
+	</if>
+    group by flowid,inside
+    ) a
+   </select>
+   <!-- 查询等级阈值 -->
+<select id="showGradKpi" resultType="com.complaint.model.Rate" parameterType="map">
+  select v.rank_arithmetic,v.rank_value,k.kpi_code,v.rank_code,v.rank_ratio,v.rank_avg 
+  from t_rate_value v,t_rate_kpi k where v.id=k.id and k.scene=decode((select t.inside from t_log_manual t where t.flowid=#{flowid} and t.area_id=#{areaid}) ,0,0,1,1)
+</select>
+<!-- 查询等级颜色 -->
+<select id="showGradColor" resultType="com.complaint.model.RateColor">
+  select  t.rank_color from t_rate_color t where t.scene=0 and t.type=1 order by t.rank_code asc
+</select>
+
+</mapper>

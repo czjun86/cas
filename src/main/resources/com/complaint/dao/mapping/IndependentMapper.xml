@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.IndependentDao">
+  <sql id="Base_Column_List">
+    t.id,t.serialno, t.create_date,t.test_number as num, t.areaid,t.break_flag as breakflag,t.test_address,t.is_verify isverify
+  </sql>
+  
+    <!-- 工单表WHERE条件 -->
+  <sql id="where_sql"> 
+       <!-- 时间 -->
+        <if test="datatype!=null and datatype==1">
+				<if test="startTime != null">
+					and t.create_date &gt;= to_date(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endTime != null">
+					and t.create_date &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<!-- 地址 -->
+				<if test="testAddr!=null and testAddr!=''">
+				    and t.test_address like '%' ||  #{testAddr} || '%'
+				</if>
+				
+				<!-- 测试人 -->
+				<if test="testphone!=null and testphone!=''">
+					and c.test_phone like '%' ||  #{testphone} || '%'
+				</if>
+				<!-- 环境 -->
+				<if test="inside!=null and inside!=-1">
+	              	and c.inside=#{inside}
+	            </if>
+				<!-- 测试网络 -->
+			    <if test="testnet!='-1' and testnet!=null">
+			     	and instr(','||#{testnet}||',',','||c.net_type||',')>0 
+			    </if>
+			    <!-- 业务类型 -->
+			    <if test="testtype!=null and bustype!=-1">
+				    and(
+				    <if test="tt!=null">
+				      instr(','||#{tt}||',',','||c.test_type||',')>0 
+				    </if>
+				     <if test="yy!=null">
+				       or instr(','||#{yy}||',',','||c.call_type||',')>0 
+				     </if>
+				      <if test="ff!=null">
+				      or  instr(','||#{ff}||',',','||c.ftp_type||',')>0 
+				     </if>
+				     )
+			    </if>
+				
+			    <!-- 场景 -->
+			    <if test="senceids!=null and stype!=-1">
+			    	and instr(','||#{senceids}||',',','||c.sceneid||',')>0 
+			    </if>
+		</if>
+  </sql>
+      <!-- 结果集WHERE条件 -->
+  <sql id="where_sql_test"> 
+       <!-- 时间 -->
+		<if test="datatype!=null and datatype==2">
+			<if test="testphone!=null and testphone!=''">
+				and m.test_phone like '%' ||  #{testphone} || '%'
+			</if>
+			<if test="startTime != null">
+				and m.test_time &gt;= to_date(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endTime != null">
+				and m.test_time &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<!-- 地址 -->
+				<if test="testAddr!=null and testAddr!=''">
+				    and m.test_address like '%' ||  #{testAddr} || '%'
+				</if>
+				<!-- 环境 -->
+				<if test="inside!=null and inside!=-1">
+	              	and m.inside=#{inside}
+	            </if>
+				<!-- 测试网络 -->
+			    <if test="testnet!='-1' and testnet!=null">
+			     	and instr(','||#{testnet}||',',','||m.net_type||',')>0 
+			    </if>
+			    <!-- 业务类型 -->
+			    <if test="testtype!=null and bustype!=-1">
+				    and(
+				    <if test="tt!=null">
+				      instr(','||#{tt}||',',','||m.test_type||',')>0 
+				    </if>
+				     <if test="yy!=null">
+				       or instr(','||#{yy}||',',','||m.call_type||',')>0 
+				     </if>
+				      <if test="ff!=null">
+				      or  instr(','||#{ff}||',',','||m.ftp_type||',')>0 
+				     </if>
+				     )
+			    </if>
+				
+			    <!-- 场景 -->
+			    <if test="senceids!=null and stype!=-1">
+			    	and instr(','||#{senceids}||',',','||m.sceneid||',')>0 
+			    </if>
+			
+		</if>
+  </sql>
+  <select id="queryWorkOrderList" parameterType="map" resultType="com.complaint.model.TestWorkOrder">
+   select * from (
+		select a.*,rownum rn  from (
+			select 
+			<include refid="Base_Column_List" /> , c.test_time testtime,c.test_phone testphone,d.areaname
+			 from (select  e.id id,
+					       e.serialno serialno,
+					       e.areaid areaid,
+					       e.break_flag break_flag,
+					       e.test_address test_address,
+					       e.create_date create_date,
+					       e.is_verify is_verify,
+					       nvl(count(a.flowid), 0) test_number
+					  from t_own_etl e, t_log_manual_own a
+					 where a.id(+) = e.id
+					   and e.areaid in (select areaid from t_user_area where
+					   1=1 
+					   <if test="userid!=null">
+					   and userid = #{userid}
+					   </if>)
+					 group by e.id,
+					          e.serialno,
+					          e.areaid,
+					          e.break_flag,
+					          e.test_address,
+					          e.create_date,
+					          e.is_verify) t,
+			  	(select *
+                              from (select m.*,
+                                           row_number() over(partition by m.id,m.serialno order by m.test_time desc) rw
+                                      from t_log_manual_own m where 1=1 <include refid="where_sql_test"/>
+                                     order by m.test_time desc)
+                             where rw = 1) c,t_area_code d 
+                  <if test="datatype!=null and datatype==1">
+                  where t.id = c.id(+) 
+                  and t.serialno = c.serialno(+)
+                  and t.areaid = d.areaid(+)
+                  </if>
+                  <if test="breakflag!=null and breakflag!=-1">
+                  and break_flag = #{breakflag}
+                  </if>
+                   <if test="datatype!=null and datatype==2">
+                  where t.id = c.id 
+                  and t.serialno = c.serialno
+                  and t.areaid = d.areaid
+                  </if>
+                  and 1 = 1
+			      and instr(','||#{areaids,jdbcType=VARCHAR}||',',','||to_char(t.areaid)||',')>decode(instr(','||#{areaids,jdbcType=VARCHAR}||',',',-1,'),0,0,-1)
+       <include refid="where_sql"/>
+			<if test="s_id != null and s_id != '' ">		
+				and t.ID  = #{s_id} 
+			</if>
+			<if test="isDeal != null and isDeal != -1" >
+				<if test="isDeal == 1">
+					and t.test_number &gt;=1
+				</if>
+				<if test="isDeal == 0">
+					and t.test_number &lt;= 0
+				</if>
+			</if>
+			<if test="testphone != null and testphone != ''">
+				and c.test_phone like '%' ||  #{testphone} || '%'
+			</if>
+            <if test="verify != null and verify != -1" >
+				and t.is_verify =#{verify}
+            </if>
+			order by t.create_date DESC ) a 
+		where rownum &lt;= #{mbound} ) 
+	  where rn &gt; #{lbound}
+	 
+  </select>
+  <select id="countWorkOrderList" parameterType="map" resultType="java.lang.Integer">
+			select 	count(0)
+			 from t_own_etl t,
+			  	(select *
+                              from (select m.*,
+                                           row_number() over(partition by m.id,m.serialno order by m.test_time desc) rw
+                                      from t_log_manual_own m where 1=1 <include refid="where_sql_test"/>
+                                     order by m.test_time desc)
+                             where rw = 1) c,t_area_code d
+                   <if test="datatype!=null and datatype==1">
+                  where t.id = c.id(+) 
+                  and t.serialno = c.serialno(+)
+                  and t.areaid = d.areaid(+)
+                  </if>
+                  
+                   <if test="datatype!=null and datatype==2">
+                  where t.id = c.id 
+                  and t.serialno = c.serialno
+                  and t.areaid = d.areaid
+                  </if>
+			 	and instr(','||#{areaids,jdbcType=VARCHAR}||',',','||to_char(t.areaid)||',')>decode(instr(','||#{areaids,jdbcType=VARCHAR}||',',',-1,'),0,0,-1)
+				 and t.areaid in (select areaid from t_user_area where userid = #{userid,jdbcType=DECIMAL}) 
+		<include refid="where_sql"/>
+		
+			<if test="s_id != null and s_id != '' ">		
+				and t.ID  = #{s_id} 
+			</if>
+			
+			<if test="breakFlag != null and breakFlag != -1">
+				and t.break_flag = #{breakFlag}
+			</if>
+			
+			<if test="verify != null and verify != -1" >
+				and t.is_verify =#{verify}
+            </if>
+			order by t.create_date Desc 
+  </select>
+  <select id="queryAllArea" resultType="com.complaint.model.TestWorkOrder">
+  		select t.areaid,t.areaname from t_area_code t 
+  			where areaid in (select areaid from t_user_area where userid = #{userid,jdbcType=DECIMAL}) 
+  			order by areaid asc 
+  </select>
+  <select id="queryWorkOrderBySerialno" parameterType="java.lang.String" resultType="com.complaint.model.TestWorkOrder">
+ 	 select * from 	(select 
+  		<include refid="Base_Column_List"/>
+  		from t_own_etl t where t.SERIALNO = #{serialno,jdbcType=VARCHAR} and t.id = #{id,jdbcType=VARCHAR} order by t.request_datetime desc ) where rownum = 1
+  </select>
+
+  <insert id="insertWorkOrder" parameterType="com.complaint.model.TestWorkOrder">
+    insert into t_own_etl (SERIALNO, SUBMIT_DATETIME, REQUEST_DATETIME, 
+      ACCEPT_HUMAN, COMPLAINT_CHANNELS, ADMISSIBLE_PATH, 
+      PRODUCT_NAME, COMPLAINT, TEMPLATE_CONTENT, 
+      CHANNEL_PROBLEMS, PROBLEMS_ADDRESS, ATTRIBUTION, 
+      ACCOUNT_ATTRIBUTION, ACCEPTANCE_NUMBER, USERS_BRAND, 
+      CUSTOMER_CONTACT, areaid, NET_WORKTYPE, 
+      TEST_NUMBER, process_sta, isdeal, 
+      updatetime)
+    values (#{serialno,jdbcType=VARCHAR}, #{submitDatetime,jdbcType=TIMESTAMP}, #{requestDatetime,jdbcType=TIMESTAMP}, 
+      #{acceptHuman,jdbcType=VARCHAR}, #{complaintChannels,jdbcType=VARCHAR}, #{admissiblePath,jdbcType=VARCHAR}, 
+      #{productName,jdbcType=VARCHAR}, #{complaint,jdbcType=VARCHAR}, #{templateContent,jdbcType=VARCHAR}, 
+      #{channelProblems,jdbcType=VARCHAR}, #{problemsAddress,jdbcType=VARCHAR}, #{attribution,jdbcType=VARCHAR}, 
+      #{accountAttribution,jdbcType=VARCHAR}, #{acceptanceNumber,jdbcType=VARCHAR}, #{usersBrand,jdbcType=VARCHAR}, 
+      #{customerContact,jdbcType=VARCHAR}, #{areaId,jdbcType=DECIMAL}, #{netWorktype,jdbcType=VARCHAR}, 
+      #{testNumber,jdbcType=DECIMAL}, #{processStatus,jdbcType=DECIMAL}, #{isDeal,jdbcType=DECIMAL}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 自主工单的插入 -->
+  <insert id="insertOwnWorkOrder" parameterType="com.complaint.model.TestMasterlog">
+    insert into t_own_etl (id,serialno, areaid, break_flag, 
+      test_address, create_date)
+    values (#{serialno,jdbcType=VARCHAR},#{serialno,jdbcType=VARCHAR},#{areaid,jdbcType=DECIMAL},
+    		#{breakflag,jdbcType=DECIMAL},#{testaddress,jdbcType=VARCHAR},#{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  
+ <update id="updateWOTestNumber" parameterType="com.complaint.model.TestWorkOrder">
+ 	   update t_own_etl
+    set  TEST_NUMBER = TEST_NUMBER+#{testNumber,jdbcType=DECIMAL},
+      isdeal = #{isDeal,jdbcType=DECIMAL}
+    where 1 = 1
+    	<if test="id!=null and id!=''">
+   			and id = #{id,jdbcType=VARCHAR}
+   		</if>
+    	<if test="id==null or id ==''">
+    		and SERIALNO = #{serialno,jdbcType=VARCHAR}
+    		and areaid =  #{areaId,jdbcType=DECIMAL}
+    		and process_sta = 2
+    	</if>
+ </update>
+  <update id="updateWorkOrder" parameterType="com.complaint.model.TestWorkOrder">
+    update t_own_etl
+    set SUBMIT_DATETIME = #{submitDatetime,jdbcType=TIMESTAMP},
+      REQUEST_DATETIME = #{requestDatetime,jdbcType=TIMESTAMP},
+      ACCEPT_HUMAN = #{acceptHuman,jdbcType=VARCHAR},
+      COMPLAINT_CHANNELS = #{complaintChannels,jdbcType=VARCHAR},
+      ADMISSIBLE_PATH = #{admissiblePath,jdbcType=VARCHAR},
+      PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+      COMPLAINT = #{complaint,jdbcType=VARCHAR},
+      TEMPLATE_CONTENT = #{templateContent,jdbcType=VARCHAR},
+      CHANNEL_PROBLEMS = #{channelProblems,jdbcType=VARCHAR},
+      PROBLEMS_ADDRESS = #{problemsAddress,jdbcType=VARCHAR},
+      ATTRIBUTION = #{attribution,jdbcType=VARCHAR},
+      ACCOUNT_ATTRIBUTION = #{accountAttribution,jdbcType=VARCHAR},
+      ACCEPTANCE_NUMBER = #{acceptanceNumber,jdbcType=VARCHAR},
+      USERS_BRAND = #{usersBrand,jdbcType=VARCHAR},
+      CUSTOMER_CONTACT = #{customerContact,jdbcType=VARCHAR},
+      areaid = #{areaId,jdbcType=DECIMAL},
+      NET_WORKTYPE = #{netWorktype,jdbcType=VARCHAR},
+      TEST_NUMBER = #{testNumber,jdbcType=DECIMAL},
+      process_sta = #{processStatus,jdbcType=DECIMAL},
+      isdeal = #{isDeal,jdbcType=DECIMAL},
+      updatetime = #{updateTime,jdbcType=TIMESTAMP}
+    where SERIALNO = #{serialno,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="queryWorkOrderForPhoneList" parameterType="java.lang.String" resultType="com.complaint.model.WorkOrderForList">
+	   select  b.id,
+	   b.areaid as areaid, 
+	   b.serialno,
+       b.isdeal         isDeal,
+       b.submit_datetime submitDatetime,
+       b.test_number     testNumber,
+       b.problems_address address
+    from  t_own_etl b,  
+     (select a.departmentid,a.phone_num 
+      from t_test_users a 
+      where a.phone_num = #{phone,jdbcType=VARCHAR}
+      group by a.departmentid,a.phone_num
+          ) t
+   where  b.process_sta =2
+       and b.areaid=t.departmentid 
+  </select>
+  
+  <select id="queryWorkOrderForDetail" parameterType="java.lang.String" resultType="com.complaint.model.TestWorkOrder">
+	select a.serialno,
+	       a.test_number     testNumber,
+	       a.submit_datetime submitDatetime,
+	       a.net_worktype    netWorktype,
+	       a.users_brand     usersBrand,
+	       a.customer_contact customerContact,
+	       a.admissible_path admissiblePath,
+	       a.problems_address problemsAddress,
+	       a.complaint,
+	       a.template_content templateContent,
+	       a.isdeal  isDeal
+	  from t_own_etl a
+	       where a.serialno = #{serialno,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

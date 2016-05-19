@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sys>
+<vision>1.01.03</vision>
+<url>172.31.0.43/cas.apk</url>
+<!-- 版本更新说明 -->
+<declare>更新闪屏BUG|增加自动更新功能</declare>
+<visionLte>1.03.01</visionLte>
+<urlLte>172.31.0.43/ltecas.apk</urlLte>
+<!-- 版本更新说明 -->
+<declareLte>更新BUG|增加4G功能</declareLte>
+</sys>

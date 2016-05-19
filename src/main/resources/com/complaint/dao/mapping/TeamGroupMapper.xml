@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.TeamGroupDao">
+	 <!-- 查询大组小组映射关系 -->
+	<resultMap id="bigTeamMap" type="com.complaint.model.TeamGroup">
+        <id property="groupid" column="groupid" />
+        <id property="groupname" column="groupname" />
+        <collection property="list" ofType="com.complaint.model.TeamGroup" column="groupid" resultMap="smallTeamBigMap"/>
+     </resultMap>
+     <resultMap id="smallTeamBigMap" type="com.complaint.model.TeamGroup">
+     		 <result property="groupname" column="ggroupname" jdbcType="VARCHAR" javaType="String" />
+     		 <result property="groupid" column="ggroupid" jdbcType="NUMERIC" javaType="Integer" />
+     </resultMap>
+     <!-- 小组与人员映射关系  -->
+     <resultMap id="smallTeamMap" type="com.complaint.model.TeamGroup">
+     		 <id property="groupname" column="ggroupname"/>
+     		 <id property="groupid" column="ggroupid"/>
+     		 <collection property="plist" ofType="com.complaint.model.Personnel" column="groupid" resultMap="smallTeamPersonnelMap"/>
+     </resultMap>
+     <resultMap id="smallTeamPersonnelMap" type="com.complaint.model.Personnel">
+        <result property="id" column="id" jdbcType="NUMERIC" javaType="Integer" />
+        <result property="name" column="name" jdbcType="VARCHAR" javaType="String"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR" javaType="String"/>
+     </resultMap>
+     <!-- 人员与区域映射关系 -->
+     <resultMap id="personnelMap" type="com.complaint.model.Personnel">
+        <result property="id" column="id"  />
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <collection property="list" ofType="com.complaint.model.AreaBean" column="id" resultMap="areaMap"/>
+     </resultMap>
+     <resultMap id="areaMap" type="com.complaint.model.AreaBean">
+     		 <result property="areaid" column="areaid" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="areaname" column="areaname" jdbcType="VARCHAR" javaType="String" />
+     </resultMap>
+     <!-- 查询大组小组关系 -->
+     <select id="queryBigAndSmallRelation" resultMap="bigTeamMap">
+     		select a.groupname, a.groupid, c.groupid ggroupid, c.groupname ggroupname
+			  from (select * from t_team_group where grouptype = 0) a
+			  left join t_team_group_relation b
+			    on a.groupid = b.groupid_big
+			  left join (select * from t_team_group where grouptype = 1) c
+			    on c.groupid = b.groupid_small
+			 order by a.groupid asc 
+     </select>
+     <!-- 查询不在大组中的小组 -->
+     <select id="queryNotInBig" parameterType="java.lang.Integer" resultType="com.complaint.model.TeamGroup">
+     	select a.groupid,a.groupname
+		  from t_team_group a 
+		 where not exists (select 1 from t_team_group_relation b where a.groupid = b.groupid_small)
+		   and a.grouptype = 1
+     </select>
+     <!-- 小组与人员关系 -->
+	<select id="querySmallAndPersonnelRelation" resultMap="smallTeamMap">
+     		select a.groupid ggroupid, a.groupname ggroupname,c.id,c.name,c.phone
+			  from  t_team_group a
+			  left join t_team_manager_relation b
+			    on a.groupid = b.groupid
+			  left join t_area_manager c
+			    on b.id = c.id  
+			 where a.grouptype = 1
+			 order by a.groupid asc
+     </select>
+     <!-- 查询不在小组中的人员 -->
+     <select id="queryNotInSmall" resultType="com.complaint.model.Personnel">
+     	select a.id,a.name,a.phone
+		  from t_area_manager a
+		 where not exists (select 1 from t_team_manager_relation b where a.id = b.id) 
+     </select>
+     <select id="queryNotInBigPersonnel" parameterType="java.lang.Integer" resultType="com.complaint.model.Personnel">
+     	select d.name,d.id
+		  from (select c.id, b.groupid_small, b.groupid
+		          from (select b.groupid_small, a.groupid
+		                  from t_team_group a
+		                  left join t_team_group_relation b
+		                    on a.groupid = b.groupid_big
+		                 where a.grouptype = 0) b
+		         inner join t_team_manager_relation c
+		            on b.groupid_small = c.groupid) c
+		 inner join t_area_manager d
+		    on c.id = d.id
+		 where d.great_leader = 0
+		   and c.groupid = #{groupid}
+     </select>
+     <!-- 查询大组组长 -->
+     <select id="queryGreatLeader"  parameterType="java.lang.Integer" resultType="com.complaint.model.Personnel">
+     	select d.name,d.id
+		  from (select c.id, b.groupid_small, b.groupid
+		          from (select b.groupid_small, a.groupid
+		                  from t_team_group a
+		                  left join t_team_group_relation b
+		                    on a.groupid = b.groupid_big
+		                 where a.grouptype = 0) b
+		         inner join t_team_manager_relation c
+		            on b.groupid_small = c.groupid) c
+		 inner join t_area_manager d
+		    on c.id = d.id
+		 where d.great_leader = 1
+		   and c.groupid = #{groupid} and rownum=1
+		   and rownum = 1
+     </select>
+     <!-- 查询小组中不是组长的人员 -->
+     <select id="queryNotInSmallPersonnel" parameterType="java.lang.Integer" resultType="com.complaint.model.Personnel">
+     	select b.name,b.id
+         from t_team_manager_relation a, t_area_manager b
+        where a.id = b.id
+          and a.groupid = ${groupid}
+          and b.leader = 0
+     </select>
+     <!-- 查询小组组长 -->
+     <select id="queryLeader" parameterType="java.lang.Integer" resultType="com.complaint.model.Personnel">
+     	select b.name,b.id
+         from t_team_manager_relation a, t_area_manager b
+        where a.id = b.id
+          and a.groupid = ${groupid}
+          and b.leader = 1
+          and rownum = 1
+     </select>	
+     <select id="queryPersonneAndAreaRelation" resultMap="personnelMap">
+     		select a.id, a.name, a.phone, c.areaid, c.areaname
+			  from t_area_manager a
+			  left join t_area_manager_relation b
+			    on a.id = b.id
+			  left join t_area_code c
+			    on b.areaid = c.areaid
+			 order by a.id asc 
+	 </select>
+	  <!-- 查询不在人员的区域 -->
+     <select id="queryNotInPersonne" resultType="com.complaint.model.AreaBean">
+     	select a.areaid,a.areaname
+		  from t_area_code a
+		 where not exists (select 1 from t_area_manager_relation b where a.areaid = b.areaid)
+		 and a.areaid not in (863450,863451,863452) 
+     </select>
+     <!-- 判断小组大组名称是否重复 -->
+     <select id="countGroupname"  parameterType="java.lang.String" resultType="java.lang.Integer" >
+     	select count(1) from t_team_group where groupname =#{groupname}
+     </select>
+     <select id="insertTeam" parameterType="map">
+     	insert into t_team_group(groupid,groupname,grouptype) values(seq_t_team_group.nextval,#{groupname,jdbcType=VARCHAR},#{type,jdbcType=NUMERIC})
+     </select>
+     <!-- 删除组加减分 -->
+     <delete id="deleteTeamScore"  parameterType="java.lang.String" >
+     	delete from t_team_other_score where instr(',' ||#{groupid}|| ',', ',' || groupid || ',') > 0
+     </delete>
+     
+      <!-- 删除组 -->
+     <delete id="deleteTeam"  parameterType="java.lang.String" >
+     	delete from t_team_group where instr(',' ||#{groupid}|| ',', ',' || groupid || ',') > 0
+     </delete>
+     <!-- 删除组 关系-->
+     <delete id="deleteTeamBigRelation"  parameterType="java.lang.String" >
+     	<!-- delete from t_team_group_relation where groupid_big = #{groupid,jdbcType=NUMERIC} -->
+     	delete from t_team_group_relation a where 
+     	(instr(',' ||#{groupid}|| ',', ',' || a.groupid_big || ',') > 0 or instr(',' ||#{groupid}|| ',', ',' || a.groupid_small || ',') > 0)
+     </delete>
+     <!-- 删除组与人员关系 -->
+     
+      <delete id="deleteTeamMa"  parameterType="java.lang.String" >
+     	delete from t_team_manager_relation a where  instr(',' ||#{groupid}|| ',', ',' || a.groupid || ',') > 0 
+     </delete>
+     <!-- 修改大或小组组长 -->
+     <update id="updateTeamer" parameterType="map">
+         update  t_area_manager r set 
+         <if test="type==2">
+         r.leader=0,r.great_leader=0 
+         </if>
+         <if test="type==1">
+         r.great_leader=0  
+         </if>
+         where  id in
+         (select r.id from t_team_group_relation t,t_team_manager_relation m ,t_area_manager r,t_team_group p where  t.groupid_small=m.groupid
+        and m.id=r.id and p.groupid=m.groupid and (instr(',' ||#{groupid}|| ',', ',' || t.groupid_small || ',') > 0 or instr(',' ||#{groupid}|| ',', ',' || t.groupid_big || ',') > 0))
+     </update>
+     <insert id="insertTeamBigRelation" parameterType="map">
+     	  insert into t_team_group_relation(groupid_big,groupid_small) values(#{big,jdbcType=NUMERIC},#{small,jdbcType=NUMERIC})
+     </insert>
+     <delete id="deleteTeamSmallRelation"  parameterType="java.lang.Integer" >
+     	delete from t_team_manager_relation where groupid = #{groupid}
+     </delete>
+     <insert id="insertTeamSmallRelation" parameterType="map">
+     	  insert into t_team_manager_relation(groupid,id) values(#{groupid,jdbcType=NUMERIC},#{id,jdbcType=NUMERIC})
+     </insert>
+     <update id="updateTeam" parameterType="map">
+     		update t_team_group set groupname=#{groupname,jdbcType=VARCHAR} where groupid=#{groupid}
+     </update>
+     <select id="insertPersonnel"  parameterType="map">
+     	insert into t_area_manager(id,name,phone,leader) values(seq_t_area_manager.nextval,#{name,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},0)
+     </select>
+     <!-- 删除人员 -->
+     <delete id="deletePersonnel"  parameterType="java.lang.String">
+     	delete from t_area_manager where instr(',' ||#{id}|| ',', ',' || id || ',') > 0
+     </delete>
+     <!-- 删除人员与区域 -->
+     <delete id="deletePersonnelRelation"  parameterType="java.lang.String">
+     	<!-- delete from t_area_manager_relation where id=#{id} -->
+       delete from t_area_manager_relation a where instr(',' ||#{id}|| ',', ',' || a.id || ',') > 0
+     </delete>
+     <!-- 删除人员与小组 -->
+       <delete id="deletePersonTim"  parameterType="java.lang.String">
+         delete from t_team_manager_relation a where  instr(',' ||#{id}|| ',', ',' || a.id || ',') > 0
+     </delete>
+     
+     <delete id="insertPersonnelRelation"  parameterType="java.lang.Integer">
+     	   insert into t_area_manager_relation(id,areaid) values(#{id,jdbcType=NUMERIC},#{areaid,jdbcType=NUMERIC})
+     </delete>
+     <update id="updatePersonnel" parameterType="map">
+     		update t_area_manager set name=#{name,jdbcType=VARCHAR},phone=#{phone,jdbcType=VARCHAR} where id=#{id}
+     </update>
+     <update id="cancelLeader">
+     		update t_area_manager set leader = 0 where leader = 1
+     </update>
+     <update id="cancelGreatLeader">
+     		update t_area_manager set great_leader = 0 where great_leader = 1
+     </update>
+     <update id="setLeader"  parameterType="java.lang.Integer">
+     		update t_area_manager set leader = 1 where id=#{id}
+     </update>
+     <update id="setGreatLeader" parameterType="java.lang.Integer">
+     		update t_area_manager set great_leader = 1 where id=#{id}
+     </update>
+	<select id="countGroup" resultType="java.lang.Integer" parameterType="map">
+		 select count(1)
+  from (select b.groupid, b.groupname, b.groupname1, a.name, a.areas
+          from (select b.groupid, b.name, a.areas
+                  from (select id, substr(str, 2) areas
+                          from (select a.id, a.name, b.areaid, b.areaname
+                                  from (select a.id, a.name, b.areaid
+                                          from t_area_manager          a,
+                                               t_area_manager_relation b
+                                         where a.id = b.id) a,
+                                       t_area_code b
+                                 where a.areaid = b.areaid) model return updated rows partition by(id) dimension by(row_number() over(partition by id order by areaname) as rn) measures(cast(areaname as varchar2(30)) as str) rules upsert iterate(3) until(presentv(str [ iteration_number + 2 ], 1, 0) = 0)(str [ 0 ] = str [ 0 ] || ',' || str [ iteration_number + 1 ])
+                         order by 1) a,
+                       (select a.id, a.name, a.leader, b.groupid
+                          from t_area_manager a, t_team_manager_relation b
+                         where a.id = b.id) b
+                 where a.id = b.id) a
+         right join (select a.groupid,
+                           a.groupname,
+                           b.groupname groupname1,
+                           a.groupid_small
+                      from (select a.groupid, a.groupname, b.groupid_small
+                              from t_team_group a, t_team_group_relation b
+                             where a.grouptype = 0
+                               and a.groupid = b.groupid_big) a,
+                           t_team_group b
+                     where a.groupid_small = b.groupid
+                     order by a.groupid, b.groupid) b
+            on a.groupid = b.groupid_small
+         <if test="name != null and name != '' ">
+       		where a.name like '%' || #{name} || '%' 
+       	</if>
+		)
+	</select>
+	
+	<select id="groupInfo" resultType="com.complaint.model.GroupManager"  parameterType="java.lang.Integer">
+		select a.groupid group_big_id,a.groupname group_small_name,a.groupname1 group_big_name,a.name manager_name,a.areas area_name
+              from (select b.groupid, b.groupname, b.groupname1, a.name, a.areas
+                      from (select b.groupid, b.name, a.areas
+                              from (select t.groupid groupid,
+                                           substr(sys_connect_by_path(t.areaname,
+                                                                      ' | '),
+                                                  3) areas
+                                      from (select groupid,
+                                                   name,
+                                                   areaid,
+                                                   areaname,
+                                                   row_number() over(partition by groupid order by areaname) rn
+                                              from (select a.groupid,
+                                                           a.name,
+                                                           b.areaid,
+                                                           b.areaname
+                                                      from (select c.groupid,
+                                                                   a.name,
+                                                                   b.areaid
+                                                              from t_area_manager          a,
+                                                                   t_area_manager_relation b,
+                                                                   t_team_manager_relation c
+                                                             where a.id = b.id and a.id=c.id) a,
+                                                           t_area_code b
+                                                     where a.areaid = b.areaid)) t
+                                     where connect_by_isleaf = 1
+                                     start with rn = 1
+                                    connect by rn = prior rn + 1
+                                           and groupid = prior groupid) a,
+                                   (select 
+                                           substr(sys_connect_by_path(t.name, ' | '),
+                                                  3) name,
+                                           leader,
+                                           groupid
+                                      from (select 
+                                                   name,
+                                                   leader,
+                                                   groupid,
+                                                   row_number() over(partition by groupid order by name) rn
+                                              from (select 
+                                                           a.name,
+                                                           a.leader,
+                                                           b.groupid
+                                                      from t_area_manager          a,
+                                                           t_team_manager_relation b
+                                                     where a.id = b.id)) t
+                                     where connect_by_isleaf = 1
+                                     start with rn = 1
+                                    connect by rn = prior rn + 1
+                                           and groupid = prior groupid) b
+                             where a.groupid(+) = b.groupid) a
+                     right join (select a.groupid,
+                                       a.groupname,
+                                       b.groupname groupname1,
+                                       a.groupid_big groupid_small
+                                  from (select a.groupid,
+                                               a.groupname,
+                                               b.groupid_big
+                                          from t_team_group          a,
+                                               t_team_group_relation b
+                                         where a.grouptype = 1
+                                           and a.groupid = b.groupid_small(+)) a,
+                                       t_team_group b
+                                 where a.groupid_big = b.groupid(+)
+                                 order by a.groupid, b.groupid) b on a.groupid =
+                                                                     b.groupid
+						<if test="name != null and name != '' ">
+		                  where a.name like '%' || #{name} || '%' 
+		                </if>
+              ) a
+             
+	</select>
+</mapper>

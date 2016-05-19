@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.complaint.dao.TaskConfigDao" >
+  <select id="countTask" resultType="java.lang.Integer" parameterType="java.lang.String">
+  		select count(1) from <include refid="searchlist"/>
+  </select>
+  
+  <select id="queryList" resultType="com.complaint.model.TaskOrder" parameterType="map">
+  		select id,
+		       serialno,
+		       areaid,
+		       networktype,
+		       breakflag,
+		       test_address,
+		       create_date,
+		       handler,
+		       isverify,
+		       validstate,
+		       areaname,
+		       num
+		   from <include refid="searchlist"/>
+		   where rn &lt;= #{mbound} and rn &gt; #{lbound}
+  </select>
+  
+  <sql id="searchlist">
+  		(select id,
+		       serialno,
+		       areaid,
+		       networktype,
+		       breakflag,
+		       test_address,
+		       create_date,
+		       handler,
+		       isverify,
+		       validstate,
+		       areaname,
+		       num,
+               rownum rn
+               from (select e.id id,
+				       e.serialno serialno,
+				       e.areaid areaid,
+				       e.net_worktype networktype,
+				       e.break_flag breakflag,
+				       e.test_address test_address,
+				       e.create_date create_date,
+				       e.handler handler,
+				       e.is_verify isverify,
+				       e.valid_state validstate,
+				       max(c.areaname) areaname,
+				       nvl(count(t.id),0) num
+				  from t_task_etl e, t_log_manual_task t, t_area_code c
+				 where e.id = t.id(+)
+				   and c.areaid(+) = e.areaid
+				   <if test= "userid!=null">
+					 and e.areaid in (select areaid from t_user_area where userid = #{userid})
+					 </if>
+				   <if test= "val!='' and val!=null">
+					 and (e.serialno like '%'||#{val}||'%'
+					    or e.test_address like '%'||#{val}||'%')
+					 </if>
+					 <if test= "isverify!=null and isverify!=-1">
+					 and e.is_verify = #{isverify}
+					 </if>
+					 <if test= "validstate!=null and validstate!=-1">
+					 and e.valid_state = #{validstate}
+					 </if>
+					 <if test= "startTime!='' and startTime!=null">
+					 and e.create_date &gt;= to_date(#{startTime} ,'yyyy-MM-dd hh24:mi:ss')
+					 </if>
+					 <if test= "endTime!='' and endTime!=null">
+					 and e.create_date &lt;= to_date(#{endTime} ,'yyyy-MM-dd hh24:mi:ss')
+					 </if>
+					 <if test= "areaid!='' and areaid!=null">
+					 and e.areaid = areaid
+					 </if>
+					 <if test= "networktype!='' and networktype!=null">
+					 and e.net_worktype = #{networktype}
+					 </if>
+					 <if test= "breakflag!=null">
+					 and e.break_flag = #{breakflag}
+					 </if>
+				 group by e.id,
+				          e.serialno,
+				          e.areaid,
+				          e.net_worktype,
+				          e.break_flag,
+				          e.test_address,
+				          e.create_date,
+				          e.handler,
+				          e.is_verify,
+				          e.valid_state
+				order by  e.create_date desc)
+			 )
+  </sql>
+  
+  <select id="getAreaList" resultType="com.complaint.model.AreaBean" parameterType="java.lang.Integer">
+  		select u.areaid areaid, c.areaname areaname
+			  from t_user_area u, t_area_code c
+			 where userid = #{userid}
+			   and u.areaid = c.areaid
+  </select>
+  
+  <insert id="insertByBatch" parameterType="com.complaint.model.TaskOrder">
+		insert into t_task_etl
+			  (id,
+			   serialno,
+			   areaid,
+			   NET_WORKTYPE,
+			   BREAK_FLAG,
+			   test_address,
+			   create_date,
+			   handler,
+			   is_verify,
+			   valid_state,
+			   handler_time)
+			values
+			  (#{id}, #{serialno}, #{areaid}, #{networktype}, #{breakflag}, #{test_address}
+			  , sysdate, #{handler}, #{isverify},#{validstate},sysdate)
+	</insert>
+	
+	<select id="querySerialno" resultType="com.complaint.model.TaskOrder" parameterType="java.lang.String">
+  		select id,
+		       serialno,
+		       areaid,
+		       NETWORKTYPE,
+		       BREAKFLAG,
+		       test_address,
+		       create_date,
+		       handler,
+		       isverify,
+		       validstate,
+		       areaname,
+		       num
+		  from (select e.id id,
+		               e.serialno serialno,
+		               e.areaid areaid,
+		               e.NET_WORKTYPE NETWORKTYPE,
+		               e.BREAK_FLAG BREAKFLAG,
+		               e.test_address test_address,
+		               e.create_date create_date,
+		               e.handler handler,
+		               e.is_verify isverify,
+		               e.valid_state validstate,
+		               max(c.areaname) areaname,
+		               nvl(count(t.id), 0) num
+		          from t_task_etl e, t_area_code c, t_log_manual_task t
+		         where e.id = #{id}
+		           and c.areaid(+) = e.areaid
+		           and t.id(+) = e.id
+		         group by e.id,
+		                  e.serialno,
+		                  e.areaid,
+		                  e.NET_WORKTYPE,
+		                  e.BREAK_FLAG,
+		                  e.test_address,
+		                  e.create_date,
+		                  e.handler,
+		                  e.is_verify,
+		                  e.valid_state
+		         order by create_date)
+		 where rownum &lt; 2
+  </select>
+  <update id="updateSerialno" parameterType="com.complaint.model.TaskOrder">
+  	update t_task_etl
+		   set areaid       = #{areaid},
+		       NET_WORKTYPE = #{networktype},
+		       BREAK_FLAG   = #{breakflag},
+		       test_address = #{test_address},
+		       handler      = #{handler},
+		       valid_state  = #{validstate},
+		       handler_time = sysdate
+		 where id = #{id}
+  </update>
+  <select id="createExcel" resultType="com.complaint.model.TaskOrder" parameterType="com.complaint.model.TaskOrder">
+  		select id,
+		       serialno,
+		       areaid,
+		       networktype,
+		       breakflag,
+		       test_address,
+		       create_date,
+		       handler,
+		       isverify,
+		       validstate,
+		       areaname,
+		       num from 
+  		<include refid="excellist"/>
+  		where 1=1
+  		<if test= "num!='' and num!=null and num != 0 and num != -1">
+  			and num &gt; 0
+  		</if>
+  </select>
+  <sql id="excellist">
+  		(select id,
+		       serialno,
+		       areaid,
+		       networktype,
+		       breakflag,
+		       test_address,
+		       create_date,
+		       handler,
+		       isverify,
+		       validstate,
+		       areaname,
+		       num,
+               rownum rn
+               from (select e.id id,
+				       e.serialno serialno,
+				       e.areaid areaid,
+				       e.net_worktype networktype,
+				       e.break_flag breakflag,
+				       e.test_address test_address,
+				       e.create_date create_date,
+				       e.handler handler,
+				       e.is_verify isverify,
+				       e.valid_state validstate,
+				       max(c.areaname) areaname,
+				       nvl(count(t.id),0) num
+				  from t_task_etl e, t_log_manual_task t, t_area_code c
+				 where e.id = t.id(+)
+				   and c.areaid(+) = e.areaid
+				    <if test= "handler!='' and handler!=null">
+					 and e.areaid in (select areaid from t_user_area where userid = #{handler})
+					 </if>
+					 <if test= "isverify!=null and isverify!=-1">
+					 and e.is_verify = #{isverify}
+					 </if>
+					 <if test= "validstate!=null and validstate!=-1">
+					 and e.valid_state = #{validstate}
+					 </if>
+					 <if test= "startTime!='' and startTime!=null">
+					 and e.create_date &gt;= to_date(#{startTime} ,'yyyy-MM-dd hh24:mi:ss')
+					 </if>
+					 <if test= "endTime!='' and endTime!=null">
+					 and e.create_date &lt;= to_date(#{endTime} ,'yyyy-MM-dd hh24:mi:ss')
+					 </if>
+					 <if test= "areaid!='' and areaid!=null and areaid!=-1">
+					 and e.areaid = #{areaid}
+					 </if>
+					 <if test= "networktype!='' and networktype!=null and networktype!=-1">
+					 and e.net_worktype = #{networktype}
+					 </if>
+					 <if test= "breakflag!=null and breakflag!=-1">
+					 and e.break_flag = #{breakflag}
+					 </if>
+				 group by e.id,
+				          e.serialno,
+				          e.areaid,
+				          e.net_worktype,
+				          e.break_flag,
+				          e.test_address,
+				          e.create_date,
+				          e.handler,
+				          e.is_verify,
+				          e.valid_state
+				order by  e.create_date desc)
+			 )
+  </sql>
+   <update id="setValidstate" parameterType="com.complaint.model.TaskOrder">
+  	update t_task_etl
+		   set handler      = #{handler},
+		       valid_state  = #{validstate},
+		       handler_time = sysdate
+		 where id = #{id}
+  </update>
+  
+  <select id="getSameSerialno" resultType="java.lang.String" parameterType="map">
+  select t.serialno from t_task_etl t,t_user_area a where a.areaid = t.areaid
+  	<if test="userid!=null">
+  	and	a.userid = #{userid}
+     </if>
+	  	and t.serialno in
+	  	<foreach collection="tos" item="item" open="(" close=")" separator=",">
+	  		<if test="item.serialno!=null and item.serialno!=''">
+	         #{item.serialno}
+	         </if>
+	     </foreach>
+  </select>
+  
+  <update id="updateTaskSerialno" parameterType="com.complaint.model.TaskOrder">
+  	update t_task_etl
+		   set areaid       = #{areaid},
+		       NET_WORKTYPE = #{networktype},
+		       BREAK_FLAG   = #{breakflag},
+		       test_address = #{test_address},
+		       handler      = #{handler},
+		       handler_time = sysdate
+		 where id = #{id}
+  </update>
+</mapper>

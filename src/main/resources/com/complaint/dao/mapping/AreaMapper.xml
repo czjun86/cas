@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.AreaDao">
+
+	 <resultMap id="groupMap" type="com.complaint.model.Group">
+        <id property="groupid" column="groupid" />
+        <id property="groupname" column="groupname" />
+        <collection property="list" ofType="com.complaint.model.AreaBean" column="groupid" resultMap="areaMap"/>
+     </resultMap>
+     <resultMap id="areaMap" type="com.complaint.model.AreaBean">
+     		 <result property="areaid" column="areaid" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="areaname" column="areaname" jdbcType="VARCHAR" javaType="String" />
+     		 <result property="groupid" column="groupid" jdbcType="NUMERIC" javaType="Integer" />
+     		 <result property="id" column="id" jdbcType="NUMERIC" javaType="Integer" />
+     </resultMap>
+     <resultMap id="personnelMap" type="com.complaint.model.Personnel">
+        <id property="id" column="id" />
+        <id property="name" column="name" />
+        <id property="phone" column="phone" />
+        <collection property="list" ofType="com.complaint.model.AreaBean" column="id" resultMap="areaMap"/>
+     </resultMap>
+	
+  <sql id="whereCondition">
+  	<if test="areaid != null">
+  		and areaid = #{areaid}
+  	</if>
+  	<if test="areaname != null">
+  		and areaname = #{areaname}
+  	</if>
+  	<if test="size != 0">  
+        and areaid IN  
+        <foreach item="item" collection="areasList" open="(" separator="," close=")">  
+           #{item.areaid}  
+        </foreach>   
+     </if>  
+  </sql>
+  <!-- 查询所有区域 -->
+  <select id="queryAllArea" resultType="com.complaint.model.AreaBean">
+  		select t.areaid,t.areaname from t_area_code t where areaid not in ('863450','863451','863452') order by areaid asc 
+  </select>
+  <!-- 查询所有分公司 -->
+  <select id="queryAllGroup" resultType="com.complaint.model.AreaBean">
+  		select t.groupid,t.groupname from t_group t order by t.groupid
+  </select>
+  <!--  -->
+  <select id="queryAreaCondition" resultType="com.complaint.model.AreaBean" parameterType="map">
+  		select t.areaid,t.areaname from t_area_code t where 1=1
+  		<include refid="whereCondition"/>
+  </select>
+  <!-- 删除分公司关系 -->
+  <delete id="deleteGroupRelation" parameterType="java.lang.Integer">
+  	delete from t_area_group_relation where groupid = #{groupid}
+  </delete>
+</mapper>

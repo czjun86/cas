@@ -1,0 +1,916 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.TestMasterlogDao">
+  <resultMap id="BaseResultMap" type="com.complaint.model.TestMasterlog">
+    <id column="FLOWID" jdbcType="VARCHAR" property="flowid" />
+    <result column="SERIALNO" jdbcType="VARCHAR" property="serialno" />
+    <result column="TEST_NUM" jdbcType="DECIMAL" property="orders" />
+    <result column="TEST_TIME" jdbcType="TIMESTAMP" property="testtime" />
+    <result column="TEST_PHONE" jdbcType="VARCHAR" property="testphone" />
+    <result column="TEST_ADRESS" jdbcType="VARCHAR" property="testaddress" />
+    <result column="UUID" jdbcType="VARCHAR" property="imei" />
+    <result column="INSIDE" jdbcType="DECIMAL" property="inside" />
+    <result column="SCENEID" jdbcType="DECIMAL" property="sceneid" />
+    <result column="DENSITY" jdbcType="DECIMAL" property="density" />
+    <result column="OBSTRUCT" jdbcType="DECIMAL" property="obstruct" />
+    <result column="FAILURE" jdbcType="VARCHAR" property="failure" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="ISINDOOR" jdbcType="DECIMAL" property="isindoor" />
+    <result column="LONGITUDE_MODIFY" jdbcType="DECIMAL" property="longitudeModify" />
+    <result column="LATITUDE_MODIFY" jdbcType="DECIMAL" property="latitudeModify" />
+    <result column="LONGITUDE_BMAP" property="longitudeBmap" jdbcType="DECIMAL" />
+    <result column="LATITUDE_BMAP" property="latitudeBmap" jdbcType="DECIMAL" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+    <result column="NET_TYPE" jdbcType="DECIMAL" property="netsystem" />
+    <result column="TEST_TYPE" jdbcType="DECIMAL" property="teststatus" />
+    <result column="CALL_TYPE" jdbcType="DECIMAL" property="calltype" />
+    <result column="FTP_TYPE" jdbcType="DECIMAL" property="ftpUpdown" />
+    <result column="FTP_MAX_SPEED" jdbcType="DECIMAL" property="ftpMaxSpeed" />
+    <result column="FTP_MIN_SPEED" jdbcType="DECIMAL" property="ftpMinSpeed" />
+    <result column="FTP_AVG_SPEED" jdbcType="DECIMAL" property="ftpAvgSpeed" />
+    <result column="PING_LOSE_RATE" jdbcType="DECIMAL" property="pinglo" />
+    <result column="PING_MAX_DELAY" jdbcType="DECIMAL" property="pingdmax" />
+    <result column="PING_MIN_DELAY" jdbcType="DECIMAL" property="pingdmix" />
+    <result column="PING_AVG_DELAY" jdbcType="DECIMAL" property="pingdavg" />
+    <result column="HTTP_MAX_CONNECT_TIME" jdbcType="DECIMAL" property="httptmax" />
+    <result column="HTTP_MIN_CONNECT_TIME" jdbcType="DECIMAL" property="httptmix" />
+    <result column="HTTP_AVG_CONNECT_TIME" jdbcType="DECIMAL" property="httptavg" />
+    <result column="HTTP_MAX_DOWNLOAD_SPEED" jdbcType="DECIMAL" property="httpsmax" />
+    <result column="HTTP_MIN_DOWNLOAD_SPEED" jdbcType="DECIMAL" property="httpsmin" />
+    <result column="HTTP_AVG_DOWNLOAD_SPEED" jdbcType="DECIMAL" property="httpsavg" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="GPS_TYPE" jdbcType="DECIMAL" property="gpsType" />
+    <result column="TEST_ENDTIME" jdbcType="TIMESTAMP" property="testendtime" />
+    <result column="DURATION" jdbcType="DECIMAL" property="duration" />
+    <result column="SPACE" jdbcType="DECIMAL" property="space" />
+    <result column="CALL_PHONE" jdbcType="VARCHAR" property="callphone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    FLOWID, SERIALNO, TEST_NUM, TEST_TIME, TEST_PHONE, TEST_ADRESS, UUID, INSIDE, SCENEID, DENSITY, 
+    OBSTRUCT, FAILURE, DESCRIPTION, UPDATE_TIME,
+    ISINDOOR, LONGITUDE_MODIFY, LATITUDE_MODIFY,  LONGITUDE_BMAP,LATITUDE_BMAP,LONGITUDE, LATITUDE, NET_TYPE, TEST_TYPE, 
+    CALL_TYPE, FTP_TYPE, FTP_MAX_SPEED, FTP_MIN_SPEED, FTP_AVG_SPEED, PING_LOSE_RATE, 
+    PING_MAX_DELAY, PING_MIN_DELAY, PING_AVG_DELAY, HTTP_MAX_CONNECT_TIME, HTTP_MIN_CONNECT_TIME, 
+    HTTP_AVG_CONNECT_TIME, HTTP_MAX_DOWNLOAD_SPEED, HTTP_MIN_DOWNLOAD_SPEED, HTTP_AVG_DOWNLOAD_SPEED,GPS_TYPE,
+    TEST_ENDTIME,DURATION,SPACE,CALL_PHONE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_log_manual
+    where FLOWID = #{flowid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_log_manual
+    where FLOWID = #{flowid,jdbcType=VARCHAR}
+  </delete>
+  
+  <sql id="insertManual">
+  	<trim prefix="(" suffix=")" suffixOverrides=",">
+    FLOWID, SERIALNO, TEST_NUM,
+      TEST_TIME, TEST_PHONE,TEST_ADRESS, UUID, INSIDE, 
+      SCENEID, DENSITY, OBSTRUCT, FAILURE, UPDATE_TIME,
+      DESCRIPTION, ISINDOOR,
+      <if test = "id!=null">
+      	ID,
+      </if>
+      <if test= "areaid!=null">
+      	AREA_ID,
+      </if>	
+      <if test="longitudeModify != null">
+        LONGITUDE_MODIFY,
+      </if>
+      <if test="latitudeModify != null">
+        LATITUDE_MODIFY,
+      </if>
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP, 
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      NET_TYPE, TEST_TYPE, CALL_TYPE, 
+      FTP_TYPE,
+      <if test="ftpMaxSpeed != null">
+        FTP_MAX_SPEED,
+      </if>
+      <if test="ftpMinSpeed != null">
+        FTP_MIN_SPEED,
+      </if>
+      <if test="ftpAvgSpeed != null">
+        FTP_AVG_SPEED,
+      </if>
+      <if test="ftpMaxSpeedLte != null">
+        FTP_MAX_SPEED_LTE,
+      </if>
+      <if test="ftpMinSpeedLte != null">
+        FTP_MIN_SPEED_LTE,
+      </if>
+      <if test="ftpAvgSpeedLte != null">
+        FTP_AVG_SPEED_LTE,
+      </if>
+      <if test="pinglo != null">
+        PING_LOSE_RATE,
+      </if>
+      <if test="pingdmax != null">
+        PING_MAX_DELAY,
+      </if>
+      <if test="pingdmix != null">
+        PING_MIN_DELAY,
+      </if>
+      <if test="pingdavg != null">
+        PING_AVG_DELAY,
+      </if>
+      <if test="httptmax != null">
+        HTTP_MAX_CONNECT_TIME,
+      </if>
+      <if test="httptmix != null">
+        HTTP_MIN_CONNECT_TIME,
+      </if>
+      <if test="httptavg != null">
+        HTTP_AVG_CONNECT_TIME,
+      </if>
+      <if test="httpsmax != null">
+        HTTP_MAX_DOWNLOAD_SPEED,
+      </if>
+      <if test="httpsmin != null">
+        HTTP_MIN_DOWNLOAD_SPEED,
+      </if>
+      <if test="httpsavg != null">
+        HTTP_AVG_DOWNLOAD_SPEED,
+      </if> 
+      <if test="gpsType != null">
+          GPS_TYPE,
+      </if>
+    TEST_ENDTIME,
+    <if test=" duration!= null">
+     	DURATION,
+    </if>
+    <if test=" space!= null">
+    	SPACE,
+    </if>
+   	<if test="callphone != null">
+   		CALL_PHONE,
+   	</if>
+   	<if test="isRepair != null">
+   		isRepair,
+   	</if>
+   	<if test="version  != null">
+   		version,
+   	</if>
+   	<if test="room_type  != null">
+   		room_type,
+   	</if>
+   </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    
+    #{flowid,jdbcType=VARCHAR}, #{serialno,jdbcType=VARCHAR},  #{orders,jdbcType=DECIMAL},  
+    #{testtime,jdbcType=TIMESTAMP},#{testphone,jdbcType=DECIMAL},#{testaddress,jdbcType=VARCHAR},
+      #{imei,jdbcType=DECIMAL}, #{inside,jdbcType=DECIMAL}, 
+      #{sceneid,jdbcType=DECIMAL}, #{density,jdbcType=DECIMAL}, #{obstruct,jdbcType=DECIMAL}, 
+      #{failure,jdbcType=VARCHAR}, sysdate,
+      #{description,jdbcType=VARCHAR}, #{isindoor,jdbcType=DECIMAL},
+      <if test = "id!=null">
+      	 #{id,jdbcType=VARCHAR}, 
+      </if>
+      <if test= "areaid!=null">
+      	#{areaid,jdbcType=NUMERIC},
+      </if>	
+      <if test="longitudeModify != null">
+        #{longitudeModify,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeModify != null">
+        #{latitudeModify,jdbcType=DECIMAL},
+      </if>
+      
+      <if test="longitude != null">
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+       <if test="longitudeBmap != null">
+      #{longitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeBmap != null">
+      #{latitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      #{netsystem,jdbcType=DECIMAL}, #{teststatus,jdbcType=DECIMAL}, #{calltype,jdbcType=DECIMAL}, 
+      #{ftpUpdown,jdbcType=DECIMAL},
+      <if test="ftpMaxSpeed != null">
+        #{ftpMaxSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMinSpeed != null">
+        #{ftpMinSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpAvgSpeed != null">
+        #{ftpAvgSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMaxSpeedLte != null">
+        #{ftpMaxSpeedLte,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMinSpeedLte != null">
+        #{ftpMinSpeedLte,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpAvgSpeedLte != null">
+        #{ftpAvgSpeedLte,jdbcType=DECIMAL},
+      </if>
+      <if test="pinglo != null">
+        #{pinglo,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmax != null">
+        #{pingdmax,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmix != null">
+        #{pingdmix,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdavg != null">
+        #{pingdavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmax != null">
+        #{httptmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmix != null">
+        #{httptmix,jdbcType=DECIMAL},
+      </if>
+      <if test="httptavg != null">
+        #{httptavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmax != null">
+        #{httpsmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmin != null">
+        #{httpsmin,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsavg != null">
+        #{httpsavg,jdbcType=DECIMAL},
+      </if>
+      <if test="gpsType != null">
+      #{gpsType,jdbcType=DECIMAL},
+      </if>
+      #{testendtime,jdbcType=TIMESTAMP},
+      <if test=" duration!= null">
+      #{duration,jdbcType=DECIMAL},
+      </if>
+       <if test=" space!= null">
+	      #{space,jdbcType=DECIMAL},
+       </if>
+       <if test="callphone != null">
+       	#{callphone,jdbcType=VARCHAR},
+       </if>
+       <if test="isRepair  != null">
+       		#{isRepair,jdbcType=NUMERIC},
+       </if>
+       <if test="version != null">
+      	 #{version,jdbcType=VARCHAR},
+       </if>
+       <if test="room_type != null">
+      	 #{room_type,jdbcType=NUMERIC},
+       </if>
+      </trim>
+  </sql>
+  
+  <sql id="insertManualNoLte">
+  	<trim prefix="(" suffix=")" suffixOverrides=",">
+    FLOWID, SERIALNO, TEST_NUM,
+      TEST_TIME, TEST_PHONE,TEST_ADRESS, UUID, INSIDE, 
+      SCENEID, DENSITY, OBSTRUCT, FAILURE, UPDATE_TIME,
+      DESCRIPTION, ISINDOOR,
+      <if test = "id!=null">
+      	ID,
+      </if>
+      <if test= "areaid!=null">
+      	AREA_ID,
+      </if>	
+      <if test="longitudeModify != null">
+        LONGITUDE_MODIFY,
+      </if>
+      <if test="latitudeModify != null">
+        LATITUDE_MODIFY,
+      </if>
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP, 
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      NET_TYPE, TEST_TYPE, CALL_TYPE, 
+      FTP_TYPE,
+      <if test="ftpMaxSpeed != null">
+        FTP_MAX_SPEED,
+      </if>
+      <if test="ftpMinSpeed != null">
+        FTP_MIN_SPEED,
+      </if>
+      <if test="ftpAvgSpeed != null">
+        FTP_AVG_SPEED,
+      </if>
+      <if test="pinglo != null">
+        PING_LOSE_RATE,
+      </if>
+      <if test="pingdmax != null">
+        PING_MAX_DELAY,
+      </if>
+      <if test="pingdmix != null">
+        PING_MIN_DELAY,
+      </if>
+      <if test="pingdavg != null">
+        PING_AVG_DELAY,
+      </if>
+      <if test="httptmax != null">
+        HTTP_MAX_CONNECT_TIME,
+      </if>
+      <if test="httptmix != null">
+        HTTP_MIN_CONNECT_TIME,
+      </if>
+      <if test="httptavg != null">
+        HTTP_AVG_CONNECT_TIME,
+      </if>
+      <if test="httpsmax != null">
+        HTTP_MAX_DOWNLOAD_SPEED,
+      </if>
+      <if test="httpsmin != null">
+        HTTP_MIN_DOWNLOAD_SPEED,
+      </if>
+      <if test="httpsavg != null">
+        HTTP_AVG_DOWNLOAD_SPEED,
+      </if> 
+      <if test="gpsType != null">
+          GPS_TYPE,
+      </if>
+    TEST_ENDTIME,
+    <if test=" duration!= null">
+     	DURATION,
+    </if>
+    <if test=" space!= null">
+    	SPACE,
+    </if>
+   	<if test="callphone != null">
+   		CALL_PHONE,
+   	</if>
+   	<if test="isRepair != null">
+   		isRepair,
+   	</if>
+   	<if test="version  != null">
+   		version,
+   	</if>
+   	<if test="room_type  != null">
+   		room_type,
+   	</if>
+   </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    
+    #{flowid,jdbcType=VARCHAR}, #{serialno,jdbcType=VARCHAR},  #{orders,jdbcType=DECIMAL},  
+    #{testtime,jdbcType=TIMESTAMP},#{testphone,jdbcType=DECIMAL},#{testaddress,jdbcType=VARCHAR},
+      #{imei,jdbcType=DECIMAL}, #{inside,jdbcType=DECIMAL}, 
+      #{sceneid,jdbcType=DECIMAL}, #{density,jdbcType=DECIMAL}, #{obstruct,jdbcType=DECIMAL}, 
+      #{failure,jdbcType=VARCHAR}, sysdate,
+      #{description,jdbcType=VARCHAR}, #{isindoor,jdbcType=DECIMAL},
+      <if test = "id!=null">
+      	 #{id,jdbcType=VARCHAR}, 
+      </if>
+      <if test= "areaid!=null">
+      	#{areaid,jdbcType=NUMERIC},
+      </if>	
+      <if test="longitudeModify != null">
+        #{longitudeModify,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeModify != null">
+        #{latitudeModify,jdbcType=DECIMAL},
+      </if>
+      
+      <if test="longitude != null">
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+       <if test="longitudeBmap != null">
+      #{longitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      <if test="latitudeBmap != null">
+      #{latitudeBmap,jdbcType=DECIMAL}, 
+      </if>
+      #{netsystem,jdbcType=DECIMAL}, #{teststatus,jdbcType=DECIMAL}, #{calltype,jdbcType=DECIMAL}, 
+      #{ftpUpdown,jdbcType=DECIMAL},
+      <if test="ftpMaxSpeed != null">
+        #{ftpMaxSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMinSpeed != null">
+        #{ftpMinSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpAvgSpeed != null">
+        #{ftpAvgSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="pinglo != null">
+        #{pinglo,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmax != null">
+        #{pingdmax,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmix != null">
+        #{pingdmix,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdavg != null">
+        #{pingdavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmax != null">
+        #{httptmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmix != null">
+        #{httptmix,jdbcType=DECIMAL},
+      </if>
+      <if test="httptavg != null">
+        #{httptavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmax != null">
+        #{httpsmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmin != null">
+        #{httpsmin,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsavg != null">
+        #{httpsavg,jdbcType=DECIMAL},
+      </if>
+      <if test="gpsType != null">
+      #{gpsType,jdbcType=DECIMAL},
+      </if>
+      #{testendtime,jdbcType=TIMESTAMP},
+      <if test=" duration!= null">
+      #{duration,jdbcType=DECIMAL},
+      </if>
+       <if test=" space!= null">
+	      #{space,jdbcType=DECIMAL},
+       </if>
+       <if test="callphone != null">
+       	#{callphone,jdbcType=VARCHAR},
+       </if>
+       <if test="isRepair  != null">
+       		#{isRepair,jdbcType=NUMERIC},
+       </if>
+       <if test="version != null">
+      	 #{version,jdbcType=VARCHAR},
+       </if>
+       <if test="room_type != null">
+      	 #{room_type,jdbcType=NUMERIC},
+       </if>
+      </trim>
+  </sql>
+  
+  <!-- 投诉工单测试总表插入 -->
+  <insert id="insert" parameterType="com.complaint.model.TestMasterlog">
+    insert into t_log_manual 
+    <include refid="insertManual"/> 
+  </insert>
+  
+  <!-- 任务工单测试总表插入 -->
+  <insert id="insertTask" parameterType="com.complaint.model.TestMasterlog">
+    insert into t_log_manual_task 
+    <include refid="insertManualNoLte"/> 
+  </insert>
+  
+  <!-- 自主工单测试总表插入 -->
+  <insert id="insertOwn" parameterType="com.complaint.model.TestMasterlog">
+    insert into t_log_manual_own 
+    <include refid="insertManualNoLte"/> 
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.complaint.model.TestMasterlog">
+    insert into t_log_manual
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="flowid != null">
+        FLOWID,
+      </if>
+      <if test="serialno != null">
+        SERIALNO,
+      </if>
+      <if test="TEST_NUM != null">
+        TEST_NUM,
+      </if>
+      <if test="testtime != null">
+        TESTTIME,
+      </if>
+      <if test="UUID != null">
+        UUID,
+      </if>
+      <if test="inside != null">
+        INSIDE,
+      </if>
+      <if test="sceneid != null">
+        SCENEID,
+      </if>
+      <if test="density != null">
+        DENSITY,
+      </if>
+      <if test="obstruct != null">
+        OBSTRUCT,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="isindoor != null">
+        ISINDOOR,
+      </if>
+      <if test="longitudeModify != null">
+        LONGITUDE_MODIFY,
+      </if>
+      <if test="latitudeModify != null">
+        LATITUDE_MODIFY,
+      </if>
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP, 
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP,
+      </if>
+      
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+      <if test="netsystem != null">
+        NET_TYPE,
+      </if>
+      <if test="teststatus != null">
+        TESTSTATUS,
+      </if>
+      <if test="calltype != null">
+        CALLTYPE,
+      </if>
+      <if test="ftpUpdown != null">
+        FTP_TYPE,
+      </if>
+      <if test="ftpMaxSpeed != null">
+        FTP_MAX_SPEED,
+      </if>
+      <if test="ftpMinSpeed != null">
+        FTP_MIN_SPEED,
+      </if>
+      <if test="ftpAvgSpeed != null">
+        FTP_AVG_SPEED,
+      </if>
+      <if test="pinglo != null">
+        PING_LOSE_RATE,
+      </if>
+      <if test="pingdmax != null">
+        PING_MAX_DELAY,
+      </if>
+      <if test="pingdmix != null">
+        PING_MIN_DELAY,
+      </if>
+      <if test="pingdavg != null">
+        PING_AVG_DELAY,
+      </if>
+      <if test="httptmax != null">
+        HTTP_MAX_CONNECT_TIME,
+      </if>
+      <if test="httptmix != null">
+        HTTP_MIN_CONNECT_TIME,
+      </if>
+      <if test="httptavg != null">
+        HTTP_AVG_CONNECT_TIME,
+      </if>
+      <if test="httpsmax != null">
+        HTTP_MAX_DOWNLOAD_SPEED,
+      </if>
+      <if test="httpsmin != null">
+        HTTP_MIN_DOWNLOAD_SPEED,
+      </if>
+      <if test="httpsavg != null">
+        HTTP_AVG_DOWNLOAD_SPEED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="flowid != null">
+        #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="serialno != null">
+        #{serialno,jdbcType=VARCHAR},
+      </if>
+      <if test="TEST_NUM != null">
+        #{TEST_NUM,jdbcType=DECIMAL},
+      </if>
+      <if test="testtime != null">
+        #{testtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="UUID != null">
+        #{UUID,jdbcType=DECIMAL},
+      </if>
+      <if test="inside != null">
+        #{inside,jdbcType=DECIMAL},
+      </if>
+      <if test="sceneid != null">
+        #{sceneid,jdbcType=DECIMAL},
+      </if>
+      <if test="density != null">
+        #{density,jdbcType=DECIMAL},
+      </if>
+      <if test="obstruct != null">
+        #{obstruct,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isindoor != null">
+        #{isindoor,jdbcType=DECIMAL},
+      </if>
+      <if test="longitudeModify != null">
+        #{longitudeModify,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeModify != null">
+        #{latitudeModify,jdbcType=DECIMAL},
+      </if>
+       <if test="longitudeBmap != null">
+        #{longitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeBmap != null">
+        #{latitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="netsystem != null">
+        #{netsystem,jdbcType=DECIMAL},
+      </if>
+      <if test="teststatus != null">
+        #{teststatus,jdbcType=DECIMAL},
+      </if>
+      <if test="calltype != null">
+        #{calltype,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpUpdown != null">
+        #{ftpUpdown,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMaxSpeed != null">
+        #{ftpMaxSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMinSpeed != null">
+        #{ftpMinSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpAvgSpeed != null">
+        #{ftpAvgSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="pinglo != null">
+        #{pinglo,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmax != null">
+        #{pingdmax,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmix != null">
+        #{pingdmix,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdavg != null">
+        #{pingdavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmax != null">
+        #{httptmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmix != null">
+        #{httptmix,jdbcType=DECIMAL},
+      </if>
+      <if test="httptavg != null">
+        #{httptavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmax != null">
+        #{httpsmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmin != null">
+        #{httpsmin,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsavg != null">
+        #{httpsavg,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.complaint.model.TestMasterlog">
+    update t_log_manual
+    <set>
+      <if test="serialno != null">
+        SERIALNO = #{serialno,jdbcType=VARCHAR},
+      </if>
+      <if test="TEST_NUM != null">
+        TEST_NUM = #{TEST_NUM,jdbcType=DECIMAL},
+      </if>
+      <if test="testtime != null">
+        TESTTIME = #{testtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="UUID != null">
+        UUID = #{UUID,jdbcType=DECIMAL},
+      </if>
+      <if test="inside != null">
+        INSIDE = #{inside,jdbcType=DECIMAL},
+      </if>
+      <if test="sceneid != null">
+        SCENEID = #{sceneid,jdbcType=DECIMAL},
+      </if>
+      <if test="density != null">
+        DENSITY = #{density,jdbcType=DECIMAL},
+      </if>
+      <if test="obstruct != null">
+        OBSTRUCT = #{obstruct,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isindoor != null">
+        ISINDOOR = #{isindoor,jdbcType=DECIMAL},
+      </if>
+      <if test="longitudeModify != null">
+        LONGITUDE_MODIFY = #{longitudeModify,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeModify != null">
+        LATITUDE_MODIFY = #{latitudeModify,jdbcType=DECIMAL},
+      </if>
+      
+       <if test="longitudeBmap != null">
+      LONGITUDE_BMAP= #{longitudeBmap,jdbcType=DECIMAL},
+      </if>
+      <if test="latitudeBmap != null">
+      LATITUDE_BMAP= #{latitudeBmap,jdbcType=DECIMAL},
+      </if>
+      
+      <if test="longitude != null">
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="netsystem != null">
+        NET_TYPE = #{netsystem,jdbcType=DECIMAL},
+      </if>
+      <if test="teststatus != null">
+        TESTSTATUS = #{teststatus,jdbcType=DECIMAL},
+      </if>
+      <if test="calltype != null">
+        CALLTYPE = #{calltype,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpUpdown != null">
+        FTP_TYPE = #{ftpUpdown,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMaxSpeed != null">
+        FTP_MAX_SPEED = #{ftpMaxSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpMinSpeed != null">
+        FTP_MIN_SPEED = #{ftpMinSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="ftpAvgSpeed != null">
+        FTP_AVG_SPEED = #{ftpAvgSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="pinglo != null">
+        PING_LOSE_RATE = #{pinglo,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmax != null">
+        PING_MAX_DELAY = #{pingdmax,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdmix != null">
+        PING_MIN_DELAY = #{pingdmix,jdbcType=DECIMAL},
+      </if>
+      <if test="pingdavg != null">
+        PING_AVG_DELAY = #{pingdavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmax != null">
+        HTTP_MAX_CONNECT_TIME = #{httptmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httptmix != null">
+        HTTP_MIN_CONNECT_TIME = #{httptmix,jdbcType=DECIMAL},
+      </if>
+      <if test="httptavg != null">
+        HTTP_AVG_CONNECT_TIME = #{httptavg,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmax != null">
+        HTTP_MAX_DOWNLOAD_SPEED = #{httpsmax,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsmin != null">
+        HTTP_MIN_DOWNLOAD_SPEED = #{httpsmin,jdbcType=DECIMAL},
+      </if>
+      <if test="httpsavg != null">
+        HTTP_AVG_DOWNLOAD_SPEED = #{httpsavg,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where FLOWID = #{flowid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.complaint.model.TestMasterlog">
+    update t_log_manual
+    set SERIALNO = #{serialno,jdbcType=VARCHAR},
+      TEST_NUM = #{TEST_NUM,jdbcType=DECIMAL},
+      TESTTIME = #{testtime,jdbcType=TIMESTAMP},
+      UUID = #{UUID,jdbcType=DECIMAL},
+      INSIDE = #{inside,jdbcType=DECIMAL},
+      SCENEID = #{sceneid,jdbcType=DECIMAL},
+      DENSITY = #{density,jdbcType=DECIMAL},
+      OBSTRUCT = #{obstruct,jdbcType=DECIMAL},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      ISINDOOR = #{isindoor,jdbcType=DECIMAL},
+      LONGITUDE_MODIFY = #{longitudeModify,jdbcType=DECIMAL},
+      LATITUDE_MODIFY = #{latitudeModify,jdbcType=DECIMAL},
+      LONGITUDE_BMAP= #{longitudeBmap,jdbcType=DECIMAL},
+      LATITUDE_BMAP= #{latitudeBmap,jdbcType=DECIMAL},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      NET_TYPE = #{netsystem,jdbcType=DECIMAL},
+      TESTSTATUS = #{teststatus,jdbcType=DECIMAL},
+      CALLTYPE = #{calltype,jdbcType=DECIMAL},
+      FTP_TYPE = #{ftpUpdown,jdbcType=DECIMAL},
+      FTP_MAX_SPEED = #{ftpMaxSpeed,jdbcType=DECIMAL},
+      FTP_MIN_SPEED = #{ftpMinSpeed,jdbcType=DECIMAL},
+      FTP_AVG_SPEED = #{ftpAvgSpeed,jdbcType=DECIMAL},
+      PING_LOSE_RATE = #{pinglo,jdbcType=DECIMAL},
+      PING_MAX_DELAY = #{pingdmax,jdbcType=DECIMAL},
+      PING_MIN_DELAY = #{pingdmix,jdbcType=DECIMAL},
+      PING_AVG_DELAY = #{pingdavg,jdbcType=DECIMAL},
+      HTTP_MAX_CONNECT_TIME = #{httptmax,jdbcType=DECIMAL},
+      HTTP_MIN_CONNECT_TIME = #{httptmix,jdbcType=DECIMAL},
+      HTTP_AVG_CONNECT_TIME = #{httptavg,jdbcType=DECIMAL},
+      HTTP_MAX_DOWNLOAD_SPEED = #{httpsmax,jdbcType=DECIMAL},
+      HTTP_MIN_DOWNLOAD_SPEED = #{httpsmin,jdbcType=DECIMAL},
+      HTTP_AVG_DOWNLOAD_SPEED = #{httpsavg,jdbcType=DECIMAL}
+    where FLOWID = #{flowid,jdbcType=VARCHAR}
+  </update>
+  
+    <select id="querySequence" resultType="Integer" >
+		  select seq_serialno.nextval sequence from dual
+	</select>
+	
+	<!-- 投诉工单测试次数查询 -->
+	<select id="queryOrderNum" resultType="Integer" >
+		  select count(0)
+		  from t_log_manual
+		 where serialno = #{serialno,jdbcType=DECIMAL}
+	</select>
+	
+	<!-- 任务工单测试次数查询 -->
+	<select id="queryTaskOrderNum" resultType="Integer" >
+		  select count(0)
+		  from t_log_manual_task
+		 where serialno = #{serialno,jdbcType=DECIMAL}
+	</select>
+	
+	<!-- 自主工单测试次数查询 -->
+	<select id="queryOwnOrderNum" resultType="Integer" >
+		  select count(0)
+		  from t_log_manual_own
+		 where serialno = #{serialno,jdbcType=DECIMAL}
+	</select>
+	
+  <delete id="delMasterLogByFlowid" parameterType="String">
+  	delete from t_log_manual where flowid = #{flowid,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 修改总表地址 -->
+   <update id="updateAdress" parameterType="com.complaint.model.TestMasterlog">
+    update t_log_manual
+    set test_adress = #{testaddress,jdbcType=VARCHAR}
+    where FLOWID = #{flowid,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- PSC反算CID，LAC 根据小区算-->
+  <select id="updateCidLac" resultType="com.complaint.model.TCasCell" parameterType="map">
+            select c.cid cellId,c.lac ,c.celllat,c.celllng
+              from (
+                    select a.cid,a.lac,a.LATITUDE celllat,a.LONGITUDE celllng,min(abs(a.LONGITUDE-b.LONGITUDE+a.LATITUDE-b.LATITUDE))  min_l
+                      from t_cas_cell a,
+                           (select LONGITUDE,LATITUDE 
+                              from t_cas_cell 
+                             where LAC = #{lac} and cid = #{cid}) b 
+                     where a.psc = #{psc}
+                     group by a.cid,a.lac,a.LATITUDE ,a.LONGITUDE order by min_l
+                   )c where rownum = 1
+  </select>
+  
+    <!-- PSC反算CID，LAC 根据人经纬度计算-->
+  <select id="updateCidLacBylatlng" resultType="com.complaint.model.WcdmsTrackLog" parameterType="map">
+	select c.cid ,c.lac ,
+	( select
+	trunc(2 * asin(sqrt(power(sin((#{celllat}* 3.1415926 / 180.0 -
+	#{lat} * 3.1415926 / 180.0) / 2),2) +cos(#{celllat} * 3.1415926 / 180.0) *
+	cos(#{lat} * 3.1415926 / 180.0) *power(sin((#{celllng} *
+	3.1415926 / 180.0 -
+	#{lng} * 3.1415926 / 180.0) / 2), 2))) * 6378137 ) from dual
+	)as range
+	from (
+	select a.cid,a.lac,a.LONGITUDE lng,a.LATITUDE lat,
+	min(abs(a.LONGITUDE-#{lng}+a.LATITUDE-#{lat})) min_l
+	from t_cas_cell a
+	where a.psc = #{psc} 
+	group by a.cid,a.lac,a.LONGITUDE ,a.LATITUDE  order by min_l
+	)c where rownum = 1
+  </select>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.ResourceDao">
+	<insert id="insertByBatch" parameterType="com.complaint.model.Resource">
+		insert into t_resource(resourcename,url,parentid) values(#{resourcename,jdbcType=VARCHAR},
+			#{url,jdbcType=VARCHAR},#{parentid,jdbcType=NUMERIC})
+	</insert>
+	<select id="getAllResources" resultType="com.complaint.model.Resource">
+		select resourceid,resourcename,url,parentid,type,btntype,css,nepotismid from t_resource order by BYORDER
+	</select>
+	
+	<select id="getRolenames" parameterType="int" resultType="String">
+		   select b.rolename
+		     from t_role_resource a, t_role b
+		    where a.resourceid = #{resourceId,jdbcType=NUMERIC}
+		      and a.roleid = b.roleid
+	</select>
+	<select id="getAllRoles" resultType="com.complaint.model.Role">
+		   select roleid,rolename from t_role
+	</select>
+		<select id="getResourcesByRole" resultType="com.complaint.model.Resource">
+		   select b.resourceid,b.resourcename,b.url,b.parentid,b.type,b.btntype,b.css,b.nepotismid
+		     from t_role_resource a, t_resource b
+		    where a.resourceid = b.resourceid
+	        and a.roleid = #{roleid,jdbcType=NUMERIC}
+	        order by byorder
+	</select>
+	<delete id="deleteRoleById" parameterType="int">
+		delete from t_role_resource where roleid = #{roleId}
+	</delete>
+	<insert id="insertRoleToResource" parameterType="map">
+		insert into t_role_resource(relationid,roleid,resourceid) values(seq_t_role_resource.nextval,#{roleid},#{resourceid})
+	</insert>
+</mapper>

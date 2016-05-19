@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.complaint.dao.ReportIndependentDao">
+
+	<!--3g不包括PSC与bcch的运算  -->
+	<select id="getWcdmaData" parameterType="map" resultType="com.complaint.model.WcdmaGsmData">
+	
+<!-- 3G -->
+    select flowid,
+   inside,
+           case when rscp>0 then 1 else 0 end rscp,
+           case when rscp=0 then 0 else round(rscp_1/rscp,4)*100 end rscp_1,
+           case when rscp=0 then 0 else round(rscp_2/rscp,4)*100 end rscp_2,
+           case when rscp=0 then 0 else round(rscp_3/rscp,4)*100 end rscp_3,
+           case when rscp=0 then 0 else round(rscp_4/rscp,4)*100 end rscp_4,
+           case when rscp=0 then 0 else round(rscp_5/rscp,4)*100 end rscp_5,
+           case when rscp=0 then 0 else round(rscp_6/rscp,4)*100 end rscp_6,
+           case when ec_no>0 then 1 else 0 end ec_no,
+           case when ec_no=0 then 0 else round(ec_no_1/ec_no,4)*100 end ec_no_1,
+           case when ec_no=0 then 0 else round(ec_no_2/ec_no,4)*100 end ec_no_2,
+           case when ec_no=0 then 0 else round(ec_no_3/ec_no,4)*100 end ec_no_3,
+           case when ec_no=0 then 0 else round(ec_no_4/ec_no,4)*100 end ec_no_4,
+           case when ec_no=0 then 0 else round(ec_no_5/ec_no,4)*100 end ec_no_5,
+           case when ec_no=0 then 0 else round(ec_no_6/ec_no,4)*100 end ec_no_6,           
+           case when txpower>0 then 1 else 0 end txpower,
+           case when txpower=0 then 0 else round(txpower_1/txpower,4)*100 end txpower_1,
+           case when txpower=0 then 0 else round(txpower_2/txpower,4)*100 end txpower_2,
+           case when txpower=0 then 0 else round(txpower_3/txpower,4)*100 end txpower_3,
+           case when txpower=0 then 0 else round(txpower_4/txpower,4)*100 end txpower_4,
+           case when txpower=0 then 0 else round(txpower_5/txpower,4)*100 end txpower_5,
+           case when txpower=0 then 0 else round(txpower_6/txpower,4)*100 end txpower_6,
+           case when ftp_speed_up>0 then 1 else 0 end ftp_speed_up,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_1/ftp_speed_up,4)*100 end ftp_speed_up_1,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_2/ftp_speed_up,4)*100 end ftp_speed_up_2,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_3/ftp_speed_up,4)*100 end ftp_speed_up_3,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_4/ftp_speed_up,4)*100 end ftp_speed_up_4,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_5/ftp_speed_up,4)*100 end ftp_speed_up_5,
+           case when ftp_speed_up=0 then 0 else round(ftp_speed_up_6/ftp_speed_up,4)*100 end ftp_speed_up_6, 
+           case when ftp_speed_down>0 then 1 else 0 end ftp_speed_down,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_1/ftp_speed_down,4)*100 end ftp_speed_down_1,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_2/ftp_speed_down,4)*100 end ftp_speed_down_2,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_3/ftp_speed_down,4)*100 end ftp_speed_down_3,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_4/ftp_speed_down,4)*100 end ftp_speed_down_4,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_5/ftp_speed_down,4)*100 end ftp_speed_down_5,
+           case when ftp_speed_down=0 then 0 else round(ftp_speed_down_6/ftp_speed_down,4)*100 end ftp_speed_down_6     
+    from 
+    (
+    select w.flowid,
+    w.inside,
+           sum(case when w.rscp!=-9999 then 1 else 0 end) rscp,
+           sum(case when w.rscp!=-9999 and (rscp=-9998 or (select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1))>rscp) then 1 else 0 end) rscp_1,
+           sum(case when w.rscp!=-9999 and w.rscp>=(select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1))>w.rscp then 1 else 0 end) rscp_2,
+           sum(case when w.rscp!=-9999 and w.rscp>=(select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1))>w.rscp then 1 else 0 end) rscp_3,
+           sum(case when w.rscp!=-9999 and w.rscp>=(select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1))>w.rscp then 1 else 0 end) rscp_4,
+           sum(case when w.rscp!=-9999 and w.rscp>=(select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1))>w.rscp then 1 else 0 end) rscp_5,
+           sum(case when w.rscp!=-9999 and w.rscp>=(select kpi_value from t_kpi_interval_value where kpiid=1 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1)) then 1 else 0 end) rscp_6,
+
+           sum(case when w.ec_no!=-9999 then 1 else 0 end) ec_no,
+           sum(case when w.ec_no!=-9999 and (ec_no=-9998 or (select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1))>ec_no) then 1 else 0 end) ec_no_1,
+           sum(case when w.ec_no!=-9999 and w.ec_no>=(select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1))>ec_no then 1 else 0 end) ec_no_2,
+           sum(case when w.ec_no!=-9999 and w.ec_no>=(select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1))>w.ec_no then 1 else 0 end) ec_no_3,
+           sum(case when w.ec_no!=-9999 and w.ec_no>=(select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1))>w.ec_no then 1 else 0 end) ec_no_4,
+           sum(case when w.ec_no!=-9999 and w.ec_no>=(select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1))>w.ec_no then 1 else 0 end) ec_no_5,
+           sum(case when w.ec_no!=-9999 and w.ec_no>=(select kpi_value from t_kpi_interval_value where kpiid=2 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1)) then 1 else 0 end) ec_no_6,
+
+           sum(case when w.txpower!=-9999 then 1 else 0 end) txpower,
+           sum(case when w.txpower!=-9999 and w.txpower!=-9998 and (select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1))>txpower then 1 else 0 end) txpower_6,
+           sum(case when w.txpower!=-9999 and w.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1))>w.txpower then 1 else 0 end) txpower_5,
+           sum(case when w.txpower!=-9999 and w.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1))>w.txpower then 1 else 0 end) txpower_4,
+           sum(case when w.txpower!=-9999 and w.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1))>w.txpower then 1 else 0 end) txpower_3,
+           sum(case when w.txpower!=-9999 and w.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1))>w.txpower then 1 else 0 end) txpower_2,
+           sum(case when w.txpower!=-9999 and (txpower=-9998 or (w.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=3 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1)))) then 1 else 0 end) txpower_1,
+       
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 then 1 else 0 end) ftp_speed_up,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and (ftp_speed=-9998 or (select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1))>ftp_speed) then 1 else 0 end) ftp_speed_up_1,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end) ftp_speed_up_2,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end) ftp_speed_up_3,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end) ftp_speed_up_4,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end) ftp_speed_up_5,
+           sum(case when w.ftp_type=1 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=4 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1)) then 1 else 0 end) ftp_speed_up_6,
+         
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 then 1 else 0 end) ftp_speed_down,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and (ftp_speed=-9998 or (select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed)  then 1 else 0 end) ftp_speed_down_1,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=1 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end ) ftp_speed_down_2,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=2 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end ) ftp_speed_down_3,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=3 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end ) ftp_speed_down_4,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=4 and scene_type=decode(w.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1))>w.ftp_speed then 1 else 0 end ) ftp_speed_down_5,
+           sum(case when w.ftp_type=2 and w.ftp_speed!=-9999 and w.ftp_speed>=(select kpi_value from t_kpi_interval_value where kpiid=5 and serial_num=5 and scene_type=decode(w.inside,0,0,1,1)) then 1 else 0 end) ftp_speed_down_6
+           from t_log_own_wcdma w,t_log_manual_own t where w.flowid=t.flowid
+           and 1=(case when t.net_type=1 then 0 else 1 end)
+    and w.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+    <if test="areaid != null and areaid != '' ">	
+	    and w.area_id=#{areaid}
+	</if>
+    group by w.flowid,w.inside
+    ) a
+  
+	</select>
+	
+	<!-- GSM查询数据 -->
+	<select id="getGsmData" parameterType="map" resultType="com.complaint.model.WcdmaGsmData">
+	  <!--2G  -->
+ select flowid,inside,
+           case when rxlev_Sub>0 then 1 else 0 end rxlev_Sub,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_1/rxlev_Sub,4)*100 end rxlev_Sub_1,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_2/rxlev_Sub,4)*100 end rxlev_Sub_2,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_3/rxlev_Sub,4)*100 end rxlev_Sub_3,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_4/rxlev_Sub,4)*100 end rxlev_Sub_4,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_5/rxlev_Sub,4)*100 end rxlev_Sub_5,
+           case when rxlev_Sub=0 then 0 else round(rxlev_Sub_6/rxlev_Sub,4)*100 end rxlev_Sub_6,
+           case when rxqual_Sub>0 then 1 else 0 end rxqual_Sub,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_1/rxqual_Sub,4)*100 end rxqual_Sub_1,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_2/rxqual_Sub,4)*100 end rxqual_Sub_2,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_3/rxqual_Sub,4)*100 end rxqual_Sub_3,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_4/rxqual_Sub,4)*100 end rxqual_Sub_4,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_5/rxqual_Sub,4)*100 end rxqual_Sub_5,
+           case when rxqual_Sub=0 then 0 else round(rxqual_Sub_6/rxqual_Sub,4)*100 end rxqual_Sub_6,           
+           case when c_i>0 then 1 else 0 end c_i,
+           case when c_i=0 then 0 else round(c_i_1/c_i,4)*100 end c_i_1,
+           case when c_i=0 then 0 else round(c_i_2/c_i,4)*100 end c_i_2,
+           case when c_i=0 then 0 else round(c_i_3/c_i,4)*100 end c_i_3,
+           case when c_i=0 then 0 else round(c_i_4/c_i,4)*100 end c_i_4,
+           case when c_i=0 then 0 else round(c_i_5/c_i,4)*100 end c_i_5,
+           case when c_i=0 then 0 else round(c_i_6/c_i,4)*100 end c_i_6,
+           case when mos>0 then 1 else 0 end mos,
+           case when mos=0 then 0 else round(mos_1/mos,4)*100 end mos_1,
+           case when mos=0 then 0 else round(mos_2/mos,4)*100 end mos_2,
+           case when mos=0 then 0 else round(mos_3/mos,4)*100 end mos_3,
+           case when mos=0 then 0 else round(mos_4/mos,4)*100 end mos_4,
+           case when mos=0 then 0 else round(mos_5/mos,4)*100 end mos_5,
+           case when mos=0 then 0 else round(mos_6/mos,4)*100 end mos_6, 
+           case when txpower>0 then 1 else 0 end txpower,
+           case when txpower=0 then 0 else round(txpower_1/txpower,4)*100 end txpower_1,
+           case when txpower=0 then 0 else round(txpower_2/txpower,4)*100 end txpower_2,
+           case when txpower=0 then 0 else round(txpower_3/txpower,4)*100 end txpower_3,
+           case when txpower=0 then 0 else round(txpower_4/txpower,4)*100 end txpower_4,
+           case when txpower=0 then 0 else round(txpower_5/txpower,4)*100 end txpower_5,
+           case when txpower=0 then 0 else round(txpower_6/txpower,4)*100 end txpower_6     
+    from 
+    (
+    select g.flowid,
+    g.inside,
+           sum(case when rxlev_Full!=-9999 then 1 else 0 end) rxlev_Sub,
+           sum(case when rxlev_Full!=-9999 and (g.rxlev_Full=-9998 or (select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1))>g.rxlev_Full) then 1 else 0 end) rxlev_Sub_1,
+           sum(case when rxlev_Full!=-9999 and g.rxlev_Full>=(select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1))>g.rxlev_Full then 1 else 0 end) rxlev_Sub_2,
+           sum(case when rxlev_Full!=-9999 and g.rxlev_Full>=(select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1))>g.rxlev_Full then 1 else 0 end) rxlev_Sub_3,
+           sum(case when rxlev_Full!=-9999 and g.rxlev_Full>=(select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1))>g.rxlev_Full then 1 else 0 end) rxlev_Sub_4,
+           sum(case when rxlev_Full!=-9999 and g.rxlev_Full>=(select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1))>g.rxlev_Full then 1 else 0 end) rxlev_Sub_5,
+           sum(case when rxlev_Full!=-9999 and g.rxlev_Full>=(select kpi_value from t_kpi_interval_value where kpiid=6 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1)) then 1 else 0 end) rxlev_Sub_6,
+         
+           sum(case when g.rxqual_Sub!=-9999 then 1 else 0 end) rxqual_Sub,
+           sum(case when g.rxqual_Sub!=-9999 and g.rxqual_Sub!=-9998 and (select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1))>rxqual_Sub then 1 else 0 end) rxqual_Sub_6,
+           sum(case when g.rxqual_Sub!=-9999 and g.rxqual_Sub>=(select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1))>g.rxqual_Sub then 1 else 0 end) rxqual_Sub_5,
+           sum(case when g.rxqual_Sub!=-9999 and g.rxqual_Sub>=(select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1))>g.rxqual_Sub then 1 else 0 end) rxqual_Sub_4,
+           sum(case when g.rxqual_Sub!=-9999 and g.rxqual_Sub>=(select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1))>g.rxqual_Sub then 1 else 0 end) rxqual_Sub_3,
+           sum(case when g.rxqual_Sub!=-9999 and g.rxqual_Sub>=(select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1))>g.rxqual_Sub then 1 else 0 end) rxqual_Sub_2,
+           sum(case when g.rxqual_Sub!=-9999 and (rxqual_Sub=-9998 or (g.rxqual_Sub>=(select kpi_value from t_kpi_interval_value where kpiid=7 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1)))) then 1 else 0 end) rxqual_Sub_1,
+         
+           sum(case when g.c_i!=-9999 then 1 else 0 end) c_i,
+           sum(case when g.c_i!=-9999 and (select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1))>c_i then 1 else 0 end) c_i_1,
+           sum(case when g.c_i!=-9999 and g.c_i>=(select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1))>g.c_i then 1 else 0 end) c_i_2,
+           sum(case when g.c_i!=-9999 and g.c_i>=(select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1))>g.c_i then 1 else 0 end) c_i_3,
+           sum(case when g.c_i!=-9999 and g.c_i>=(select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1))>g.c_i then 1 else 0 end) c_i_4,
+           sum(case when g.c_i!=-9999 and g.c_i>=(select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1))>g.c_i then 1 else 0 end) c_i_5,
+           sum(case when g.c_i!=-9999 and g.c_i>=(select kpi_value from t_kpi_interval_value where kpiid=8 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1)) then 1 else 0 end) c_i_6,
+
+           sum(case when g.mos!=-9999 then 1 else 0 end) mos,
+           sum(case when g.mos!=-9999 and (select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1))>mos then 1 else 0 end) mos_1,
+           sum(case when g.mos!=-9999 and g.mos>=(select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1))>g.mos  then 1 else 0 end) mos_2,
+           sum(case when g.mos!=-9999 and g.mos>=(select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1))>g.mos  then 1 else 0 end) mos_3,
+           sum(case when g.mos!=-9999 and g.mos>=(select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1))>g.mos  then 1 else 0 end) mos_4,
+           sum(case when g.mos!=-9999 and g.mos>=(select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1))>g.mos  then 1 else 0 end) mos_5,
+           sum(case when g.mos!=-9999 and g.mos>=(select kpi_value from t_kpi_interval_value where kpiid=9 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1)) then 1 else 0 end) mos_6,
+        
+           sum(case when g.txpower!=-9999 then 1 else 0 end) txpower,
+           sum(case when g.txpower!=-9999 and g.txpower!=-9998 and (select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1))>txpower then 1 else 0 end) txpower_6,
+           sum(case when g.txpower!=-9999 and g.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=5 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1))>g.txpower then 1 else 0 end) txpower_5,
+           sum(case when g.txpower!=-9999 and g.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=4 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1))>g.txpower then 1 else 0 end) txpower_4,
+           sum(case when g.txpower!=-9999 and g.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=3 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1))>g.txpower then 1 else 0 end) txpower_3,
+           sum(case when g.txpower!=-9999 and g.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=2 and scene_type=decode(g.inside,0,0,1,1)) and (select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1))>g.txpower then 1 else 0 end) txpower_2,
+           sum(case when g.txpower!=-9999 and (txpower=-9998 or (g.txpower>=(select kpi_value from t_kpi_interval_value where kpiid=22 and serial_num=1 and scene_type=decode(g.inside,0,0,1,1)))) then 1 else 0 end) txpower_1           
+    from t_log_own_gsm g,t_log_manual_own t where g.flowid=t.flowid
+           and 1=(case when t.net_type=2 then 0 else 1 end)
+    and g.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+    <if test="areaid != null and areaid != '' ">	
+	    and g.area_id=#{areaid}
+	</if>
+    group by g.flowid,g.inside
+    ) a
+	
+	</select>
+	
+	<!--查询psc,bcch数据  -->
+	<select id="getpsc" parameterType="map" resultType="com.complaint.model.Percent">
+	select * from(
+select '20' kpi,a.inside,
+       a.flowid,
+       a.psc pscbcch,
+       round(ratio_to_report(sum(1)) over(partition by a.flowid)*100,2) percent
+from t_log_own_wcdma a,t_log_manual_own t
+where a.flowid=t.flowid and 1=(case when t.net_type=1 then 0 else 1 end) and (a.psc!=-9999 and a.psc!=-9998)
+    and a.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+    <if test="areaid != null and areaid != '' ">	
+	    and a.area_id=#{areaid}
+	</if>
+group by a.flowid, a.inside,
+         a.psc
+union all         
+select '21' kpi,a.inside,
+       a.flowid,
+       a.bcch pscbcch,
+       round(ratio_to_report(sum(1)) over(partition by a.flowid)*100,2) percent
+from t_log_own_gsm a,t_log_manual_own t
+where a.flowid=t.flowid and 1=(case when t.net_type=2 then 0 else 1 end) and (a.bcch!=-9999 and a.bcch!=-9998)
+    and a.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+    <if test="areaid != null and areaid != '' ">	
+	    and a.area_id=#{areaid}
+	</if>
+group by a.flowid,a.inside,
+         a.bcch )
+         
+         order by   case  when flowid =#{firstflowid} then 1 else 0 end desc,flowid,kpi,percent desc
+	</select>
+
+	
+	
+	<!--室内 区间值 -->
+	<select id="getRptKpi"  resultType="com.complaint.model.KpiIntervalValue">
+　　　　select k.net_type netType,k.kpiid kpi,k.kpi_VALUE kpiValue,k.SERIAL_NUM serialNum,k.kpi_name kpiName from 　t_kpi_interval_value k　where k.SCENE_TYPE=1　order by k.kpiid asc, k.net_type,k.SERIAL_NUM 　　　
+	</select>
+	
+	<!--室外 区间值 -->
+	<select id="getRptKpiByOut"  resultType="com.complaint.model.KpiIntervalValue">
+　　　　select k.net_type netType,k.kpiid kpi,k.kpi_VALUE kpiValue,k.SERIAL_NUM serialNum,k.kpi_name kpiName from 　t_kpi_interval_value k　where k.SCENE_TYPE=0 order by k.kpiid asc, k.net_type,k.SERIAL_NUM 　　　
+	</select>
+	
+	
+	<!-- 根据工单号、流水号查询信息 -->
+	<select id="getserialno"  parameterType="map" resultType="com.complaint.model.TestMasterlog">
+	    select w.serialno          serialno,
+		       w.create_date   submitDatetime,
+		       a.areaname,
+		       w.break_flag 	   breakFlag,
+		       w.test_number       testNumber,
+		       w.test_address  problemsAddress,
+		       t.test_endtime      testendtime,
+		       w.is_verify         verify
+        from (select   e.id id,
+				       e.serialno serialno,
+				       e.areaid area_id,
+				       e.break_flag break_flag,
+				       e.test_address test_address,
+				       e.create_date create_date,
+				       e.is_verify is_verify,
+				       nvl(count(t.flowid), 0) test_number
+				  from t_own_etl e, t_log_manual_own t
+				 where e.serialno = t.serialno(+)
+				   <if test="serialno != null and serialno != '' ">	
+					    and e.serialno =#{serialno} 
+					</if>
+					<if test="s_id != null and s_id != '' ">	
+					    and e.id=#{s_id}
+					</if>
+				   group by e.id,
+				            e.serialno,
+				            e.areaid,
+				            e.break_flag,
+				            e.test_address,
+				            e.create_date,
+				            e.is_verify) w , t_log_manual_own t ,t_area_code a where
+
+ w.serialno = t.serialno(+) and t.area_id = a.areaid(+)
+ <!--  
+ 	<if test="flowid != null and flowid != '' ">	
+	    and t.flowid =#{flowid}
+	</if>-->
+	<if test="serialno != null and serialno != '' ">	
+	    and w.serialno =#{serialno} 
+	</if>
+	<if test="s_id != null and s_id != '' ">	
+	    and w.id=#{s_id}
+	</if>
+	<if test="areaid != null and areaid != '' ">	
+	    and w.area_id=#{areaid}
+	</if>
+	<!-- 
+	<if test="netType != null and netType != '' ">	
+	    and t.net_type=#{netType}
+	</if>
+	<if test="testType != null and testType != '' ">	
+	    and t.test_type=#{testType}
+	</if> -->
+	
+	
+	   order by t.test_endtime desc
+	</select>
+	
+	<!-- 根据流水号查询计算应用（HTTP,PING）数据,只有数据业务才有 -->
+	<select id="getHPF" resultType="com.complaint.model.TestMasterlog" parameterType="map">
+
+
+select t.ping_lose_rate pinglo,t.inside,
+
+case when t.ping_lose_rate>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=10  and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end plostate,
+     t.ping_max_delay pingdmax,
+
+case when t.ping_max_delay>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=11 and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end pdmaxstate,
+        t.ping_min_delay pingdmix,
+
+case when t.ping_min_delay>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=12 and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end pdminstate,
+     
+       t.ping_avg_delay pingdavg,
+
+case when t.ping_avg_delay>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=13 and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end pdavgstate,
+            t.http_max_connect_time httptmax,
+
+case when t.http_max_connect_time>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=14 and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end htmaxstate,
+     
+          t.http_min_connect_time httptmix,
+
+case when t.http_min_connect_time>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=15 and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end htminstate,
+          t.http_avg_connect_time httptavg,
+
+case when t.http_avg_connect_time>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=16 and scene_type=decode(inside,0,0,1,1))
+     then 1
+     else 0 end htavgstate,
+     
+        t.http_max_download_speed httpsmax,
+
+case when t.http_max_download_speed>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=17 and scene_type=decode(inside,0,0,1,1))
+     then 0
+     else 1 end hsmaxstate,
+     
+        t.http_min_download_speed httpsmin,
+
+case when t.http_min_download_speed>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=18 and scene_type=decode(inside,0,0,1,1))
+     then 0
+     else 1 end hsminstate,
+     
+        t.http_avg_download_speed httpsavg,
+
+case when t.http_avg_download_speed>(select k.kpi_value from t_kpi_interval_value k where k.kpiid=19 and scene_type=decode(inside,0,0,1,1))
+     then 0
+     else 1 end hsavgstate
+     
+
+
+ from t_log_manual_own t where t.test_type=3 and flowid=#{flowid} 
+ <if test="areaid != null and areaid != '' ">	
+	    and t.area_id=#{areaid}
+	</if>
+	</select>
+	
+	<!-- ＦＴＰ上行或下行曲线数据 -->
+	<select id="getFtp" resultType="com.complaint.model.Percent" parameterType="map">
+	     select t.flowid flowid,t.ftp_speed percent,case when t.ftp_type=1 then 4 
+		when t.ftp_type=2 then 5 else 0 end as kpi from t_log_own_wcdma t
+		 where  t.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach> and t.ftp_type=#{ftpType}
+		 <if test="areaid != null and areaid != '' ">	
+	    and t.area_id=#{areaid}
+	</if>
+	 order by ep_time asc
+	</select>
+	
+	
+<!-- 根据流水号测试结果查询 -->
+    <select id="queryResult" parameterType="map" resultType="com.complaint.model.TestMasterlog">
+    <!-- 2014－06－16判断经纬度类型 -->
+       select 
+       case when (select s.configvalue from t_sysconfig s where s.configkey='t_map_type')='baidu' then t.longitude_bmap else t.longitude_modify end longitudeModify,
+       case when (select s.configvalue from t_sysconfig s where s.configkey='t_map_type')='baidu' then t.latitude_bmap else t.latitude_modify end latitudeModify,
+       t.latitude,t.longitude,t.serialno,case when s.type=1 then s.name||'_A类' when s.type=2 then s.name||'_B类'
+       else s.name  end scenName,t.call_phone callphone ,t.test_adress testaddress,t.failure, t.inside, t.duration,t.space,to_char(t.test_time,'yyyy-mm-dd hh24:mi:ss') testtime,
+       t.isindoor,t.test_type teststatus,t.call_type calltype ,t.obstruct, t.density,t.flowid flowid,t.net_type netsystem
+       ,t.test_type teststatus,t.ftp_type ftpUpdown
+        from t_log_manual_own t,t_scene_code s where t.sceneid=s.sceneid(+) 
+        <if test="serialno != null and serialno != '' ">	
+	    and t.serialno =#{serialno} 
+	</if>
+	<if test="s_id != null and s_id != '' ">	
+	    and t.id=#{s_id}
+	</if>
+       <if test="flowid != null and flowid != '' ">	
+	    and t.flowid =#{flowid}
+	  </if>
+	  <if test="areaid != null and areaid != '' ">	
+	    and t.area_id=#{areaid}
+	</if>
+	  <!-- 网络状态 -->
+	  <if test="netType !=null and netType!=-1">
+		  <if test="netType != null and netType != '' ">
+		    <if test="netType==2">
+		     and (t.net_type=2 or t.net_type=3)
+		    </if>
+		     <if test="netType==1">
+		     and t.net_type=1
+		    </if>	
+		    
+		   </if>
+	</if>
+	<!-- 业务状态 -->
+	 <if test="testType !=null and testType!=-1">
+		<if test="testType != null and testType != '' ">	
+		    and t.test_type=#{testType}
+		</if>
+	</if>
+	   and (t.net_type=1 or t.net_type=2 or t.net_type=3)  order by t.test_endtime desc
+    </select>
+	
+	
+	<!-- 颜色查询 -->
+	<select id="queryColor" resultType="com.complaint.model.ColourCode">
+	   select t.SERIAL_NUM,t.COLOURCODE from t_colour_code t order by t.serial_num asc
+	</select>
+	
+	<!-- 测试下最大最小平均值 -->
+	<select id="queryMaxMin" resultType="com.complaint.model.MaxMinIntvel">
+	  select r.*,q.*,v.* from (select
+	   max(case when t.rscp!=-9999 then  t.rscp end) max_rscp,
+	   min(case when t.rscp!=-9999 then t.rscp end ) min_rscp,
+	   max(case when t.ec_no!=-9999 then t.ec_no end) max_ec_no,
+	   min(case when t.ec_no!=-9999 then t.ec_no end) min_ec_no,
+	   max(case when t.txpower!=-9999 then t.txpower end) max_txpower,
+	   min(case when t.txpower!=-9999 then t.txpower end) min_txpower
+	   from t_log_own_wcdma t where t.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+	   <if test="areaid != null and areaid != '' ">	
+	    and t.area_id=#{areaid}
+	</if>
+	) r,
+	   ( select a.ftp_max_speed max_ftp,a.ftp_min_speed min_ftp, a.ftp_avg_speed avg_ftp 
+	   from t_log_manual_own a where a.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+	   <if test="areaid != null and areaid != '' ">	
+	    and a.area_id=#{areaid}
+	</if>
+	) q,
+	   ( select max(case when g.rxlev_Full!=-9999 then g.rxlev_Full end ) max_rxlev, 
+	   min(case when g.rxlev_Full!=-9999 then g.rxlev_Full end ) min_rxlev ,
+	   max(case when g.rxqual_Sub!=-9999 then g.rxqual_Sub end ) max_rxqual,
+	   min(case when g.rxqual_Sub!=-9999 then g.rxqual_Sub end) min_rxqual,
+	   max(case when g.c_i!=-9999 then g.c_i end ) max_ci,
+	   min(case when g.c_i!=-9999 then g.c_i end) min_ci
+	   from t_log_own_gsm g where g.flowid in <foreach collection="flowid" item="fid"  open="(" separator="," close=")">  
+	#{fid}  
+  </foreach>
+	   <if test="areaid != null and areaid != '' ">	
+	    and g.area_id=#{areaid}
+	  </if>
+	) v
+	</select>
+	
+	<select id="countNumById" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(1) from t_own_etl t where id = #{id}
+	</select>
+	
+	<select id="getlatlng" resultType="map" parameterType="java.lang.String">
+		select LONGITUDE,LATITUDE from t_log_manual_own where flowid=#{flowid}
+	</select>
+	
+	<select id="getCell" resultType="com.complaint.model.TCasCell" parameterType="java.lang.String">
+	select c.lac              lac,
+       c.cid              cellid,
+       c.LONGITUDE_MODIFY		  celllng,
+       c.LATITUDE_MODIFY		  celllat,
+       c.bid              bid,
+       c.ant_azimuth      ant_azimuth,
+       c.self_azimuth     self_azimuth,
+       c.up_freq          upfreq,
+       c.down_freq        downfreq,
+       c.mode_type        modetype,
+       c.rnc_name         rncname,
+       c.base_name        baseName,
+       c.cell_name        cellName,
+       c.ne_type          neType,
+       c.psc              psc,
+       c.ant_elect_angle  antElectAngle,
+       c.ant_mach_angle   antMathAngle,
+       c.tilt             tilt,
+       c.ant_type         antType,
+       c.shared_ant       sharedAnt,
+       c.indoor           indoor,
+       c.shared_platform  sharedPlatform,
+       c.dev_type         devType,
+       c.bsic             bsic,
+       c.cover_range      coverRange,
+       c.bsc_name         bscName,
+       c.cell_band        cellBand,
+       c.up_freq          upfreq,
+       c.down_freq		  downfreq
+	  from (select lac, cid
+	          from (select lac, cid
+	                  from t_log_own_gsm
+	                 where flowid = #{flowid}
+	                union all
+	                select lac, cid
+	                  from t_log_own_wcdma
+	                 where flowid = #{flowid})
+	         where lac not in (0, -9998)
+	           and cid not in (0, -9998)
+	         group by lac, cid
+	         order by lac, cid) l,
+	       t_cas_cell c
+	 where l.lac = c.lac
+	   and l.cid = c.cid
+		
+	</select>
+	
+	<select id="getGsmByFlowid" parameterType="java.lang.String" resultType="com.complaint.model.TrackPoint">
+		select  to_char(ep_time,'yyyy-MM-dd hh24:mi:ss') eptime,rxlev_full rxlev,rxqual_full rxqual,c_i ci from  t_log_own_gsm where flowid = to_char(#{flowid}) order by ep_time asc
+	</select>
+	
+	<select id="getWcdmaByFlowid" parameterType="java.lang.String" resultType="com.complaint.model.TrackPoint">
+		select to_char(ep_time,'yyyy-MM-dd hh24:mi:ss') eptime,rscp rscp,ec_no ecno,txpower txpower,FTP_SPEED ftpSpeed from t_log_own_wcdma where flowid = to_char(#{flowid}) order by ep_time asc
+	</select>
+	
+	<update id="updateVerify" parameterType="map">
+		update t_own_etl set is_verify = #{val} where id=#{id}
+	</update>
+	
+	<!-- 修改总表地址 -->
+   <update id="updateAdress" parameterType="com.complaint.model.TestMasterlog">
+    update t_log_manual_own
+    set test_adress = #{testaddress,jdbcType=VARCHAR}
+    where FLOWID = #{flowid,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+  <resultMap id="Evallist" type="com.complaint.model.EvalSet">
+	 	 <result property="rscp" column="rscp"/>
+		 <result property="ecno" column="ec_no"/>
+		 <result property="txpower" column="txpower"/>
+		 <result property="ftpup" column="ftp_up"/>
+		 <result property="ftpdown" column="ftp_down"/>
+		 <result property="rxlev" column="rxlev"/>
+		 <result property="rxqual" column="rxqual"/>
+		 <result property="ci" column="c_i"/>   
+		 <result property="compeval3g" column="comp_eval_3g"/>   
+		 <result property="compeval2g" column="comp_eval_2g"/> 
+	 </resultMap>
+  <select id="getEval" statementType="CALLABLE" parameterType="map">    
+	<![CDATA[
+	call pro_flow_eval_task(#{depts,mode=OUT,jdbcType=CURSOR,javaType=java.sql.ResultSet,resultMap=Evallist},
+	#{areaid}, 
+	#{flowid},
+	#{tlog},
+	#{twcdma},
+	#{tgsm}) ]]>    
+	</select>
+</mapper>
