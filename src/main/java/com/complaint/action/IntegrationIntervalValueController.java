@@ -32,7 +32,7 @@ public class IntegrationIntervalValueController {
 //		查出color值
 		List<RateColor> colors = integrationThresholdColorService.getIntegrationColorsWithNoPoundSign();
 //		查出页面数据值
-		
+		//ccc
 		Map map = integrationThresholdService.getIntegrationThreshold();
 //		将map中的计分规则，修正规则，评分规则分别取出绑定进ModelAndView
 		mv.addObject("scoreRule",map.get("scoreRule"));
